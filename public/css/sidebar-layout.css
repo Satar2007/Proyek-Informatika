@@ -1,0 +1,189 @@
+/* JIMNY COFFEE: tata letak sidebar + latar wallpaper kopi.
+   Hanya lapisan tampilan (GUI). Tidak ada perubahan logika, route, atau database. */
+
+:root{
+  --sb-w:258px;
+  --sb-gap:16px;
+  --topbar-h:58px;
+  --cream-glass:rgba(255,250,241,.73);
+}
+
+/* ---------- Latar belakang: wallpaper "Coffee, love, cream" ---------- */
+body.ember-theme{
+  background-color:#f0dfc0!important;
+  background-image:
+    radial-gradient(ellipse at 0% 0%,rgba(188,67,13,.10),transparent 55%),
+    radial-gradient(ellipse at 100% 100%,rgba(219,169,79,.18),transparent 52%),
+    linear-gradient(rgba(246,229,197,.50),rgba(246,229,197,.50)),
+    url('../images/coffee-bg-seamless.jpg')!important;
+  background-repeat:no-repeat,no-repeat,no-repeat,repeat!important;
+  background-size:auto,auto,auto,920px auto!important;
+  background-position:0 0,100% 100%,0 0,0 0!important;
+  background-attachment:fixed!important;
+  color:#432b1c!important;
+}
+
+.app-main-shell{min-height:100vh}
+
+/* ---------- Sidebar ---------- */
+.app-sidebar{
+  position:fixed;z-index:90;left:var(--sb-gap);top:var(--sb-gap);bottom:var(--sb-gap);
+  width:var(--sb-w);padding:16px;display:flex;flex-direction:column;
+  border:1px solid rgba(239,202,142,.46);border-radius:28px;
+  background:
+    linear-gradient(158deg,rgba(88,47,25,.975),rgba(36,19,11,.965)),
+    url('../images/coffee-bg-seamless.jpg') center/420px auto;
+  box-shadow:0 26px 60px rgba(38,19,8,.30),inset 0 1px rgba(255,241,210,.16);
+  overflow:hidden;
+}
+.app-sidebar::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 0%,rgba(224,173,83,.20),transparent 38%),
+             linear-gradient(180deg,transparent 60%,rgba(0,0,0,.20));
+}
+.sidebar-inner{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+.brand-card{
+  display:flex;align-items:center;gap:12px;padding:8px 6px 16px;
+  border-bottom:1px solid rgba(239,202,142,.22);
+}
+.brand-logo{width:52px;height:52px;object-fit:cover;flex:none;border-radius:50%;box-shadow:0 0 0 3px rgba(255,236,190,.85),0 8px 18px rgba(0,0,0,.35)}
+.brand-title{color:#fff7e8;font-weight:900;font-size:17px;letter-spacing:.04em;line-height:1.05}
+.brand-sub{color:#e6bf82;font-size:9.5px;font-weight:800;margin-top:6px;letter-spacing:.07em;line-height:1.35}
+
+.sidebar-nav{display:flex;flex-direction:column;gap:6px;margin-top:14px;overflow-y:auto;padding:2px 2px 8px;flex:1;min-height:0;scrollbar-width:thin;scrollbar-color:rgba(230,191,130,.4) transparent}
+.sidebar-section{color:#d8ad72;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.16em;padding:12px 12px 4px}
+.sidebar-link{
+  display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:9px 12px;
+  color:#fff3dd;text-decoration:none;text-align:left;font:inherit;font-size:13px;font-weight:800;
+  background:transparent;border:1px solid transparent;border-radius:15px;cursor:pointer;
+  transition:background-color .2s,border-color .2s,transform .2s,color .2s;
+}
+.sidebar-link:hover{color:#fff;background:rgba(225,164,77,.16);border-color:rgba(239,202,142,.18);transform:translateX(3px)}
+.sidebar-link.active{
+  color:#3a2115;background:linear-gradient(135deg,#efc879,#bd6e24);border-color:#f5d993;
+  box-shadow:0 8px 22px rgba(0,0,0,.20),inset 0 1px rgba(255,255,255,.45);
+}
+.sidebar-link:focus-visible,.sidebar-logout:focus-visible,.mobile-sidebar-toggle:focus-visible{outline:3px solid #f0ce85!important;outline-offset:2px}
+.sidebar-svg{width:20px;height:20px;flex:none}
+
+.sidebar-user{margin-top:auto;padding:12px;border-radius:18px;border:1px solid rgba(239,202,142,.20);background:rgba(255,247,232,.08)}
+.sidebar-user-row{display:flex;align-items:center;gap:10px}
+.sidebar-avatar{width:38px;height:38px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,#e8b75e,#a95119);color:#fff;font-weight:900;box-shadow:0 8px 20px rgba(0,0,0,.22);flex:none}
+.sidebar-user-name{color:#fff7e8;font-size:12px;font-weight:900}
+.sidebar-role{color:#dcb77e;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}
+.sidebar-logout{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;
+  border:1px solid rgba(255,231,184,.28);border-radius:12px;padding:9px 10px;
+  background:rgba(199,110,34,.22);color:#fff2d7;font-size:11px;font-weight:900;cursor:pointer;transition:.2s;
+}
+.sidebar-logout .sidebar-svg{width:16px;height:16px}
+.sidebar-logout:hover{background:linear-gradient(135deg,#d78a38,#a84818);transform:translateY(-1px)}
+
+/* ---------- Topbar ---------- */
+.app-topbar{
+  position:fixed;z-index:80;top:var(--sb-gap);left:calc(var(--sb-gap) + var(--sb-w) + var(--sb-gap));right:var(--sb-gap);
+  height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 16px;
+  border:1px solid rgba(201,129,49,.30);border-radius:20px;
+  background:rgba(255,248,235,.93);box-shadow:0 14px 36px rgba(60,31,13,.14),inset 0 1px #fff;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.topbar-left{display:flex;align-items:center;gap:10px;min-width:0}
+.topbar-bean{width:40px;height:40px;object-fit:cover;flex:none;border-radius:50%;box-shadow:0 0 0 2px rgba(217,180,125,.9),0 4px 10px rgba(74,38,16,.22)}
+.topbar-title{font-weight:900;color:#492a18;font-size:15px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-caption{color:#7f5c42;font-size:10.5px;font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-role{display:flex;align-items:center;gap:8px;flex:none;padding:7px 13px;border-radius:999px;border:1px solid #d9b47d;background:rgba(255,255,255,.7);color:#633719;font-size:12px;font-weight:800}
+.topbar-dot{width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.18)}
+.mobile-sidebar-toggle{display:none;flex:none;place-items:center;width:40px;height:40px;border:1px solid #d8b67f;border-radius:12px;background:#fff3dc;color:#5b321b;cursor:pointer}
+.mobile-sidebar-toggle .sidebar-svg{width:20px;height:20px}
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:85;background:rgba(30,14,6,.52);backdrop-filter:blur(3px)}
+
+/* ---------- Konten ---------- */
+body main.app-content{
+  max-width:none!important;
+  margin-left:calc(var(--sb-gap) + var(--sb-w) + var(--sb-gap));
+  padding:calc(var(--sb-gap) + var(--topbar-h) + 14px) var(--sb-gap) var(--sb-gap) 0;
+  min-height:100vh;box-sizing:border-box;
+}
+.content-glass{
+  min-height:calc(100vh - (var(--sb-gap) + var(--topbar-h) + 14px) - var(--sb-gap));
+  border-radius:28px;padding:22px;box-sizing:border-box;
+  background:var(--cream-glass);border:1px solid rgba(203,151,78,.28);
+  box-shadow:0 22px 54px rgba(67,34,13,.12),inset 0 1px rgba(255,255,255,.75);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+}
+.page-ready{animation:pageReady .38s cubic-bezier(.16,1,.3,1) both}
+@keyframes pageReady{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Judul & teks halaman sebelumnya dirancang untuk latar gelap; di panel krem harus gelap. */
+.ember-theme .content-glass :is(.page-lead h1,.page-heading h1,.pos-compact-heading h1){color:#432b1c!important;text-shadow:none}
+.ember-theme .content-glass :is(.page-lead h1+p,.page-heading p,.report-context,.pos-compact-heading p,.pos-compact-heading h1 span,.pos-heading-actions,.catalog-pager){color:#7b6552!important}
+.ember-theme .content-glass .page-heading .eyebrow{color:#a06a2a}
+.ember-theme .content-glass .pos-compact-heading p{font-weight:600}
+.ember-theme .content-glass .pos-heading-actions{font-weight:700}
+
+/* ---------- Layar kasir (desktop): semua muat dalam satu layar ---------- */
+@media(min-width:1024px){
+  body.pos-screen{overflow:hidden}
+  body.pos-screen main.app-content{height:100vh;height:100dvh;min-height:0;overflow:hidden}
+  .pos-screen .content-glass{height:100%;min-height:0;padding:12px 14px;display:flex;flex-direction:column;overflow:hidden}
+  .pos-screen .page-ready{flex:1;min-height:0;display:flex;flex-direction:column}
+  .pos-screen .pos-workspace{flex:1;height:auto;min-height:0}
+  .pos-screen .pos-content{height:100%;gap:8px}
+  .pos-screen .pos-compact-heading{min-height:0}
+  .pos-screen .pos-compact-heading>div:first-child{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .pos-screen .pos-compact-heading h1{font-size:20px;line-height:1.2;margin:0}
+  .pos-screen .pos-compact-heading p{margin:0;font-size:12px}
+  .pos-screen .pos-columns{grid-template-columns:minmax(0,1fr) 310px;gap:14px}
+  .pos-screen .pos-catalog{gap:8px}
+  .pos-screen .order-cart{border-radius:18px}
+
+  /* Toolbar dipadatkan menjadi satu baris: pencarian - kategori - jumlah menu */
+  .pos-screen .catalog-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;padding:10px 14px;border-radius:16px}
+  .pos-screen .catalog-toolbar>div:first-child{display:contents}
+  .pos-screen .catalog-toolbar>div:first-child>div:first-child{order:1;flex:0 1 270px;min-width:200px;max-width:none;width:auto}
+  .pos-screen .catalog-toolbar>div:first-child>div:last-child{order:3;margin-left:auto;white-space:nowrap}
+  .pos-screen .category-tabs{order:2;flex:1 1 auto;margin-top:0}
+}
+@media(min-width:1600px){.pos-screen .pos-columns{grid-template-columns:minmax(0,1fr) 330px}}
+/* Layar sedang: pencarian + jumlah menu di baris pertama, kategori satu baris yang bisa digeser */
+@media(min-width:1024px) and (max-width:1599px){
+  .pos-screen .catalog-toolbar>div:first-child>div:first-child{flex:1 1 220px;max-width:340px}
+  .pos-screen .catalog-toolbar>div:first-child>div:last-child{order:2}
+  .pos-screen .category-tabs{order:3;flex:1 1 100%;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:rgba(160,100,40,.35) transparent}
+  .pos-screen .category-tabs button{flex:none;white-space:nowrap}
+}
+@media(max-width:1279px){
+  :root{--sb-w:224px}
+  .brand-title{font-size:15px}
+}
+
+/* ---------- Tablet & ponsel: sidebar menjadi laci geser ---------- */
+@media(max-width:1023px){
+  :root{--sb-gap:12px}
+  .app-sidebar{width:min(280px,calc(100vw - 24px));transform:translateX(-125%);transition:transform .28s cubic-bezier(.16,1,.3,1)}
+  .app-sidebar.is-open{transform:none}
+  .app-topbar{left:var(--sb-gap)}
+  .mobile-sidebar-toggle{display:grid}
+  .sidebar-overlay{display:block}
+  body main.app-content{margin-left:0;padding:calc(var(--sb-gap) + var(--topbar-h) + 12px) 10px 14px}
+  .content-glass{padding:14px;border-radius:22px;min-height:calc(100vh - 100px)}
+}
+@media(max-width:560px){
+  .topbar-caption{display:none}
+  .topbar-title{font-size:13px}
+  .topbar-bean{width:40px;height:40px;object-fit:cover;flex:none;border-radius:50%;box-shadow:0 0 0 2px rgba(217,180,125,.9),0 4px 10px rgba(74,38,16,.22)}
+  .topbar-role{padding:6px 10px;font-size:11px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .page-ready{animation:none!important}
+  .app-sidebar{transition:none}
+  .sidebar-link:hover{transform:none}
+}
+
+@media print{
+  .app-sidebar,.app-topbar,.sidebar-overlay,.smart-assistant-root{display:none!important}
+  body.ember-theme{background:#fff!important}
+  body main.app-content{margin:0!important;padding:0!important;height:auto!important;overflow:visible!important}
+  .content-glass{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;backdrop-filter:none!important;min-height:0!important}
+}
