@@ -1,0 +1,25 @@
+const fs = require('fs');
+const vm = require('vm');
+const path = require('path');
+const assert = require('assert/strict');
+const source = fs.readFileSync(path.join(__dirname, '../../resources/views/kasir/index.blade.php'),'utf8').split('<script>')[1].split('</script>')[0].replace(/\{\{.*?\}\}/g,'null');
+const alerts=[];
+const context = { setTimeout:()=>1, clearTimeout:()=>{}, window:{matchMedia:()=>({matches:true})}, Swal:{fire:(...args)=>alerts.push(args)} };
+vm.createContext(context); vm.runInContext(source,context);
+const app = context.kasirApp();
+app.menuIndex=Array.from({length:42},(_,i)=>({id:i+1,name:i===0?"chef's latte":'menu '+i,category:i<21?'1':'2'}));
+app.$refs={productGrid:{clientWidth:1530,clientHeight:700}};
+app.fitCatalog();
+assert.equal(app.pageCount,1); assert.equal(app.visibleMenuIds.length,42);
+app.$refs.productGrid={clientWidth:950,clientHeight:430};app.fitCatalog();
+assert.equal(app.pageSize,18);assert.equal(app.pageCount,3);
+const ids=[];for(let i=1;i<=app.pageCount;i++){app.page=i;ids.push(...app.visibleMenuIds)}
+assert.equal(new Set(ids).size,42);assert.equal(ids.length,42);
+app.page=1;app.search="CHEF'S";assert.equal(app.filteredMenus.length,1);assert.equal(app.visibleMenuIds[0],1);
+app.search='';app.selectedCategory='2';assert.equal(app.filteredMenus.length,21);
+app.search='not a menu';assert.equal(app.hasVisibleMenus(),false);assert.equal(app.pageCount,1);
+app.tambahCart(1,"Chef's latte",10000,2);app.tambahQty(1);app.tambahQty(1);
+assert.equal(app.cart[0].qty,2);assert.equal(alerts.length,1);assert.equal(app.subtotal,20000);assert.equal(app.pajak,600);assert.equal(app.grandTotal,20600);
+app.kurangiQty(1);assert.equal(app.cart[0].qty,1);assert.equal(app.recentItem,1);
+app.hapusItem(1);assert.equal(app.cart.length,0);
+console.log('PASS: 42 menus fit on large desktop; pagination includes every product; search/category/empty state; stock limit, quantity, subtotal and tax.');
