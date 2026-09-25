@@ -11,6 +11,7 @@ class Payment extends Model
         'metode',
         'external_id',
         'qris_string',
+        'midtrans_snap_token',
         'payment_status',
         'status',
         'uang_diterima',

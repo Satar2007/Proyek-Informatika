@@ -14,6 +14,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\AkunController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\SmartAssistantController;
+use App\Http\Controllers\MidtransWebhookController;
 
 // Root diarahkan ke halaman login
 Route::get('/', function () {
@@ -22,6 +23,14 @@ Route::get('/', function () {
 
 // Auth Routes
 require __DIR__ . '/auth.php';
+
+// Midtrans HTTP Notification / Webhook.
+// Tidak memakai auth karena request dikirim langsung oleh server Midtrans.
+// Keaslian request diverifikasi menggunakan signature_key.
+Route::post(
+    '/midtrans/notification',
+    [MidtransWebhookController::class, 'handle']
+)->name('midtrans.notification');
 
 // =====================
 // SEMUA ROLE: KASIR, ADMIN, OWNER
@@ -58,6 +67,7 @@ Route::middleware(['auth', 'role:kasir,admin'])->group(function () {
     // Payment
     Route::get('/payment/struk/{id}', [PaymentController::class, 'struk'])->name('payment.struk');
     Route::get('/payment/check/{id}', [PaymentController::class, 'check'])->name('payment.check');
+    Route::post('/payment/token/{id}', [PaymentController::class, 'token'])->name('payment.token');
     Route::get('/payment/{id}', [PaymentController::class, 'show'])->name('payment.show');
     Route::post('/payment/success/{id}', [PaymentController::class, 'success'])->name('payment.success');
 
