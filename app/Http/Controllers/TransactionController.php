@@ -20,9 +20,32 @@ class TransactionController extends Controller
             $query->where('user_id', $user->id);
         }
 
+        $statsQuery = Transaction::query();
+
+        if ($user->role === 'kasir') {
+            $statsQuery->where('user_id', $user->id);
+        }
+
+        $transactionStats = [
+            'success' => (clone $statsQuery)
+                ->where('status', 'success')
+                ->count(),
+
+            'pending' => (clone $statsQuery)
+                ->where('status', 'pending')
+                ->count(),
+
+            'failed' => (clone $statsQuery)
+                ->whereIn('status', ['cancelled', 'expired'])
+                ->count(),
+        ];
+
         $transaksis = $query->paginate(20);
 
-        return view('transaksi.index', compact('transaksis'));
+        return view(
+            'transaksi.index',
+            compact('transaksis', 'transactionStats')
+        );
     }
 
     public function show($id)

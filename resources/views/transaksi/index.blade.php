@@ -52,7 +52,7 @@
                         Sukses
                     </p>
                     <p class="mt-2 text-3xl font-black text-emerald-600">
-                        {{ $transaksis->where('status', 'success')->count() }}
+                        {{ $transactionStats['success'] }}
                     </p>
                 </div>
 
@@ -69,7 +69,7 @@
                         Pending
                     </p>
                     <p class="mt-2 text-3xl font-black text-[#C98A4A]">
-                        {{ $transaksis->where('status', 'pending')->count() }}
+                        {{ $transactionStats['pending'] }}
                     </p>
                 </div>
 
@@ -86,7 +86,7 @@
                         Gagal/Batal
                     </p>
                     <p class="mt-2 text-3xl font-black text-red-600">
-                        {{ $transaksis->whereIn('status', ['cancelled', 'expired'])->count() }}
+                        {{ $transactionStats['failed'] }}
                     </p>
                 </div>
 
