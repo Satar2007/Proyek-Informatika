@@ -28,13 +28,34 @@ class LaporanController extends Controller
 
     private function report(CarbonImmutable $start, CarbonImmutable $end, bool $monthly)
     {
-        // Follow the existing report definition: successful orders, grouped by created_at.
-        $query = Transaction::where('status', 'success')->where('created_at', '>=', $start)->where('created_at', '<', $end);
-        $orders = (clone $query)->get(['id', 'created_at', 'grand_total', 'payment_method']);
+        // Laporan hanya menghitung transaksi sukses.
+        // Kasir dibatasi ke transaksi miliknya; admin dan owner melihat seluruh transaksi.
+        $user = auth()->user();
+
+        $baseQuery = Transaction::where('status', 'success');
+
+        if ($user->role === 'kasir') {
+            $baseQuery->where('user_id', $user->id);
+        }
+
+        $query = (clone $baseQuery)
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<', $end);
+
+        $orders = (clone $query)
+            ->get(['id', 'created_at', 'grand_total', 'payment_method']);
+
         $total = (float) $orders->sum('grand_total');
         $count = $orders->count();
-        $previousStart = $monthly ? $start->subMonth() : $start->subDay();
-        $previousTotal = (float) Transaction::where('status', 'success')->where('created_at', '>=', $previousStart)->where('created_at', '<', $start)->sum('grand_total');
+
+        $previousStart = $monthly
+            ? $start->subMonth()
+            : $start->subDay();
+
+        $previousTotal = (float) (clone $baseQuery)
+            ->where('created_at', '>=', $previousStart)
+            ->where('created_at', '<', $start)
+            ->sum('grand_total');
         $growth = $previousTotal > 0 ? (($total - $previousTotal) / $previousTotal) * 100 : null;
         $groups = $orders->groupBy(fn ($order) => $order->created_at->format($monthly ? 'Y-m-d' : 'H'));
         $series = collect();
