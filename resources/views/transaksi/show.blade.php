@@ -129,62 +129,99 @@
                 <h2 class="text-lg font-black text-[#4B2E1F]">
                     Aksi Transaksi Pending
                 </h2>
+
                 <p class="mt-1 text-sm font-semibold text-[#7B4B2A]/75">
-                    Transaksi QRIS ini belum lunas. Pilih aksi sesuai kondisi pembayaran.
+                    @if($method === 'qris')
+                        Pembayaran QRIS menunggu verifikasi dari Midtrans.
+                    @else
+                        Transaksi belum lunas. Pilih aksi sesuai kondisi pembayaran.
+                    @endif
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 gap-3 p-6 md:grid-cols-4">
-                @if($payment && $method === 'qris')
-                    <a href="{{ route('payment.show', $payment->id) }}"
-                        class="inline-flex items-center justify-center rounded-2xl bg-[#7B4B2A] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#7B4B2A]/20 transition hover:bg-[#4B2E1F] active:scale-[0.98]">
-                        Lanjutkan QRIS
-                    </a>
+            <div class="grid grid-cols-1 gap-3 p-6 {{ $method === 'qris' ? 'md:grid-cols-1' : 'md:grid-cols-4' }}">
+                @if($method === 'qris')
+                    @if($payment)
+                        <a href="{{ route('payment.show', $payment->id) }}"
+                            class="inline-flex items-center justify-center rounded-2xl bg-[#7B4B2A] px-5 py-3 text-sm font-black text-white shadow-lg shadow-[#7B4B2A]/20 transition hover:bg-[#4B2E1F] active:scale-[0.98]">
+                            Lanjutkan QRIS
+                        </a>
+
+                        <form action="{{ route('transaksi.cancel', $transaksi->id) }}"
+                            method="POST"
+                            onsubmit="return konfirmasiAksiTransaksi(event, this, 'cancel')">
+                            @csrf
+
+                            <button type="submit"
+                                class="w-full rounded-2xl border border-red-300 bg-red-50 px-5 py-3 text-sm font-black text-red-700 shadow-sm transition hover:bg-red-100">
+                                Batalkan Transaksi
+                            </button>
+                        </form>
+                    @endif
+
+                    <div class="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm font-semibold leading-relaxed text-amber-900">
+                        @if(!$payment)
+                            Data pembayaran belum tersedia. Hubungi admin untuk memeriksa transaksi.
+                        @elseif(blank($payment->midtrans_snap_token))
+                            Pembayaran Midtrans belum dibuka.
+                            Pilih <strong>Lanjutkan QRIS</strong> untuk memulai pembayaran,
+                            atau <strong>Batalkan Transaksi</strong> jika pesanan tidak jadi dilanjutkan.
+                        @else
+                            Pembayaran Midtrans sudah pernah dibuka.
+                            Pilih <strong>Lanjutkan QRIS</strong> untuk membuka kembali pembayaran
+                            atau memeriksa statusnya.
+                            Pembatalan hanya dicatat setelah status pembayaran diverifikasi melalui Midtrans.
+                        @endif
+                    </div>
+                @else
+                    <form action="{{ route('transaksi.cancel', $transaksi->id) }}"
+                        method="POST"
+                        onsubmit="return konfirmasiAksiTransaksi(event, this, 'cancel')">
+                        @csrf
+
+                        <button type="submit"
+                            class="w-full rounded-2xl border border-[#D9B08C] bg-white px-5 py-3 text-sm font-black text-[#7B4B2A] shadow-sm transition hover:bg-[#F8F5F0] hover:text-[#4B2E1F]">
+                            Batalkan
+                        </button>
+                    </form>
+
+                    <form action="{{ route('transaksi.expire', $transaksi->id) }}"
+                        method="POST"
+                        onsubmit="return konfirmasiAksiTransaksi(event, this, 'expire')">
+                        @csrf
+
+                        <button type="submit"
+                            class="w-full rounded-2xl bg-[#C98A4A] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#7B4B2A]">
+                            Tandai Expired
+                        </button>
+                    </form>
+
+                    <form action="{{ route('transaksi.destroy', $transaksi->id) }}"
+                        method="POST"
+                        onsubmit="return konfirmasiAksiTransaksi(event, this, 'delete')">
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="submit"
+                            class="w-full rounded-2xl bg-red-600 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-red-700">
+                            Hapus
+                        </button>
+                    </form>
                 @endif
-
-                <form action="{{ route('transaksi.cancel', $transaksi->id) }}"
-                    method="POST"
-                    onsubmit="return konfirmasiAksiTransaksi(event, this, 'cancel')">
-                    @csrf
-
-                    <button type="submit"
-                        class="w-full rounded-2xl border border-[#D9B08C] bg-white px-5 py-3 text-sm font-black text-[#7B4B2A] shadow-sm transition hover:bg-[#F8F5F0] hover:text-[#4B2E1F]">
-                        Batalkan
-                    </button>
-                </form>
-
-                <form action="{{ route('transaksi.expire', $transaksi->id) }}"
-                    method="POST"
-                    onsubmit="return konfirmasiAksiTransaksi(event, this, 'expire')">
-                    @csrf
-
-                    <button type="submit"
-                        class="w-full rounded-2xl bg-[#C98A4A] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#7B4B2A]">
-                        Tandai Expired
-                    </button>
-                </form>
-
-                <form action="{{ route('transaksi.destroy', $transaksi->id) }}"
-                    method="POST"
-                    onsubmit="return konfirmasiAksiTransaksi(event, this, 'delete')">
-                    @csrf
-                    @method('DELETE')
-
-                    <button type="submit"
-                        class="w-full rounded-2xl bg-red-600 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-red-700">
-                        Hapus
-                    </button>
-                </form>
             </div>
 
             <div class="border-t border-[#E8D8C7] bg-[#FFFDF9] px-6 py-4">
                 <p class="text-xs font-semibold leading-relaxed text-[#7B4B2A]/75">
-                    Catatan: transaksi yang sudah lunas tidak bisa dibatalkan, di-expire, atau dihapus. Stok hanya dikurangi saat pembayaran berhasil.
+                    @if($method === 'qris')
+                        Status pembayaran QRIS mengikuti hasil verifikasi Midtrans.
+                        Kembali ke POS tidak otomatis membatalkan pesanan dan stok tetap dicadangkan selama pembayaran menunggu.
+                    @else
+                        Transaksi yang sudah lunas tidak bisa dibatalkan, di-expire, atau dihapus.
+                    @endif
                 </p>
             </div>
         </div>
     @endif
-
     {{-- Informasi Transaksi --}}
     <div class="overflow-hidden rounded-3xl border border-[#D9B08C]/60 bg-white shadow-sm shadow-[#4B2E1F]/5">
         <div class="border-b border-[#E8D8C7] bg-gradient-to-br from-white to-[#F8F5F0] px-6 py-5">
