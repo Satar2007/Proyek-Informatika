@@ -19,7 +19,7 @@
                 @forelse($transaksis as $trx)
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td class="px-4 py-3 font-mono text-sm">{{ $trx->kode_transaksi }}</td>
-                    <td class="px-4 py-3">{{ $trx->user->name }}</td>
+                    <td class="px-4 py-3">{{ $trx->cashier_display_name }}</td>
                     <td class="px-4 py-3 font-bold">Rp {{ number_format($trx->grand_total, 0, ',', '.') }}</td>
                     <td class="px-4 py-3">
                         @if($trx->status === 'success')

@@ -180,10 +180,10 @@
                             <td class="px-6 py-4">
                                 <div>
                                     <p class="font-black text-[#4B2E1F]">
-                                        {{ $log->createdBy?->name ?? '-' }}
+                                        {{ $log->creator_display_name }}
                                     </p>
                                     <p class="text-xs font-semibold text-[#7B4B2A]/70">
-                                        {{ $log->createdBy?->role ?? 'user' }}
+                                        {{ $log->creator_display_role }}
                                     </p>
                                 </div>
                             </td>
