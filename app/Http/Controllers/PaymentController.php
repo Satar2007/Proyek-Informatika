@@ -7,7 +7,7 @@ use App\Services\MidtransService;
 use App\Services\StockService;
 use App\Services\StockReservationService;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Throwable;
 
 class PaymentController extends Controller
@@ -71,7 +71,7 @@ class PaymentController extends Controller
                     || $lockedPayment->transaction->status !== 'pending'
                     || $lockedPayment->transaction->stock_reservation_status !== 'reserved'
                 ) {
-                    throw new RuntimeException(
+                    throw new ConflictHttpException(
                         'Transaksi tidak lagi menunggu pembayaran.'
                     );
                 }
@@ -94,6 +94,11 @@ class PaymentController extends Controller
                 'success' => true,
                 'snap_token' => $snapToken,
             ]);
+        } catch (ConflictHttpException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 409);
         } catch (Throwable $e) {
             report($e);
 
