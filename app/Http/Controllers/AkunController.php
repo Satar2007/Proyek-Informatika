@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AkunController extends Controller
 {
@@ -67,7 +68,16 @@ class AkunController extends Controller
             return redirect()->back()->with('error', 'Tidak bisa hapus akun sendiri!');
         }
 
-        $user->delete();
+        try {
+            $user->delete();
+        } catch (ValidationException $e) {
+            $errors = $e->errors();
+
+            return redirect()->back()->with(
+                'error',
+                $errors['account'][0] ?? 'Akun tidak dapat dihapus.'
+            );
+        }
 
         return redirect()->back()->with('success', 'Akun berhasil dihapus!');
     }

@@ -31,17 +31,37 @@ class TransactionService
                 throw new Exception('Metode pembayaran tidak valid.');
             }
 
+            // Serialize new checkout with account deletion before locking menu rows.
+            \App\Models\User::whereKey($userId)->lockForUpdate()->firstOrFail();
+
             $total = 0;
             $validatedItems = [];
+            $quantities = [];
 
             foreach ($cart as $item) {
-                $menuId = $item['menu_id'] ?? null;
-                $qty = (int) ($item['qty'] ?? 0);
-
-                if (!$menuId || $qty <= 0) {
+                $menuId = filter_var(
+                    $item['menu_id'] ?? null,
+                    FILTER_VALIDATE_INT,
+                    ['options' => ['min_range' => 1]]
+                );
+                $qty = filter_var(
+                    $item['qty'] ?? null,
+                    FILTER_VALIDATE_INT,
+                    ['options' => ['min_range' => 1]]
+                );
+                if ($menuId === false || $qty === false) {
                     throw new Exception('Data item transaksi tidak valid.');
                 }
+                $previousQty = $quantities[$menuId] ?? 0;
+                if ($qty > PHP_INT_MAX - $previousQty) {
+                    throw new Exception('Jumlah item transaksi terlalu besar.');
+                }
+                $quantities[$menuId] = $previousQty + $qty;
+            }
 
+            ksort($quantities, SORT_NUMERIC);
+
+            foreach ($quantities as $menuId => $qty) {
                 $menu = Menu::lockForUpdate()->find($menuId);
 
                 if (!$menu || !$menu->is_active) {
@@ -71,6 +91,10 @@ class TransactionService
 
             $grandTotal = $total + $pajak - $diskon;
 
+            if ($metode === 'qris' && $grandTotal <= 0) {
+                throw new Exception('Total pembayaran QRIS harus lebih besar dari nol.');
+            }
+
             $transaksi = Transaction::create([
                 'kode_transaksi' => $this->generateKodeTransaksi(),
                 'user_id'        => $userId,
@@ -94,7 +118,11 @@ class TransactionService
                 ]);
             }
 
-            return $transaksi->load('details.menu');
+            if ($metode === 'qris') {
+                app(StockReservationService::class)->reserve((int) $transaksi->id);
+            }
+
+            return $transaksi->refresh()->load('details.menu');
         });
     }
 

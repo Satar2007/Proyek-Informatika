@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
+use App\Models\LeaveRequest;
 use App\Models\Shift;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -146,9 +148,41 @@ class ShiftController extends Controller
 
     public function destroy(Shift $shift)
     {
-        $shift->delete();
+        try {
+            DB::transaction(function () use ($shift) {
+                $lockedShift = Shift::whereKey($shift->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-        return back()->with('success', 'Shift berhasil dihapus.');
+                $hasAttendance = Attendance::where('shift_id', $lockedShift->id)
+                    ->lockForUpdate()
+                    ->exists();
+
+                if ($hasAttendance) {
+                    throw new \RuntimeException(
+                        'Shift tidak dapat dihapus karena sudah memiliki riwayat kehadiran.'
+                    );
+                }
+
+                $pendingLeave = LeaveRequest::where('user_id', $lockedShift->user_id)
+                    ->whereDate('tanggal', $lockedShift->tanggal)
+                    ->where('status', 'pending')
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($pendingLeave) {
+                    throw new \RuntimeException(
+                        'Shift tidak dapat dihapus karena masih memiliki pengajuan izin yang menunggu persetujuan.'
+                    );
+                }
+
+                $lockedShift->delete();
+            });
+
+            return back()->with('success', 'Shift berhasil dihapus.');
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function rekap(Request $request)

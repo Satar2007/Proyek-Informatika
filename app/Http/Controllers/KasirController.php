@@ -51,7 +51,8 @@ class KasirController extends Controller
         $request->validate([
             'nama_pelanggan' => 'required|string|max:255',
             'cart'           => 'required|array',
-            'cart.*.menu_id' => 'required|exists:menus,id',
+            'cart.*.menu_id' => 'required|integer|min:1|exists:menus,id',
+            'diskon'         => 'nullable|integer|min:0',
             'cart.*.qty'     => 'required|integer|min:1',
             'metode'         => 'nullable|in:cash,qris',
             'uang_diterima'  => 'nullable|integer|min:0',

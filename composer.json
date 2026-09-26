@@ -9,6 +9,7 @@
         "php": "^8.3",
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0",
+        "midtrans/midtrans-php": "^2.6",
         "simplesoftwareio/simple-qrcode": "*"
     },
     "require-dev": {

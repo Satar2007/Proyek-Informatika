@@ -217,7 +217,7 @@
 
     <div class="row">
         <span>Kasir</span>
-        <span>{{ $transaction->user?->name ?? '-' }}</span>
+        <span>{{ $transaction->cashier_display_name }}</span>
     </div>
 
     <div class="row">

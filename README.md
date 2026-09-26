@@ -132,6 +132,54 @@ Buka alamat lokal yang ditampilkan oleh `php artisan serve` (umumnya `http://127
 
 **Penting:** Seeder project menyertakan akun contoh untuk pengujian lokal. Jangan gunakan password contoh di deployment nyata. File `.env`, database lokal, `vendor/`, dan `node_modules/` tidak perlu diunggah ke repository. Aset QRIS asli juga tidak disertakan dalam repository publik.
 
+## Konfigurasi Midtrans Sandbox
+
+Project SATAR menggunakan **Midtrans Sandbox** untuk simulasi pembayaran QRIS selama development.
+
+Setelah membuat file `.env`, isi konfigurasi berikut menggunakan credential Sandbox dari akun Midtrans masing-masing:
+
+```env
+MIDTRANS_IS_PRODUCTION=false
+MIDTRANS_SERVER_KEY=isi_server_key_sandbox
+MIDTRANS_CLIENT_KEY=isi_client_key_sandbox
+```
+
+> Jangan menaruh Server Key atau Client Key asli di `.env.example`, README, commit Git, atau repository publik. File `.env` sudah dikecualikan melalui `.gitignore`.
+
+Konfigurasi tersebut dibaca oleh `config/midtrans.php`. Ketika `MIDTRANS_IS_PRODUCTION=false`, aplikasi menggunakan environment Sandbox Midtrans.
+
+### HTTP Notification / Webhook
+
+Endpoint notification yang tersedia pada aplikasi:
+
+```text
+POST /midtrans/notification
+```
+
+Route ini tidak menggunakan autentikasi login karena request dikirim langsung oleh server Midtrans. Validitas notification diverifikasi oleh aplikasi menggunakan signature Midtrans.
+
+Untuk pengujian notification dari Midtrans, aplikasi lokal harus dapat diakses melalui URL publik. `localhost` atau `127.0.0.1` tidak dapat dipanggil langsung oleh server Midtrans, sehingga gunakan tunnel HTTPS saat menguji webhook.
+
+Contoh URL notification setelah aplikasi tersedia secara publik:
+
+```text
+https://domain-atau-tunnel.example/midtrans/notification
+```
+
+Masukkan URL tersebut sebagai Payment Notification URL pada konfigurasi Midtrans Sandbox.
+
+### Simulasi pembayaran QRIS
+
+Pembayaran QRIS Sandbox dapat diuji melalui simulator Midtrans:
+
+```text
+https://simulator.sandbox.midtrans.com/qris/index
+```
+
+Gunakan transaksi Sandbox yang dihasilkan aplikasi. Setelah simulasi pembayaran, perubahan status dapat diterima melalui notification/webhook atau melalui pengecekan status pembayaran yang tersedia pada aplikasi.
+
+Konfigurasi ini ditujukan untuk development. Jangan menggunakan `MIDTRANS_IS_PRODUCTION=true` sebelum aplikasi benar-benar menggunakan credential dan konfigurasi Midtrans Production.
+
 ## 👥 Tim Pengembang
 
 | Nama | NIM |

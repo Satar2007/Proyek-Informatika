@@ -75,7 +75,7 @@
         @if($monthly)
             @foreach($series as $row)<tr><td>{{ \Carbon\Carbon::parse($row['date'])->format('d/m/Y') }}</td><td>{{ $row['count'] }}</td><td>Rp {{ number_format($row['total'], 0, ',', '.') }}</td><td><a href="{{ route('laporan.harian', ['tanggal' => $row['date']]) }}" aria-label="Lihat laporan {{ $row['date'] }}">Lihat harian ↗</a></td></tr>@endforeach
         @else
-            @forelse($transactions as $transaction)<tr><td><strong>{{ $transaction->kode_transaksi }}</strong><small>{{ $transaction->created_at->format('H:i') }} · {{ strtoupper($transaction->payment_method) }}</small></td><td>{{ $transaction->user->name ?? '-' }}</td><td>Rp {{ number_format($transaction->grand_total, 0, ',', '.') }}</td><td><a href="{{ route('transaksi.show', $transaction->id) }}">Lihat transaksi ↗</a></td></tr>@empty<tr><td colspan="4" class="empty-state">Belum ada transaksi sukses pada tanggal ini.</td></tr>@endforelse
+            @forelse($transactions as $transaction)<tr><td><strong>{{ $transaction->kode_transaksi }}</strong><small>{{ $transaction->created_at->format('H:i') }} · {{ strtoupper($transaction->payment_method) }}</small></td><td>{{ $transaction->cashier_display_name }}</td><td>Rp {{ number_format($transaction->grand_total, 0, ',', '.') }}</td><td><a href="{{ route('transaksi.show', $transaction->id) }}">Lihat transaksi ↗</a></td></tr>@empty<tr><td colspan="4" class="empty-state">Belum ada transaksi sukses pada tanggal ini.</td></tr>@endforelse
         @endif
         </tbody></table></div>@if(!$monthly)<div class="report-pagination">{{ $transactions->links() }}</div>@endif
     </section>

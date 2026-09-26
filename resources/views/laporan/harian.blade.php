@@ -198,7 +198,7 @@
 
                             <td class="px-6 py-4">
                                 <p class="font-black text-[#4B2E1F]">
-                                    {{ $trx->user?->name ?? '-' }}
+                                    {{ $trx->cashier_display_name }}
                                 </p>
                             </td>
 

@@ -16,6 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
 
+        // Endpoint webhook eksternal Midtrans tidak memiliki CSRF token.
+        // Validasi keaslian dilakukan melalui signature_key Midtrans.
+        $middleware->preventRequestForgery(except: [
+            'midtrans/notification',
+        ]);
+
         $middleware->redirectUsersTo(function (Request $request) {
             return match ($request->user()?->role) {
                 'admin' => '/admin/dashboard',
