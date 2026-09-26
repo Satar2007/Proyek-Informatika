@@ -70,7 +70,11 @@ class AttendanceController extends Controller
                         ]
                     );
 
-                    throw new Exception('Anda melewati toleransi keterlambatan 30 menit. Status Anda tercatat alfa.');
+                    return [
+                        'message' => 'Anda melewati toleransi keterlambatan 30 menit. Status Anda tercatat alfa.',
+                        'status' => 'tidak_hadir',
+                        'time' => null,
+                    ];
                 }
 
                 Attendance::updateOrCreate(
@@ -94,6 +98,13 @@ class AttendanceController extends Controller
                     'time' => $now->format('H:i:s'),
                 ];
             });
+
+            if ($result['status'] === 'tidak_hadir') {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                ], 422);
+            }
 
             return response()->json([
                 'success' => true,
