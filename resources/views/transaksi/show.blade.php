@@ -257,7 +257,7 @@
                     Kasir
                 </p>
                 <p class="mt-2 font-black text-[#4B2E1F]">
-                    {{ $transaksi->user?->name ?? '-' }}
+                    {{ $transaksi->cashier_display_name }}
                 </p>
             </div>
 

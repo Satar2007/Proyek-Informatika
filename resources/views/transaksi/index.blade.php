@@ -151,7 +151,7 @@
                                             {{ $trx->nama_pelanggan ?? '-' }}
                                         </p>
                                         <p class="text-xs font-semibold text-[#7B4B2A]/70">
-                                            {{ $trx->user?->name ?? 'Kasir tidak diketahui' }}
+                                            {{ $trx->cashier_display_name }}
                                         </p>
                                     </div>
                                 </div>
