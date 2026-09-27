@@ -384,13 +384,15 @@ Buka browser:
 
 # 🔐 Akun Login Awal
 
-  Role    Email              Password
-  ------- ------------------ ----------
-  Admin   admin@coffee.com   password
-  Kasir   kasir@coffee.com   password
-  Owner   owner@coffee.com   password
+Berikut adalah akun default yang dapat digunakan untuk pengujian aplikasi:
 
-> Disarankan mengganti password default setelah deployment.
+| Role | Email | Password |
+| :-- | :-- | :-- |
+| 👨‍💼 Admin | admin@coffee.com | password |
+| 🧾 Kasir | kasir@coffee.com | password |
+| ☕ Owner | owner@coffee.com | password |
+
+> ⚠️ Disarankan untuk mengganti password default setelah deployment atau saat aplikasi digunakan pada lingkungan production.
 
 ------------------------------------------------------------------------
 
@@ -447,6 +449,8 @@ sebagai template konfigurasi.
 
 ------------------------------------------------------------------------
 
-::: {align="center"}
+<div align="center">
+
 **JIMNY COFFEE** · Project kolaborasi Informatika
-:::
+
+</div>
