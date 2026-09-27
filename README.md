@@ -1,155 +1,101 @@
-::: {align="center"}
-`<img src="public/images/jimny-coffee-logo.png" alt="Logo JIMNY COFFEE" width="120" />`{=html}
+<div align="center">
+
+<img src="public/images/jimny-coffee-logo.png" alt="Logo JIMNY COFFEE" width="120" />
 
 # ☕ JIMNY COFFEE
 
-### Smart Point of Sale & Coffee Shop Management
+### Smart Point of Sale &amp; Coffee Shop Management
 
-Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis
-web, dengan antarmuka khusus **Owner**, **Admin**, dan **Kasir**.
+Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, dengan antarmuka khusus **Owner**, **Admin**, dan **Kasir**.
 
 ![Laravel](https://img.shields.io/badge/Laravel-PHP-FF2D20?logo=laravel&logoColor=white)
 ![MySQL](https://img.shields.io/badge/Database-MySQL-4479A1?logo=mysql&logoColor=white)
-![Tailwind
-CSS](https://img.shields.io/badge/UI-Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/UI-Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
 ![GitHub](https://img.shields.io/badge/Project-Kolaborasi-181717?logo=github&logoColor=white)
 
-[**Fitur**](#-fitur-aplikasi) · [**Preview**](#-preview-antarmuka) ·
-[**Instalasi**](#-menjalankan-project) · [**Tim**](#-tim-pengembang)
-:::
+[**Fitur**](#-fitur-aplikasi) · [**Preview**](#-preview-antarmuka) · [**Instalasi**](#-menjalankan-project) · [**Tim**](#-tim-pengembang)
 
-------------------------------------------------------------------------
+</div>
+
+---
 
 ## ✨ Sekilas Project
 
-**JIMNY COFFEE** adalah project aplikasi Point of Sale (POS) berbasis
-Laravel untuk membantu pengelolaan pesanan, transaksi, menu, stok,
-laporan penjualan, dan aktivitas karyawan dalam satu sistem. Tampilan
-aplikasi menggunakan nuansa warna kopi dan menyediakan halaman sesuai
-peran pengguna.
+**JIMNY COFFEE** adalah project aplikasi Point of Sale (POS) berbasis Laravel untuk membantu pengelolaan pesanan, transaksi, menu, stok, laporan penjualan, dan aktivitas karyawan dalam satu sistem. Tampilan aplikasi menggunakan nuansa warna kopi dan menyediakan halaman sesuai peran pengguna.
 
-> **Status repository:** dokumentasi antarmuka dan source code sedang
-> digabungkan secara bertahap melalui kolaborasi GitHub. Beberapa
-> halaman pada preview mungkin belum tersedia di branch `main` sampai
-> semua kontribusi digabungkan.
+> **Status repository:** dokumentasi antarmuka dan source code sedang digabungkan secara bertahap melalui kolaborasi GitHub. Beberapa halaman pada preview mungkin belum tersedia di branch `main` sampai semua kontribusi digabungkan.
 
 ## 🚀 Fitur Aplikasi
 
-  -----------------------------------------------------------------------
-  Peran                               Area yang ditampilkan dalam project
-  ----------------------------------- -----------------------------------
-  **Kasir**                           Pemilihan menu & pesanan,
-                                      pencatatan transaksi, pilihan
-                                      pembayaran Cash/QRIS, presensi &
-                                      izin, riwayat transaksi, laporan
-                                      penjualan.
-
-  **Admin**                           Dashboard, pengelolaan menu, log
-                                      stok, pengaturan shift, pengajuan
-                                      izin, pengelolaan akun, dan riwayat
-                                      transaksi.
-
-  **Owner**                           Dashboard ringkasan bisnis, laporan
-                                      penjualan, riwayat transaksi, dan
-                                      rekap kehadiran.
-
-  **Smart Insight**                   Panel informasi kontekstual yang
-                                      muncul pada antarmuka sebagai
-                                      pendamping aktivitas pengguna.
-  -----------------------------------------------------------------------
+| Peran | Area yang ditampilkan dalam project |
+| :-- | :-- |
+| **Kasir** | Pemilihan menu & pesanan, pencatatan transaksi, pilihan pembayaran Cash/QRIS, presensi & izin, riwayat transaksi, laporan penjualan. |
+| **Admin** | Dashboard, pengelolaan menu, log stok, pengaturan shift, pengajuan izin, pengelolaan akun, dan riwayat transaksi. |
+| **Owner** | Dashboard ringkasan bisnis, laporan penjualan, riwayat transaksi, dan rekap kehadiran. |
+| **Smart Insight** | Panel informasi kontekstual yang muncul pada antarmuka sebagai pendamping aktivitas pengguna. |
 
 ## 🖼️ Preview Antarmuka
 
 ### Halaman Login
 
-`<img src="docs/screenshots/01-login.webp" alt="Halaman login JIMNY COFFEE" width="100%" />`{=html}
+<img src="docs/screenshots/01-login.webp" alt="Halaman login JIMNY COFFEE" width="100%" />
 
 ### Kasir / Point of Sale
 
-`<img src="docs/screenshots/02-kasir-pos.webp" alt="Tampilan kasir dan pencatatan pesanan" width="100%" />`{=html}
+<img src="docs/screenshots/02-kasir-pos.webp" alt="Tampilan kasir dan pencatatan pesanan" width="100%" />
 
 ### Dashboard Owner
 
-`<img src="docs/screenshots/06-owner-dashboard.webp" alt="Dashboard Owner: ringkasan omzet, transaksi, dan menu terlaris" width="100%" />`{=html}
+<img src="docs/screenshots/06-owner-dashboard.webp" alt="Dashboard Owner: ringkasan omzet, transaksi, dan menu terlaris" width="100%" />
 
 ### Dashboard Admin
 
-`<img src="docs/screenshots/11-admin-dashboard.webp" alt="Dashboard Admin" width="100%" />`{=html}
+<img src="docs/screenshots/11-admin-dashboard.webp" alt="Dashboard Admin" width="100%" />
 
 ### Menu, Stok & Shift
 
-  ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                                                Kelola menu                                                                                         Log stok
-  ------------------------------------------------------------------------------------------------------- --------------------------------------------------------------------------------------------
-   `<img src="docs/screenshots/13-admin-kelola-menu.webp" alt="Pengelolaan menu" width="100%" />`{=html}   `<img src="docs/screenshots/14-admin-log-stok.webp" alt="Log stok" width="100%" />`{=html}
+| Kelola menu | Log stok |
+| :--: | :--: |
+| <img src="docs/screenshots/13-admin-kelola-menu.webp" alt="Pengelolaan menu" width="100%" /> | <img src="docs/screenshots/14-admin-log-stok.webp" alt="Log stok" width="100%" /> |
 
-  ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-  -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                                                Kelola shift                                                                                              Kelola akun
-  --------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------
-   `<img src="docs/screenshots/15-admin-kelola-shift.webp" alt="Pengelolaan shift" width="100%" />`{=html}   `<img src="docs/screenshots/17-admin-kelola-akun.webp" alt="Pengelolaan akun" width="100%" />`{=html}
-
-  -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Kelola shift | Kelola akun |
+| :--: | :--: |
+| <img src="docs/screenshots/15-admin-kelola-shift.webp" alt="Pengelolaan shift" width="100%" /> | <img src="docs/screenshots/17-admin-kelola-akun.webp" alt="Pengelolaan akun" width="100%" /> |
 
 ### Laporan & Aktivitas
 
-  -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                                                   Laporan penjualan                                                                                                    Riwayat transaksi
-  -------------------------------------------------------------------------------------------------------------------- --------------------------------------------------------------------------------------------------------------------
-   `<img src="docs/screenshots/07-owner-laporan-penjualan.webp" alt="Laporan penjualan Owner" width="100%" />`{=html}   `<img src="docs/screenshots/09-owner-riwayat-transaksi.webp" alt="Riwayat transaksi Owner" width="100%" />`{=html}
+| Laporan penjualan | Riwayat transaksi |
+| :--: | :--: |
+| <img src="docs/screenshots/07-owner-laporan-penjualan.webp" alt="Laporan penjualan Owner" width="100%" /> | <img src="docs/screenshots/09-owner-riwayat-transaksi.webp" alt="Riwayat transaksi Owner" width="100%" /> |
 
-  -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-```{=html}
 <details>
-```
-```{=html}
-<summary>
-```
-`<strong>`{=html}📷 Lihat galeri tampilan lainnya (9
-screenshot)`</strong>`{=html}
-```{=html}
-</summary>
-```
-`<br />`{=html}
+<summary><strong>📷 Lihat galeri tampilan lainnya (9 screenshot)</strong></summary>
 
-  ----------------------------------------------------------------------------------------------------------------------------------------------------------
-  Tampilan                            Preview
-  ----------------------------------- ----------------------------------------------------------------------------------------------------------------------
-  Presensi & izin Kasir               `<img src="docs/screenshots/03-kasir-presensi-izin.webp" alt="Presensi dan izin Kasir" width="100%" />`{=html}
+<br />
 
-  Riwayat transaksi Kasir             `<img src="docs/screenshots/04-kasir-riwayat-transaksi.webp" alt="Riwayat transaksi Kasir" width="100%" />`{=html}
+| Tampilan | Preview |
+| :-- | :-- |
+| Presensi & izin Kasir | <img src="docs/screenshots/03-kasir-presensi-izin.webp" alt="Presensi dan izin Kasir" width="100%" /> |
+| Riwayat transaksi Kasir | <img src="docs/screenshots/04-kasir-riwayat-transaksi.webp" alt="Riwayat transaksi Kasir" width="100%" /> |
+| Laporan penjualan Kasir | <img src="docs/screenshots/05-kasir-laporan-penjualan.webp" alt="Laporan penjualan Kasir" width="100%" /> |
+| Analitik penjualan Owner | <img src="docs/screenshots/08-owner-analitik-penjualan.webp" alt="Analitik penjualan Owner" width="100%" /> |
+| Rekap kehadiran Owner | <img src="docs/screenshots/10-owner-rekap-kehadiran.webp" alt="Rekap kehadiran Owner" width="100%" /> |
+| POS Admin | <img src="docs/screenshots/12-admin-pos.webp" alt="POS Admin" width="100%" /> |
+| Pengajuan izin Admin | <img src="docs/screenshots/16-admin-pengajuan-izin.webp" alt="Pengajuan izin Admin" width="100%" /> |
+| Riwayat transaksi Admin | <img src="docs/screenshots/18-admin-riwayat-transaksi.webp" alt="Riwayat transaksi Admin" width="100%" /> |
+| Analitik penjualan Admin | <img src="docs/screenshots/19-admin-analitik-penjualan.webp" alt="Analitik penjualan Admin" width="100%" /> |
 
-  Laporan penjualan Kasir             `<img src="docs/screenshots/05-kasir-laporan-penjualan.webp" alt="Laporan penjualan Kasir" width="100%" />`{=html}
-
-  Analitik penjualan Owner            `<img src="docs/screenshots/08-owner-analitik-penjualan.webp" alt="Analitik penjualan Owner" width="100%" />`{=html}
-
-  Rekap kehadiran Owner               `<img src="docs/screenshots/10-owner-rekap-kehadiran.webp" alt="Rekap kehadiran Owner" width="100%" />`{=html}
-
-  POS Admin                           `<img src="docs/screenshots/12-admin-pos.webp" alt="POS Admin" width="100%" />`{=html}
-
-  Pengajuan izin Admin                `<img src="docs/screenshots/16-admin-pengajuan-izin.webp" alt="Pengajuan izin Admin" width="100%" />`{=html}
-
-  Riwayat transaksi Admin             `<img src="docs/screenshots/18-admin-riwayat-transaksi.webp" alt="Riwayat transaksi Admin" width="100%" />`{=html}
-
-  Analitik penjualan Admin            `<img src="docs/screenshots/19-admin-analitik-penjualan.webp" alt="Analitik penjualan Admin" width="100%" />`{=html}
-  ----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-```{=html}
 </details>
-```
-> Screenshot menunjukkan antarmuka pada saat pengambilan gambar. Angka
-> penjualan, stok, dan transaksi yang terlihat merupakan contoh
-> tampilan, bukan data operasional terkini.
+
+> Screenshot menunjukkan antarmuka pada saat pengambilan gambar. Angka penjualan, stok, dan transaksi yang terlihat merupakan contoh tampilan, bukan data operasional terkini.
 
 ## 🛠️ Teknologi
 
--   **Backend:** PHP & Laravel
--   **Database:** MySQL
--   **Frontend:** Blade, Tailwind CSS, CSS, dan JavaScript
--   **Build tools:** Composer, NPM, dan Vite
--   **Kolaborasi:** Git & GitHub (branch dan pull request)
+- **Backend:** PHP & Laravel
+- **Database:** MySQL
+- **Frontend:** Blade, Tailwind CSS, CSS, dan JavaScript
+- **Build tools:** Composer, NPM, dan Vite
+- **Kolaborasi:** Git & GitHub (branch dan pull request)
 
 ## ⚙️ Menjalankan Project
 
