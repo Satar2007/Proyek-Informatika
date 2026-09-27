@@ -2,7 +2,7 @@
 
 <img src="public/images/jimny-coffee-logo.png" alt="Logo JIMNY COFFEE" width="120" />
 
-# ☕ SATAR — JIMNY COFFEE
+# ☕ JIMNY COFFEE
 
 ### Smart Point of Sale &amp; Coffee Shop Management
 
@@ -21,7 +21,7 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 
 ## ✨ Sekilas Project
 
-**SATAR — JIMNY COFFEE** adalah project aplikasi Point of Sale (POS) berbasis Laravel untuk membantu pengelolaan pesanan, transaksi, menu, stok, laporan penjualan, dan aktivitas karyawan dalam satu sistem. Tampilan aplikasi menggunakan nuansa warna kopi dan menyediakan halaman sesuai peran pengguna.
+**JIMNY COFFEE** adalah project aplikasi Point of Sale (POS) berbasis Laravel untuk membantu pengelolaan pesanan, transaksi, menu, stok, laporan penjualan, dan aktivitas karyawan dalam satu sistem. Tampilan aplikasi menggunakan nuansa warna kopi dan menyediakan halaman sesuai peran pengguna.
 
 > **Status repository:** dokumentasi antarmuka dan source code sedang digabungkan secara bertahap melalui kolaborasi GitHub. Beberapa halaman pada preview mungkin belum tersedia di branch `main` sampai semua kontribusi digabungkan.
 
@@ -180,20 +180,10 @@ Gunakan transaksi Sandbox yang dihasilkan aplikasi. Setelah simulasi pembayaran,
 
 Konfigurasi ini ditujukan untuk development. Jangan menggunakan `MIDTRANS_IS_PRODUCTION=true` sebelum aplikasi benar-benar menggunakan credential dan konfigurasi Midtrans Production.
 
-## 👥 Tim Pengembang
-
-| Nama | NIM |
-| :-- | :-- |
-| Valentinus Panjaitan | 245314074 |
-| Dion Agung Kadang | 245314083 |
-| Andika Novanda Putra | 245314084 |
-| Rafael Paskah Bintang Pinasthi | 245314089 |
-| Afrino Alka Daraya | 245314090 |
-
 ---
 
 <div align="center">
 
-**SATAR — JIMNY COFFEE** · Project kolaborasi Informatika
+**JIMNY COFFEE** · Project kolaborasi Informatika
 
 </div>
