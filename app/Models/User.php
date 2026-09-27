@@ -47,6 +47,16 @@ class User extends Authenticatable
         return $this->role === 'owner';
     }
 
+    public function homeRouteName(): string
+    {
+        return match ($this->role) {
+            'admin' => 'admin.dashboard',
+            'owner' => 'owner.dashboard',
+            'kasir' => 'kasir.index',
+            default => 'login',
+        };
+    }
+
     public function shifts()
     {
         return $this->hasMany(Shift::class);
