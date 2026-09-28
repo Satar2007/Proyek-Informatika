@@ -12,53 +12,35 @@ class OwnerController extends Controller
 {
     public function dashboard()
     {
-        $totalTransaksi = Transaction::where('status', 'success')->count();
-
-        $omzetHarian = Transaction::where('status', 'success')
-            ->whereDate('created_at', today())
-            ->sum('grand_total');
-
-        $omzetBulanan = Transaction::where('status', 'success')
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->sum('grand_total');
-
+        $today = today();
+        $end = $today->copy()->addDay();
+        $start = $today->copy()->subDays(6);
+        // Same transaction-date basis as the existing sales reports.
+        $paid = Transaction::query()->where('status', 'success')->where('payment_status', 'paid');
+        $totalTransaksi = (clone $paid)->where('created_at', '>=', $today)->where('created_at', '<', $end)->count();
+        $omzetHarian = (clone $paid)->where('created_at', '>=', $today)->where('created_at', '<', $end)->sum('grand_total');
+        $omzetBulanan = (clone $paid)->where('created_at', '>=', $today->copy()->startOfMonth())->where('created_at', '<', $end)->sum('grand_total');
+        $daily = (clone $paid)->where('created_at', '>=', $start)->where('created_at', '<', $end)
+            ->selectRaw('DATE(created_at) as tanggal, SUM(grand_total) as omzet')
+            ->groupByRaw('DATE(created_at)')->pluck('omzet', 'tanggal');
+        $omzetMingguan = collect(range(0, 6))->map(function ($offset) use ($start, $daily) {
+            $date = $start->copy()->addDays($offset);
+            return ['label' => $date->format('d M'), 'tanggal' => $date->toDateString(), 'omzet' => (int) ($daily[$date->toDateString()] ?? 0)];
+        });
         $totalKasir = User::where('role', 'kasir')->count();
-
-        $menuTerlaris = Menu::select(
-                'menus.id',
-                'menus.nama_menu',
-                'menus.harga',
-                'menus.stok',
-                DB::raw('COALESCE(SUM(transaction_details.qty), 0) as total_terjual')
-            )
+        $kasirHadir = User::where('role', 'kasir')->whereHas('attendances', function ($query) use ($today) {
+            $query->whereDate('tanggal', $today)->whereNotNull('clock_in');
+        })->count();
+        $menuTerlaris = Menu::select('menus.id', 'menus.nama_menu', DB::raw('SUM(transaction_details.qty) as total_terjual'))
             ->join('transaction_details', 'menus.id', '=', 'transaction_details.menu_id')
             ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
-            ->where('transactions.status', 'success')
-            ->groupBy('menus.id', 'menus.nama_menu', 'menus.harga', 'menus.stok')
-            ->orderByDesc('total_terjual')
-            ->take(5)
-            ->get();
-
-        $stokHampirHabis = Menu::where('stok', '<=', 5)
-            ->where('is_active', true)
-            ->get();
-
-        $transaksiTerbaru = Transaction::with('user')
-            ->where('status', 'success')
-            ->latest()
-            ->take(5)
-            ->get();
-
-        return view('owner.dashboard', compact(
-            'totalTransaksi',
-            'omzetHarian',
-            'omzetBulanan',
-            'totalKasir',
-            'menuTerlaris',
-            'stokHampirHabis',
-            'transaksiTerbaru'
-        ));
+            ->where('transactions.status', 'success')->where('transactions.payment_status', 'paid')
+            ->where('transactions.created_at', '>=', $start)->where('transactions.created_at', '<', $end)
+            ->groupBy('menus.id', 'menus.nama_menu')->orderByDesc('total_terjual')->orderBy('menus.id')->take(5)->get();
+        $stokHampirHabis = Menu::where('is_active', true)
+            ->whereColumn('stok', '<=', 'minimum_stok')->orderBy('stok')->orderBy('nama_menu')->get();
+        return view('owner.dashboard', compact('totalTransaksi', 'omzetHarian', 'omzetBulanan',
+            'totalKasir', 'kasirHadir', 'omzetMingguan', 'menuTerlaris', 'stokHampirHabis'));
     }
 
     public function rekapKehadiran(Request $request)
