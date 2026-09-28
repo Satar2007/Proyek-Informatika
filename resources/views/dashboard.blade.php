@@ -34,7 +34,7 @@
                     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div class="flex items-center gap-4">
                             <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#7B4B2A] text-2xl text-white shadow-lg shadow-[#7B4B2A]/20">
-                                ☕
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M4 8h12v7a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5ZM16 9h2a3 3 0 0 1 0 6h-2M7 3v2M12 3v2"/></svg>
                             </div>
 
                             <div>

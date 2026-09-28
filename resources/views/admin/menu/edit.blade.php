@@ -28,11 +28,7 @@
     <div class="rounded-3xl border border-[#D9B08C]/60 bg-white p-5 shadow-sm shadow-[#4B2E1F]/5">
         <div class="flex items-center gap-4">
             <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#F8F5F0] text-2xl text-[#7B4B2A] ring-1 ring-[#D9B08C]/60">
-                @if($menu->gambar)
-                    <img src="{{ asset('storage/'.$menu->gambar) }}" alt="{{ $menu->nama_menu }}" class="h-full w-full object-cover">
-                @else
-                    ☕
-                @endif
+                <x-menu-photo :menu="$menu" />
             </div>
 
             <div>
@@ -170,24 +166,13 @@
                     </label>
 
                     <div class="rounded-3xl border border-dashed border-[#D9B08C] bg-[#FFFDF9] p-5">
-                        @if($menu->gambar)
-                            <div class="mb-4 flex items-center gap-4 rounded-2xl border border-[#D9B08C]/70 bg-white p-3">
-                                <img src="{{ asset('storage/'.$menu->gambar) }}" alt="{{ $menu->nama_menu }}" class="h-20 w-20 rounded-2xl object-cover">
-
-                                <div>
-                                    <p class="text-sm font-black text-[#4B2E1F]">
-                                        Gambar saat ini
-                                    </p>
-                                    <p class="mt-1 text-xs font-semibold text-[#7B4B2A]/70">
-                                        Upload gambar baru jika ingin mengganti gambar menu.
-                                    </p>
-                                </div>
+                        <div class="mb-4 flex items-center gap-4">
+                            <div style="width:120px;height:90px;overflow:hidden;border-radius:12px;flex:none"><x-menu-photo :menu="$menu" /></div>
+                            <div>
+                                <p class="text-sm font-black">{{ $menu->gambar ? 'Gambar upload saat ini' : 'Ilustrasi bawaan menu' }}</p>
+                                <p class="text-xs">Upload foto produk untuk mengganti gambar ini.</p>
                             </div>
-                        @else
-                            <div class="mb-4 rounded-2xl border border-[#D9B08C]/70 bg-white p-4 text-sm font-semibold text-[#7B4B2A]/75">
-                                Belum ada gambar untuk menu ini.
-                            </div>
-                        @endif
+                        </div>
 
                         <input type="file" name="gambar" accept="image/*"
                             class="block w-full cursor-pointer rounded-2xl border border-[#D9B08C] bg-white text-sm font-semibold text-[#7B4B2A] file:mr-4 file:border-0 file:bg-[#7B4B2A] file:px-4 file:py-3 file:text-sm file:font-black file:text-white hover:file:bg-[#4B2E1F]">

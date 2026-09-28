@@ -2,7 +2,7 @@
 <div x-data="smartAssistant()" x-init="init()" x-ref="root" class="smart-assistant-root" :style="rootStyle">
     <div x-cloak x-show="proactiveVisible && !open" x-transition.opacity class="smart-proactive" @click="openFromProactive()">
         <button type="button" class="smart-proactive-close" @click.stop="dismissProactive()" aria-label="Tutup notifikasi">×</button>
-        <div class="smart-proactive-label">✦ Smart Insight</div>
+        <div class="smart-proactive-label">Smart Insight</div>
         <div class="smart-proactive-text" x-text="currentInsight"></div>
         <div class="smart-proactive-hint">Klik untuk melihat detail · atau abaikan saja</div>
     </div>

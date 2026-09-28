@@ -301,7 +301,7 @@
                 Swal.fire({
                     title: 'Pembayaran Berhasil',
                     html: `
-                        <div style="font-size: 72px; margin-bottom: 12px;">✅</div>
+
 
                         <p style="font-size: 18px; font-weight: bold; color: #15803d;">
                             Transaksi Selesai

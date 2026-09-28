@@ -99,7 +99,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#F8F5F0] text-lg text-[#7B4B2A] ring-1 ring-[#D9B08C]/60">
-                                        ☕
+                                        <x-menu-photo :menu="$menu" />
                                     </div>
 
                                     <div>
@@ -208,7 +208,7 @@
                             <td colspan="6" class="px-6 py-12 text-center">
                                 <div class="mx-auto max-w-sm">
                                     <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-[#F8F5F0] text-2xl ring-1 ring-[#D9B08C]/60">
-                                        🍽️
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M4 3v6a3 3 0 0 0 6 0V3M7 3v19M20 3c-4 3-5 8 0 9v10M20 3v9"/></svg>
                                     </div>
 
                                     <p class="font-black text-[#4B2E1F]">

@@ -16,7 +16,7 @@
         <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div class="flex items-start gap-4">
                 <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F8F5F0] text-xl text-[#7B4B2A] ring-1 ring-[#D9B08C]/60">
-                    🕒
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block;vertical-align:middle;flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
                 </div>
 
                 <div>
@@ -160,8 +160,14 @@
                         aria-label="{{ $menu->nama_menu }}, Rp {{ number_format($menu->harga, 0, ',', '.') }}, {{ $menu->stok > 0 ? 'tambahkan ke pesanan' : 'stok habis' }}"
                         x-show="visibleMenuIds.includes({{ $menu->id }})"
                         @click="tambahCart({{ $menu->id }}, {{ Illuminate\Support\Js::from($menu->nama_menu) }}, {{ $menu->harga }}, {{ $menu->stok }}, $event.currentTarget)">
-                        <div class="product-meta"><span class="product-badge">{{ $categoryName ?: 'Menu' }}</span><span class="stock-badge {{ $menu->stok <= $menu->minimum_stok ? 'stock-low' : '' }}">{{ $menu->stok > 0 ? $menu->stok : 'Habis' }}</span></div>
+                        <div class="product-photo">
+                            <x-menu-photo :menu="$menu" />
+                        </div>
                         <span class="product-name">{{ $menu->nama_menu }}</span>
+                        <div class="product-info-row">
+                            <span class="product-category">{{ $categoryName ?: 'Menu' }}</span>
+                            <span class="product-stock {{ $menu->stok <= $menu->minimum_stok ? 'is-low' : '' }}">{{ $menu->stok > 0 ? 'Stok: '.$menu->stok : 'Stok: 0 · Habis' }}</span>
+                        </div>
                         <span class="product-bottom"><strong>Rp {{ number_format($menu->harga, 0, ',', '.') }}</strong><span class="product-plus" aria-hidden="true" x-text="recentItem === {{ $menu->id }} ? '✓' : '+'">+</span></span>
                     </button>
                 @endforeach
@@ -190,7 +196,7 @@
                     </div>
 
                     <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F8F5F0] text-xl text-[#7B4B2A] ring-1 ring-[#D9B08C]/60">
-                        🛒
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M3 3h2l3 12h11l2-8H6M9 20h.01M18 20h.01"/></svg>
                     </div>
                 </div>
             </div>
@@ -275,12 +281,12 @@
 
                 {{-- Tombol Bayar --}}
                 <div class="grid grid-cols-2 gap-3">
-                    <button @click="checkout('cash')" :disabled="cart.length === 0"
+                    <button @click="checkout('cash')" :disabled="cart.length === 0 || checkoutBusy"
                         class="rounded-2xl bg-emerald-600 py-3 text-sm font-black text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-[#E8D8C7] disabled:text-[#7B4B2A]/50">
                         Cash
                     </button>
 
-                    <button @click="checkout('qris')" :disabled="cart.length === 0"
+                    <button @click="checkout('qris')" :disabled="cart.length === 0 || checkoutBusy"
                         class="rounded-2xl bg-[#7B4B2A] py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#4B2E1F] disabled:cursor-not-allowed disabled:bg-[#E8D8C7] disabled:text-[#7B4B2A]/50">
                         QRIS
                     </button>
@@ -303,7 +309,8 @@
     function kasirApp() {
         return {
             menuIndex: {{ Illuminate\Support\Js::from($menus->map(fn ($m) => ['id' => $m->id, 'name' => mb_strtolower($m->nama_menu), 'category' => (string) $m->category_id])->values()) }},
-            page: 1, pageSize: 42, gridColumns: 7, gridRows: 6,
+            checkoutBusy: false,
+            page: 1, pageSize: 15, gridColumns: 5, gridRows: 3,
             recentItem: null, notice: '', feedbackTimer: null,
             resizeObserver: null, layoutFrame: null, fullscreen: false, fullscreenListener: null,
             get filteredMenus() {
@@ -317,8 +324,8 @@
                 const grid = this.$refs.productGrid;
                 if (!grid) return;
                 const desktop = window.matchMedia('(min-width: 1024px)').matches;
-                this.gridColumns = desktop ? Math.max(1, Math.floor((grid.clientWidth + 8) / 148)) : (grid.clientWidth > 550 ? 4 : 2);
-                this.gridRows = desktop ? Math.max(1, Math.floor((grid.clientHeight + 8) / 108)) : 6;
+                this.gridColumns = desktop ? Math.min(5, Math.max(1, Math.floor((grid.clientWidth + 12) / 192))) : (grid.clientWidth > 650 ? 3 : 2);
+                this.gridRows = desktop ? Math.min(3, Math.max(1, Math.floor((grid.clientHeight + 12) / 250))) : 3;
                 this.pageSize = this.gridColumns * this.gridRows;
                 this.page = Math.min(this.page, this.pageCount);
             },
@@ -667,9 +674,24 @@
                 return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             },
 
-            async checkout(metode) {
-                if (this.cart.length === 0) return;
+            escapeHtml(value) {
+                return String(value).replace(/[&<>"']/g, char => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;',
+                    '"': '&quot;', "'": '&#39;',
+                })[char]);
+            },
 
+            async checkout(metode) {
+                if (this.checkoutBusy || this.cart.length === 0) return;
+                this.checkoutBusy = true;
+                try {
+                    await this.prosesCheckout(metode);
+                } finally {
+                    this.checkoutBusy = false;
+                }
+            },
+
+            async prosesCheckout(metode) {
                 if (!this.namaPelanggan.trim()) {
                     Swal.fire('Perhatian', 'Nama pelanggan wajib diisi!', 'warning');
                     return;
@@ -677,12 +699,13 @@
 
                 if (metode === 'cash') {
                     const pelanggan = this.namaPelanggan;
+                    const pelangganAman = this.escapeHtml(pelanggan);
                     const grandTotal = this.grandTotal;
 
                     const { value: uangDiterima } = await Swal.fire({
-                        title: '💵 Pembayaran Cash',
+                        title: 'Pembayaran Cash',
                         html: `
-                            <p style="margin-bottom: 10px;">Pelanggan: <strong>${pelanggan}</strong></p>
+                            <p style="margin-bottom: 10px;">Pelanggan: <strong>${pelangganAman}</strong></p>
                             <p style="margin-bottom: 10px;">Total: <strong>Rp ${this.formatRupiah(grandTotal)}</strong></p>
                             <input id="uang-input" type="number" class="swal2-input" placeholder="Masukkan jumlah uang" min="${grandTotal}">
                         `,
@@ -731,15 +754,15 @@
                             this.namaPelanggan = '';
 
                             await Swal.fire({
-                                title: 'Pembayaran Berhasil! 🎉',
+                                title: 'Pembayaran Berhasil',
                                 html: `
-                                    <div style="font-size: 60px; margin-bottom: 10px;">✅</div>
+
                                     <p style="font-size: 16px; font-weight: bold; color: #15803d;">Transaksi Selesai!</p>
 
                                     <div style="margin-top: 15px; padding: 15px; background: #f0fdf4; border-radius: 8px;">
                                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                                             <span>Pelanggan</span>
-                                            <strong>${pelanggan}</strong>
+                                            <strong>${pelangganAman}</strong>
                                         </div>
 
                                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
@@ -787,11 +810,12 @@
 
                 } else {
                     const pelanggan = this.namaPelanggan;
+                    const pelangganAman = this.escapeHtml(pelanggan);
 
                     const result = await Swal.fire({
                         title: 'Konfirmasi Pembayaran QRIS',
                         html: `
-                            <p>Pelanggan: <strong>${pelanggan}</strong></p>
+                            <p>Pelanggan: <strong>${pelangganAman}</strong></p>
                             <p>Total: <strong>Rp ${this.formatRupiah(this.grandTotal)}</strong></p>
                         `,
                         icon: 'question',

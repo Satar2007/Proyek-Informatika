@@ -78,8 +78,9 @@
     </style>
 <link rel="stylesheet" href="{{ asset('css/pos-theme.css') }}?v=6">
 <link rel="stylesheet" href="{{ asset('css/ember-theme.css') }}?v=6">
-<link rel="stylesheet" href="{{ asset('css/sidebar-layout.css') }}?v=7">
+<link rel="stylesheet" href="{{ asset('css/sidebar-layout.css') }}?v=8">
 <link rel="stylesheet" href="{{ asset('css/page-transition.css') }}?v=7">
+<link rel="stylesheet" href="{{ asset('css/menu-photos.css') }}?v=2">
     <script src="{{ asset('js/pos-motion.js') }}?v=6" defer></script>
     <script src="{{ asset('js/page-motion.js') }}?v=2" defer></script>
 </head>
@@ -190,7 +191,6 @@
         <header class="app-topbar">
             <div class="topbar-left">
                 <button type="button" class="mobile-sidebar-toggle" @click="mobileOpen = !mobileOpen" :aria-expanded="mobileOpen" aria-label="Buka menu navigasi">{!! $svg('menu') !!}</button>
-                <img src="{{ asset('images/jimny-logo-round.png') }}" class="topbar-bean" alt="Logo JIMNY COFFEE">
                 <div class="min-w-0">
                     <div class="topbar-title">
                         @auth
@@ -199,11 +199,11 @@
                             JIMNY COFFEE
                         @endauth
                     </div>
-                    <div class="topbar-caption">Nikmati setiap tegukan, rasakan bedanya.</div>
+                    <div class="topbar-caption mobile-brand-label">JIMNY COFFEE</div>
                 </div>
             </div>
             @auth
-                <div class="topbar-role"><span class="topbar-dot"></span>{{ ucfirst(auth()->user()->role) }} mode</div>
+                <div class="topbar-role"><span class="topbar-dot"></span>{{ ucfirst(auth()->user()->role) }}</div>
             @endauth
         </header>
 

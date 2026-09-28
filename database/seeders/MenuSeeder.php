@@ -357,7 +357,6 @@ class MenuSeeder extends Seeder
                     'harga'        => $menu['harga'],
                     'stok'         => $menu['stok'],
                     'minimum_stok' => 5,
-                    'gambar'       => null,
                     'is_active'    => true,
                 ]
             );

@@ -187,3 +187,7 @@ body main.app-content{
   body main.app-content{margin:0!important;padding:0!important;height:auto!important;overflow:visible!important}
   .content-glass{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;backdrop-filter:none!important;min-height:0!important}
 }
+
+/* The sidebar carries the brand on desktop; keep a compact label on mobile. */
+.app-topbar .mobile-brand-label{display:none}
+@media(max-width:1023px){.app-topbar .mobile-brand-label{display:block}}

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto">
-    <h1 class="text-2xl font-bold text-amber-900 dark:text-amber-400 mb-6">📋 Daftar Transaksi</h1>
+    <h1 class="text-2xl font-bold text-amber-900 dark:text-amber-400 mb-6">Daftar Transaksi</h1>
 
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
         <table class="w-full">
