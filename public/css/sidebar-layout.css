@@ -191,3 +191,12 @@ body main.app-content{
 /* The sidebar carries the brand on desktop; keep a compact label on mobile. */
 .app-topbar .mobile-brand-label{display:none}
 @media(max-width:1023px){.app-topbar .mobile-brand-label{display:block}}
+
+/* Decorative header: original supplied artwork, static role badge. */
+.app-topbar.coffee-art-header{isolation:isolate;background-color:#f4e4ca;background-image:radial-gradient(ellipse at 30% 0%,rgba(191,139,64,.24),transparent 65%),linear-gradient(105deg,#d4ae73 0%,#ebd3ab 28%,#f3e2c6 62%,#f8edda 100%);overflow:hidden;border-color:#d9b784}
+.coffee-art-header::before{content:'';position:absolute;inset:0 auto 0 0;width:290px;max-width:65%;background:url('../images/header-coffee-reference.jpg') left center / auto 110% no-repeat;mix-blend-mode:multiply;-webkit-mask-image:linear-gradient(to right,#000 0%,#000 52%,transparent 96%);mask-image:linear-gradient(to right,#000 0%,#000 52%,transparent 96%);pointer-events:none;z-index:0}
+.coffee-art-header::after{content:'';position:absolute;inset:0;background:linear-gradient(176deg,rgba(255,250,238,.22) 0%,transparent 48%,rgba(172,119,44,.07) 100%);pointer-events:none;z-index:0}
+.coffee-art-header .topbar-left{position:relative;z-index:1;flex:1;min-width:0}
+.coffee-art-header .topbar-role{position:relative;z-index:1;background:#fffaf2;color:#633719;border:1px solid #d9b47d;cursor:default;flex:none}
+.coffee-art-header .mobile-sidebar-toggle{position:relative;background:rgba(255,250,242,.96)}
+@media(max-width:560px){.app-topbar.coffee-art-header{padding:8px 10px;gap:8px}.coffee-art-header .topbar-role{padding:6px 10px}}
