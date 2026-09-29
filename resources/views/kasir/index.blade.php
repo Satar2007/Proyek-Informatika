@@ -112,24 +112,13 @@
                     </button>
 
                     @foreach($categories as $cat)
-                        @php
-                            $catName = $cat->nama_kategori;
-                            $catClass = match($catName) {
-                                'Coffee' => 'border-[#D9B08C] bg-[#F1E5D8] text-[#7B4B2A] hover:bg-[#E8D8C7]',
-                                'Coffee Flavoured' => 'border-orange-200 bg-orange-50 text-orange-800 hover:bg-orange-100',
-                                'Milk Base' => 'border-sky-200 bg-sky-50 text-sky-800 hover:bg-sky-100',
-                                'Non Coffee' => 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100',
-                                'Tea' => 'border-teal-200 bg-teal-50 text-teal-800 hover:bg-teal-100',
-                                'Food' => 'border-red-200 bg-red-50 text-red-800 hover:bg-red-100',
-                                'Snack' => 'border-yellow-200 bg-yellow-50 text-yellow-800 hover:bg-yellow-100',
-                                'Ice Cream' => 'border-pink-200 bg-pink-50 text-pink-800 hover:bg-pink-100',
-                                default => 'border-[#D9B08C] bg-[#FFFDF9] text-[#7B4B2A] hover:bg-[#F8F5F0]',
-                            };
-                        @endphp
-
-                        <button @click="selectedCategory = '{{ $cat->id }}'" :aria-pressed="selectedCategory === '{{ $cat->id }}'"
-                            :class="selectedCategory === '{{ $cat->id }}' ? 'ring-2 ring-[#7B4B2A] scale-[1.02]' : ''"
-                            class="rounded-full border px-4 py-2 text-xs font-black transition {{ $catClass }}">
+                        <button
+                            @click="selectedCategory = '{{ $cat->id }}'"
+                            :aria-pressed="selectedCategory === '{{ $cat->id }}'"
+                            :class="selectedCategory === '{{ $cat->id }}'
+                                ? 'border-[#4B2E1F] bg-[#4B2E1F] text-white shadow-sm'
+                                : 'border-[#D9B08C] bg-white text-[#7B4B2A] hover:bg-[#F8F5F0]'"
+                            class="rounded-full border px-4 py-2 text-xs font-black transition">
                             {{ $cat->nama_kategori }}
                         </button>
                     @endforeach

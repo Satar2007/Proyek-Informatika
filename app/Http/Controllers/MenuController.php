@@ -17,11 +17,82 @@ class MenuController extends Controller
     {
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $search = trim((string) $request->query('q', ''));
+
+        $categories = Category::query()
+            ->orderBy('nama_kategori')
+            ->get();
+
+        $selectedCategory = trim(
+            (string) $request->query('category', '')
+        );
+
+        if (
+            $selectedCategory !== '' &&
+            ! $categories->contains(
+                fn ($category) =>
+                    (string) $category->id === $selectedCategory
+            )
+        ) {
+            $selectedCategory = '';
+        }
+
         $menus = Menu::with('category')
+            ->when(
+                $search !== '',
+                function ($query) use ($search) {
+                    $query->where(
+                        function ($menuQuery) use ($search) {
+                            $menuQuery
+                                ->where(
+                                    'nama_menu',
+                                    'like',
+                                    "%{$search}%"
+                                )
+                                ->orWhere(
+                                    'deskripsi',
+                                    'like',
+                                    "%{$search}%"
+                                )
+                                ->orWhereHas(
+                                    'category',
+                                    function ($categoryQuery) use ($search) {
+                                        $categoryQuery->where(
+                                            'nama_kategori',
+                                            'like',
+                                            "%{$search}%"
+                                        );
+                                    }
+                                );
+
+                            if (is_numeric($search)) {
+                                $menuQuery
+                                    ->orWhere(
+                                        'stok',
+                                        (int) $search
+                                    )
+                                    ->orWhere(
+                                        'harga',
+                                        (int) $search
+                                    );
+                            }
+                        }
+                    );
+                }
+            )
+            ->when(
+                $selectedCategory !== '',
+                fn ($query) =>
+                    $query->where(
+                        'category_id',
+                        $selectedCategory
+                    )
+            )
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         $totalMenu = Menu::count();
 
@@ -29,14 +100,21 @@ class MenuController extends Controller
             ->whereColumn('stok', '<=', 'minimum_stok')
             ->count();
 
-        $stokHabis = Menu::where('stok', '<=', 0)->count();
+        $stokHabis = Menu::where('stok', '<=', 0)
+            ->count();
 
-        return view('admin.menu.index', compact(
-            'menus',
-            'totalMenu',
-            'stokRendah',
-            'stokHabis'
-        ));
+        return view(
+            'admin.menu.index',
+            compact(
+                'menus',
+                'totalMenu',
+                'stokRendah',
+                'stokHabis',
+                'search',
+                'categories',
+                'selectedCategory'
+            )
+        );
     }
 
     public function create()
