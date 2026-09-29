@@ -57,27 +57,144 @@
 
     {{-- Table --}}
     <div class="overflow-hidden rounded-3xl border border-[#D9B08C]/60 bg-white shadow-sm shadow-[#4B2E1F]/5">
-        <div class="flex flex-col gap-3 border-b border-[#E8D8C7] bg-gradient-to-br from-white to-[#F8F5F0] px-6 py-5 md:flex-row md:items-center md:justify-between">
-            <div>
-                <h2 class="text-lg font-black text-[#4B2E1F]">
-                    Daftar Menu
-                </h2>
-                <p class="mt-1 text-sm font-semibold text-[#7B4B2A]/75">
-                    Data menu yang tersedia pada sistem kasir.
+        <div class="border-b border-[#E8D8C7] bg-gradient-to-br from-white to-[#F8F5F0] px-6 py-5">
+
+            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h2 class="text-lg font-black text-[#4B2E1F]">
+                        Daftar Menu
+                    </h2>
+
+                    <p class="mt-1 text-sm font-semibold text-[#7B4B2A]/75">
+                        Cari dan kelola menu berdasarkan nama, kategori, harga, atau stok.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                    <a
+                        href="{{ route('admin.stok-log') }}"
+                        class="inline-flex items-center justify-center rounded-2xl border border-[#D9B08C] bg-white px-4 py-2 text-sm font-black text-[#7B4B2A] shadow-sm transition hover:bg-[#F8F5F0] hover:text-[#4B2E1F]">
+                        Lihat Log Stok
+                    </a>
+
+                    <a
+                        href="{{ route('admin.menu.price-history') }}"
+                        class="inline-flex items-center justify-center rounded-2xl border border-[#D9B08C] bg-white px-4 py-2 text-sm font-black text-[#7B4B2A] shadow-sm transition hover:bg-[#F8F5F0] hover:text-[#4B2E1F]">
+                        Riwayat Harga
+                    </a>
+                </div>
+            </div>
+
+
+            {{-- SEARCH --}}
+            <form
+                method="GET"
+                action="{{ route('admin.menu.index') }}"
+                class="mt-4 flex w-full flex-col gap-2 md:flex-row md:items-center">
+
+                @if($selectedCategory !== '')
+                    <input
+                        type="hidden"
+                        name="category"
+                        value="{{ $selectedCategory }}">
+                @endif
+
+                <div class="relative flex-1">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9B8574]"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </svg>
+
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ $search }}"
+                        placeholder="Cari nama menu, kategori, stok, atau harga..."
+                        autocomplete="off"
+                        aria-label="Cari menu"
+                        class="w-full rounded-2xl border border-[#D9B08C] bg-white py-3 pl-11 pr-4 text-sm font-semibold text-[#4B2E1F] outline-none transition placeholder:text-[#9B8574] focus:border-[#7B4B2A] focus:ring-4 focus:ring-[#D9B08C]/30">
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="inline-flex items-center justify-center rounded-2xl bg-[#7B4B2A] px-6 py-3 text-sm font-black text-white transition hover:bg-[#4B2E1F] active:scale-[0.98]">
+                    Cari
+                </button>
+
+                @if(
+                    $search !== '' ||
+                    $selectedCategory !== ''
+                )
+                    <a
+                        href="{{ route('admin.menu.index') }}"
+                        class="inline-flex items-center justify-center rounded-2xl border border-[#D9B08C] bg-white px-5 py-3 text-sm font-black text-[#7B4B2A] transition hover:bg-[#F8F5F0]">
+                        Reset
+                    </a>
+                @endif
+            </form>
+
+
+            {{-- CATEGORY FILTER --}}
+            <div
+                class="mt-3 flex flex-wrap gap-2"
+                aria-label="Filter kategori menu">
+
+                <a
+                    href="{{ route(
+                        'admin.menu.index',
+                        array_filter([
+                            'q' => $search,
+                        ])
+                    ) }}"
+                    class="rounded-full border px-4 py-2 text-xs font-black transition
+                        {{ $selectedCategory === ''
+                            ? 'border-[#4B2E1F] bg-[#4B2E1F] text-white shadow-sm'
+                            : 'border-[#D9B08C] bg-white text-[#7B4B2A] hover:bg-[#F8F5F0]'
+                        }}">
+                    Semua
+                </a>
+
+                @foreach($categories as $category)
+                    <a
+                        href="{{ route(
+                            'admin.menu.index',
+                            array_filter([
+                                'q' => $search,
+                                'category' => $category->id,
+                            ])
+                        ) }}"
+                        class="rounded-full border px-4 py-2 text-xs font-black transition
+                            {{ (string) $selectedCategory === (string) $category->id
+                                ? 'border-[#4B2E1F] bg-[#4B2E1F] text-white shadow-sm'
+                                : 'border-[#D9B08C] bg-white text-[#7B4B2A] hover:bg-[#F8F5F0]'
+                            }}">
+                        {{ $category->nama_kategori }}
+                    </a>
+                @endforeach
+
+            </div>
+
+
+            @if(
+                $search !== '' ||
+                $selectedCategory !== ''
+            )
+                <p class="mt-3 text-xs font-bold text-[#7B4B2A]/70">
+                    Menampilkan {{ $menus->total() }} menu sesuai pencarian/filter.
                 </p>
-            </div>
+            @endif
 
-            <div class="flex flex-wrap gap-2">
-                <a href="{{ route('admin.stok-log') }}"
-                    class="inline-flex items-center justify-center rounded-2xl border border-[#D9B08C] bg-white px-4 py-2 text-sm font-black text-[#7B4B2A] shadow-sm transition hover:bg-[#F8F5F0] hover:text-[#4B2E1F]">
-                    Lihat Log Stok
-                </a>
-
-                <a href="{{ route('admin.menu.price-history') }}"
-                    class="inline-flex items-center justify-center rounded-2xl border border-[#D9B08C] bg-white px-4 py-2 text-sm font-black text-[#7B4B2A] shadow-sm transition hover:bg-[#F8F5F0] hover:text-[#4B2E1F]">
-                    Riwayat Harga
-                </a>
-            </div>
         </div>
 
         <div class="overflow-x-auto">
@@ -115,24 +232,9 @@
                             </td>
 
                             <td class="px-6 py-4">
-                                @php
-                                    $categoryName = $menu->category->nama_kategori ?? '-';
-
-                                    $categoryClass = match($categoryName) {
-                                        'Coffee' => 'bg-[#F1E5D8] text-[#7B4B2A]',
-                                        'Coffee Flavoured' => 'bg-orange-50 text-orange-800',
-                                        'Milk Base' => 'bg-sky-50 text-sky-800',
-                                        'Non Coffee' => 'bg-emerald-50 text-emerald-800',
-                                        'Tea' => 'bg-teal-50 text-teal-800',
-                                        'Food' => 'bg-red-50 text-red-800',
-                                        'Snack' => 'bg-yellow-50 text-yellow-800',
-                                        'Ice Cream' => 'bg-pink-50 text-pink-800',
-                                        default => 'bg-[#F8F5F0] text-[#7B4B2A]',
-                                    };
-                                @endphp
-
-                                <span class="inline-flex rounded-full px-3 py-1 text-xs font-black {{ $categoryClass }}">
-                                    {{ $categoryName }}
+                                <span
+                                    class="inline-flex rounded-full border border-[#D9B08C]/70 bg-[#F1E5D8] px-3 py-1 text-xs font-black text-[#7B4B2A]">
+                                    {{ $menu->category->nama_kategori ?? '-' }}
                                 </span>
                             </td>
 
@@ -181,7 +283,7 @@
                                     <button type="button"
                                         @click="$dispatch('open-stok-modal', { mode: 'kurangi', id: {{ $menu->id }}, name: @js($menu->nama_menu) })"
                                         class="rounded-xl bg-orange-600 px-3 py-2 text-xs font-black text-white transition hover:bg-orange-700">
-                                        − Stok
+                                        - Stok
                                     </button>
 
                                     <a href="{{ route('admin.menu.edit', $menu->id) }}"
