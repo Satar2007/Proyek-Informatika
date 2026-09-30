@@ -34,7 +34,7 @@
         </div>
 
         <div class="no-print" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-            <a class="soft-button" href="{{ route('laporan.export', $exportParams) }}">
+            <a class="soft-button" href="{{ route('laporan.export', $exportParams) }}" download>
                 Export CSV (Excel)
             </a>
             <button class="soft-button" type="button" onclick="window.print()">
