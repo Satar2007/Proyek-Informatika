@@ -80,7 +80,7 @@
     </div>
 
     </dialog>
-    <a class="mobile-cart-link" href="#order-cart">Lihat pesanan <span x-text="cart.reduce((n, item) => n + item.qty, 0)"></span> item ↓</a>
+    <a class="mobile-cart-link" href="#order-cart">Pesanan · <span x-text="cart.reduce((n, item) => n + item.qty, 0)"></span> item · <span x-text="'Rp ' + formatRupiah(grandTotal)"></span> ↓</a>
     {{-- POS Layout --}}
     <div class="pos-columns">
 
@@ -93,7 +93,7 @@
                         <label for="menu-search" class="mb-2 block text-xs font-black uppercase tracking-wider text-[#7B4B2A]">
                             Cari Menu
                         </label>
-                        <input id="menu-search" aria-label="Cari menu" type="search" x-model="search" placeholder="Cari espresso, latte, nasi..."
+                        <input id="menu-search" x-ref="menuSearch" aria-label="Cari menu" type="search" x-model="search" placeholder="Cari espresso, latte, nasi..."
                             class="w-full rounded-2xl border border-[#D9B08C] bg-[#FFFDF9] px-4 py-3 text-sm font-semibold text-black outline-none transition placeholder:text-[#9B8574] focus:border-[#7B4B2A] focus:bg-white focus:ring-4 focus:ring-[#D9B08C]/40">
                     </div>
 
@@ -180,7 +180,8 @@
                             Pesanan
                         </h2>
                         <p class="text-xs font-semibold text-[#7B4B2A]/75">
-                            Keranjang transaksi pelanggan
+                            <span x-text="cart.reduce((n, item) => n + item.qty, 0)"></span> item ·
+                            <span x-text="'Rp ' + formatRupiah(grandTotal)"></span>
                         </p>
                     </div>
 
@@ -197,7 +198,8 @@
                         Nama Pelanggan <span class="text-red-500">*</span>
                     </label>
 
-                    <input type="text" x-model="namaPelanggan" placeholder="Masukkan nama pelanggan..."
+                    <input type="text" x-ref="customerNameInput" x-model="namaPelanggan" placeholder="Masukkan nama pelanggan..."
+                        autocomplete="off" @keydown.enter.prevent="$refs.menuSearch?.focus()"
                         class="w-full rounded-2xl border border-[#D9B08C] bg-[#FFFDF9] px-4 py-3 text-sm font-semibold text-black outline-none transition placeholder:text-[#9B8574] focus:border-[#7B4B2A] focus:bg-white focus:ring-4 focus:ring-[#D9B08C]/40">
                 </div>
 
@@ -235,7 +237,7 @@
 
                                     <span class="w-7 text-center text-sm font-black text-[#4B2E1F]" x-text="item.qty"></span>
 
-                                    <button :aria-label="'Tambah jumlah ' + item.nama" @click="tambahQty(item.id)" class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#7B4B2A] text-sm font-black text-white shadow-sm transition hover:bg-[#4B2E1F]">
+                                    <button :aria-label="'Tambah jumlah ' + item.nama" @click="tambahQty(item.id)" :disabled="item.qty >= item.stok" :title="item.qty >= item.stok ? 'Jumlah sudah mencapai stok tersedia' : 'Tambah jumlah'" class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#7B4B2A] text-sm font-black text-white shadow-sm transition hover:bg-[#4B2E1F] disabled:cursor-not-allowed disabled:opacity-50">
                                         +
                                     </button>
                                 </div>
@@ -363,8 +365,22 @@
                     });
                     this.resizeObserver.observe(this.$refs.productGrid);
                     if (new URLSearchParams(window.location.search).get('presensi') === '1') this.openPresensi();
+                    else this.focusCustomerName();
                 });
                 await this.loadAttendanceStatus();
+            },
+
+            focusCustomerName() {
+                this.$nextTick(() => this.$refs.customerNameInput?.focus());
+            },
+
+            startNewOrder() {
+                this.cart = [];
+                this.namaPelanggan = '';
+                this.search = '';
+                this.selectedCategory = '';
+                this.page = 1;
+                this.focusCustomerName();
             },
 
             async loadAttendanceStatus() {
@@ -682,7 +698,8 @@
 
             async prosesCheckout(metode) {
                 if (!this.namaPelanggan.trim()) {
-                    Swal.fire('Perhatian', 'Nama pelanggan wajib diisi!', 'warning');
+                    await Swal.fire('Perhatian', 'Nama pelanggan wajib diisi!', 'warning');
+                    this.focusCustomerName();
                     return;
                 }
 
@@ -742,7 +759,7 @@
                             this.cart = [];
                             this.namaPelanggan = '';
 
-                            await Swal.fire({
+                            const selesai = await Swal.fire({
                                 title: 'Pembayaran Berhasil',
                                 html: `
 
@@ -771,25 +788,25 @@
                                     </div>
 
                                     <p style="color: #666; font-size: 13px; margin-top: 15px;">
-                                        Pilih aksi berikutnya.
+                                        Cetak struk atau langsung mulai pesanan berikutnya.
                                     </p>
                                 `,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonText: 'Print Struk',
+                                confirmButtonText: 'Cetak Struk',
                                 confirmButtonColor: '#7B4B2A',
                                 showDenyButton: true,
-                                denyButtonText: 'Kembali ke Kasir',
+                                denyButtonText: 'Pesanan Baru',
                                 denyButtonColor: '#6b7280',
                                 allowOutsideClick: false,
                                 allowEscapeKey: false,
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.href = `/payment/struk/${data.payment_id}`;
-                                } else if (result.isDenied) {
-                                    window.location.reload();
-                                }
                             });
+
+                            if (selesai.isConfirmed) {
+                                window.location.href = `/payment/struk/${data.payment_id}`;
+                            } else if (selesai.isDenied) {
+                                this.startNewOrder();
+                            }
                         } else {
                             Swal.fire('Error', data.message, 'error');
                         }
