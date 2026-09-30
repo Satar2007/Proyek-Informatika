@@ -26,13 +26,13 @@
     </div>
 
     {{-- Summary --}}
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-3xl border border-[#D9B08C]/60 bg-white p-5 shadow-sm shadow-[#4B2E1F]/5">
             <p class="text-sm font-bold text-[#7B4B2A]/75">
                 Total Menu
             </p>
             <p class="mt-2 text-3xl font-black text-[#4B2E1F]">
-                {{ $menus->total() }}
+                {{ $totalMenu }}
             </p>
         </div>
 
@@ -41,16 +41,25 @@
                 Menu Aktif
             </p>
             <p class="mt-2 text-3xl font-black text-emerald-600">
-                {{ $menus->where('is_active', true)->count() }}
+                {{ $menuAktif }}
             </p>
         </div>
 
         <div class="rounded-3xl border border-[#D9B08C]/60 bg-white p-5 shadow-sm shadow-[#4B2E1F]/5">
             <p class="text-sm font-bold text-[#7B4B2A]/75">
-                Stok Rendah
+                Stok Menipis
+            </p>
+            <p class="mt-2 text-3xl font-black text-orange-600">
+                {{ $stokRendah }}
+            </p>
+        </div>
+
+        <div class="rounded-3xl border border-[#D9B08C]/60 bg-white p-5 shadow-sm shadow-[#4B2E1F]/5">
+            <p class="text-sm font-bold text-[#7B4B2A]/75">
+                Stok Habis
             </p>
             <p class="mt-2 text-3xl font-black text-red-600">
-                {{ $menus->filter(fn($menu) => $menu->stok <= $menu->minimum_stok)->count() }}
+                {{ $stokHabis }}
             </p>
         </div>
     </div>
@@ -99,6 +108,13 @@
                         value="{{ $selectedCategory }}">
                 @endif
 
+                @if($selectedStockStatus !== '')
+                    <input
+                        type="hidden"
+                        name="stock_status"
+                        value="{{ $selectedStockStatus }}">
+                @endif
+
                 <div class="relative flex-1">
 
                     <svg
@@ -134,7 +150,8 @@
 
                 @if(
                     $search !== '' ||
-                    $selectedCategory !== ''
+                    $selectedCategory !== '' ||
+                    $selectedStockStatus !== ''
                 )
                     <a
                         href="{{ route('admin.menu.index') }}"
@@ -155,6 +172,7 @@
                         'admin.menu.index',
                         array_filter([
                             'q' => $search,
+                            'stock_status' => $selectedStockStatus,
                         ])
                     ) }}"
                     class="rounded-full border px-4 py-2 text-xs font-black transition
@@ -172,6 +190,7 @@
                             array_filter([
                                 'q' => $search,
                                 'category' => $category->id,
+                                'stock_status' => $selectedStockStatus,
                             ])
                         ) }}"
                         class="rounded-full border px-4 py-2 text-xs font-black transition
@@ -185,10 +204,44 @@
 
             </div>
 
+            {{-- STOCK STATUS FILTER --}}
+            <div class="mt-4">
+                <p class="mb-2 text-xs font-black uppercase tracking-wider text-[#7B4B2A]/70">
+                    Status stok
+                </p>
+
+                <div class="flex flex-wrap gap-2" aria-label="Filter status stok">
+                    @foreach([
+                        '' => 'Semua',
+                        'aman' => 'Aman',
+                        'menipis' => 'Menipis',
+                        'habis' => 'Habis',
+                    ] as $stockStatus => $stockLabel)
+                        <a
+                            href="{{ route(
+                                'admin.menu.index',
+                                array_filter([
+                                    'q' => $search,
+                                    'category' => $selectedCategory,
+                                    'stock_status' => $stockStatus,
+                                ], fn ($value) => $value !== '')
+                            ) }}"
+                            class="rounded-full border px-4 py-2 text-xs font-black transition
+                                {{ $selectedStockStatus === $stockStatus
+                                    ? 'border-[#4B2E1F] bg-[#4B2E1F] text-white shadow-sm'
+                                    : 'border-[#D9B08C] bg-white text-[#7B4B2A] hover:bg-[#F8F5F0]'
+                                }}">
+                            {{ $stockLabel }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
 
             @if(
                 $search !== '' ||
-                $selectedCategory !== ''
+                $selectedCategory !== '' ||
+                $selectedStockStatus !== ''
             )
                 <p class="mt-3 text-xs font-bold text-[#7B4B2A]/70">
                     Menampilkan {{ $menus->total() }} menu sesuai pencarian/filter.
@@ -251,11 +304,11 @@
                                     </span>
                                 @elseif($menu->stok <= $menu->minimum_stok)
                                     <span class="inline-flex rounded-full bg-orange-50 px-3 py-1 text-xs font-black text-orange-700">
-                                        Sisa {{ $menu->stok }}
+                                        Menipis · {{ $menu->stok }}
                                     </span>
                                 @else
                                     <span class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
-                                        {{ $menu->stok }} stok
+                                        Aman · {{ $menu->stok }}
                                     </span>
                                 @endif
                             </td>

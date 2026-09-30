@@ -39,6 +39,18 @@ class MenuController extends Controller
             $selectedCategory = '';
         }
 
+        $selectedStockStatus = trim(
+            (string) $request->query('stock_status', '')
+        );
+
+        if (! in_array(
+            $selectedStockStatus,
+            ['', 'aman', 'menipis', 'habis'],
+            true
+        )) {
+            $selectedStockStatus = '';
+        }
+
         $menus = Menu::with('category')
             ->when(
                 $search !== '',
@@ -90,11 +102,31 @@ class MenuController extends Controller
                         $selectedCategory
                     )
             )
+            ->when(
+                $selectedStockStatus === 'aman',
+                fn ($query) =>
+                    $query->whereColumn('stok', '>', 'minimum_stok')
+            )
+            ->when(
+                $selectedStockStatus === 'menipis',
+                fn ($query) =>
+                    $query
+                        ->where('stok', '>', 0)
+                        ->whereColumn('stok', '<=', 'minimum_stok')
+            )
+            ->when(
+                $selectedStockStatus === 'habis',
+                fn ($query) =>
+                    $query->where('stok', '<=', 0)
+            )
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
         $totalMenu = Menu::count();
+
+        $menuAktif = Menu::where('is_active', true)
+            ->count();
 
         $stokRendah = Menu::where('stok', '>', 0)
             ->whereColumn('stok', '<=', 'minimum_stok')
@@ -108,11 +140,13 @@ class MenuController extends Controller
             compact(
                 'menus',
                 'totalMenu',
+                'menuAktif',
                 'stokRendah',
                 'stokHabis',
                 'search',
                 'categories',
-                'selectedCategory'
+                'selectedCategory',
+                'selectedStockStatus'
             )
         );
     }
