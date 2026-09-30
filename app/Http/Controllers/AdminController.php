@@ -6,6 +6,7 @@ use App\Models\Menu;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\StockLog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
@@ -70,12 +71,64 @@ class AdminController extends Controller
         return view('admin.transaksi', compact('transaksis'));
     }
 
-    public function stokLog()
+    public function stokLog(Request $request)
     {
-        $logs = StockLog::with('menu', 'createdBy')
-            ->latest()
-            ->paginate(20);
+        $search = trim((string) $request->query('q', ''));
+        $selectedType = trim((string) $request->query('type', ''));
 
-        return view('admin.stok-log', compact('logs'));
+        if (! in_array($selectedType, ['', 'in', 'out', 'adjustment'], true)) {
+            $selectedType = '';
+        }
+
+        $logs = StockLog::with('menu', 'createdBy')
+            ->when(
+                $search !== '',
+                function ($query) use ($search) {
+                    $query->where(function ($stockQuery) use ($search) {
+                        $stockQuery
+                            ->where('catatan', 'like', "%{$search}%")
+                            ->orWhereHas(
+                                'menu',
+                                fn ($menuQuery) =>
+                                    $menuQuery->where(
+                                        'nama_menu',
+                                        'like',
+                                        "%{$search}%"
+                                    )
+                            );
+
+                        if (is_numeric($search)) {
+                            $stockQuery->orWhere(
+                                'menu_id',
+                                (int) $search
+                            );
+                        }
+                    });
+                }
+            )
+            ->when(
+                $selectedType !== '',
+                fn ($query) =>
+                    $query->where('tipe', $selectedType)
+            )
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        $totalLog = StockLog::count();
+        $totalMasuk = StockLog::where('tipe', 'in')->count();
+        $totalKeluar = StockLog::where('tipe', 'out')->count();
+
+        return view(
+            'admin.stok-log',
+            compact(
+                'logs',
+                'search',
+                'selectedType',
+                'totalLog',
+                'totalMasuk',
+                'totalKeluar'
+            )
+        );
     }
 }

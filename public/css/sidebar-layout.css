@@ -81,7 +81,7 @@ body.ember-theme{
 
 /* ---------- Topbar ---------- */
 .app-topbar{
-  position:fixed;z-index:80;top:var(--sb-gap);left:calc(var(--sb-gap) + var(--sb-w) + var(--sb-gap));right:var(--sb-gap);
+  position:absolute;z-index:80;top:var(--sb-gap);left:calc(var(--sb-gap) + var(--sb-w) + var(--sb-gap));right:var(--sb-gap);
   height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 16px;
   border:1px solid rgba(201,129,49,.30);border-radius:20px;
   background:rgba(255,248,235,.93);box-shadow:0 14px 36px rgba(60,31,13,.14),inset 0 1px #fff;

@@ -1,0 +1,155 @@
+/* JIMNY COFFEE — global UI polish.
+   Pure presentation layer: no route, business logic, payment, stock, or database changes. */
+
+:root{
+  --ui-surface:#fffdf9;
+  --ui-surface-soft:#faf6ef;
+  --ui-line:#e8d8c7;
+  --ui-line-strong:#d7c1aa;
+  --ui-text:#432b1c;
+  --ui-muted:#7b6552;
+  --ui-accent:#8a5a2d;
+  --ui-focus:#bd7a32;
+  --ui-shadow:0 10px 28px rgba(67,34,13,.07);
+  --ui-shadow-hover:0 14px 34px rgba(67,34,13,.10);
+  --ui-radius:20px;
+}
+
+html,body{max-width:100%}
+body{overflow-x:hidden}
+.page-ready,.page-ready>*{min-width:0;max-width:100%}
+
+/* Shared page rhythm for Admin / Owner / Kasir reports and transaction pages. */
+body:not(.pos-screen) .page-ready{line-height:1.5}
+body:not(.pos-screen) .page-ready :is(.page-lead,.page-heading,.owner-heading){margin-bottom:18px}
+body:not(.pos-screen) .page-ready :is(.page-lead h1,.page-heading h1,.owner-heading h1){
+  font-size:clamp(26px,2.4vw,32px)!important;
+  line-height:1.12!important;
+  letter-spacing:-.025em!important;
+}
+body:not(.pos-screen) .page-ready :is(.page-lead p,.page-heading p,.owner-heading p){
+  max-width:72ch;
+  line-height:1.6;
+}
+
+/* Keep cards/panels visually related across roles without flattening page-specific design. */
+body:not(.pos-screen) .page-ready :is(.panel,.owner-panel,.owner-stat,.owner-compact),
+body:not(.pos-screen) .page-ready .rounded-3xl.border.bg-white{
+  border-color:var(--ui-line)!important;
+  box-shadow:var(--ui-shadow)!important;
+}
+body:not(.pos-screen) .page-ready :is(.panel,.owner-panel,.owner-stat,.owner-compact){
+  transition:border-color .16s ease,box-shadow .16s ease;
+}
+
+/* Forms: one focus language and predictable control sizing. */
+body:not(.pos-screen) .page-ready :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select,
+  textarea
+){
+  min-height:44px;
+  border-color:var(--ui-line-strong)!important;
+  border-radius:14px!important;
+  background-color:#fff!important;
+}
+body:not(.pos-screen) .page-ready textarea{min-height:96px}
+body:not(.pos-screen) .page-ready :is(input,select,textarea):focus{
+  border-color:var(--ui-focus)!important;
+  box-shadow:0 0 0 3px rgba(189,122,50,.14)!important;
+  outline:none!important;
+}
+body:not(.pos-screen) .page-ready label{line-height:1.35}
+
+/* Consistent interactive states. */
+body:not(.pos-screen) .page-ready :is(button,a)[class*="rounded-"]{
+  transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease,transform .12s ease;
+}
+body:not(.pos-screen) .page-ready :is(button,a)[class*="rounded-"]:active:not(:disabled){transform:translateY(1px)}
+body:not(.pos-screen) .page-ready :is(button,a,input,select,textarea,summary):focus-visible{
+  outline:3px solid rgba(189,122,50,.34)!important;
+  outline-offset:2px!important;
+}
+body:not(.pos-screen) .page-ready button:disabled{cursor:not-allowed;opacity:.58}
+
+/* Tables remain readable and scroll inside their own container, never the whole page. */
+body:not(.pos-screen) .page-ready :is(.overflow-x-auto,.table-scroll){
+  max-width:100%;
+  overscroll-behavior-inline:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#c7ad91 transparent;
+}
+body:not(.pos-screen) .page-ready :is(.overflow-x-auto,.table-scroll)::-webkit-scrollbar{height:9px}
+body:not(.pos-screen) .page-ready :is(.overflow-x-auto,.table-scroll)::-webkit-scrollbar-thumb{
+  background:#c7ad91;
+  border-radius:999px;
+  border:2px solid transparent;
+  background-clip:padding-box;
+}
+body:not(.pos-screen) .page-ready table{border-collapse:separate;border-spacing:0}
+body:not(.pos-screen) .page-ready table th{vertical-align:middle}
+body:not(.pos-screen) .page-ready table td{vertical-align:middle;line-height:1.45}
+body:not(.pos-screen) .page-ready tbody tr{transition:background-color .14s ease}
+
+/* Report controls: prevent awkward wrapping and align actions on mixed screen sizes. */
+.report-page .page-heading>.no-print{align-items:center}
+.report-page .report-filter>*{min-width:0}
+.report-page .report-pagination nav{max-width:100%;overflow-x:auto;padding-bottom:2px}
+.report-page .metric-card{box-shadow:0 8px 22px rgba(67,34,13,.045)}
+
+/* Owner overview: reduce accidental overflow in long menu names and compact cards. */
+.owner-overview{min-width:0}
+.owner-overview :is(.owner-panel,.owner-stat,.owner-compact){overflow-wrap:anywhere}
+.owner-overview .owner-list li{min-width:0}
+.owner-overview .owner-menu-name{min-width:0}
+
+/* Flash/error messages align with the same surface language. */
+.content-glass>.form-errors{
+  border-radius:16px;
+  border:1px solid #efc2bc;
+  background:#fff1ef;
+  color:#8a3028;
+  padding:14px 16px;
+  margin-bottom:18px;
+  box-shadow:0 8px 22px rgba(116,42,31,.06);
+}
+.content-glass>.form-errors strong{display:block;margin-bottom:5px}
+.content-glass>.form-errors ul{margin:0;padding-left:18px}
+
+/* Tablet / mobile: tighter spacing, stacked headings, safe wide-table scrolling. */
+@media(max-width:1023px){
+  body:not(.pos-screen) .content-glass{padding:16px}
+  body:not(.pos-screen) .page-ready :is(.page-lead,.page-heading,.owner-heading){gap:12px}
+}
+@media(max-width:767px){
+  body:not(.pos-screen) .content-glass{padding:13px;border-radius:20px}
+  body:not(.pos-screen) .page-ready :is(.page-lead,.page-heading,.owner-heading){
+    align-items:flex-start!important;
+    flex-direction:column!important;
+  }
+  body:not(.pos-screen) .page-ready :is(.page-lead h1,.page-heading h1,.owner-heading h1){font-size:25px!important}
+  body:not(.pos-screen) .page-ready .rounded-3xl{border-radius:18px!important}
+  body:not(.pos-screen) .page-ready :is(.panel,.owner-panel,.owner-stat,.owner-compact){border-radius:18px!important}
+  .report-page .page-heading>.no-print{width:100%;justify-content:flex-start!important}
+  .report-page .page-heading>.no-print :is(a,button){flex:1 1 180px}
+}
+@media(max-width:520px){
+  body:not(.pos-screen) .content-glass{padding:11px}
+  body:not(.pos-screen) .page-ready :is(.page-lead h1,.page-heading h1,.owner-heading h1){font-size:23px!important}
+  body:not(.pos-screen) .page-ready :is(input,select,textarea){font-size:16px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  body:not(.pos-screen) .page-ready *,
+  body:not(.pos-screen) .page-ready *::before,
+  body:not(.pos-screen) .page-ready *::after{
+    scroll-behavior:auto!important;
+    transition-duration:.001ms!important;
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+  }
+}
+
+@media print{
+  .content-glass>.form-errors{box-shadow:none}
+}
