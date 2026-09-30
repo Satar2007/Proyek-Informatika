@@ -78,10 +78,9 @@
     </style>
 <link rel="stylesheet" href="{{ asset('css/pos-theme.css') }}?v=6">
 <link rel="stylesheet" href="{{ asset('css/ember-theme.css') }}?v=6">
-<link rel="stylesheet" href="{{ asset('css/sidebar-layout.css') }}?v=12">
+<link rel="stylesheet" href="{{ asset('css/sidebar-layout.css') }}?v=11">
 <link rel="stylesheet" href="{{ asset('css/page-transition.css') }}?v=7">
 <link rel="stylesheet" href="{{ asset('css/menu-photos.css') }}?v=2">
-<link rel="stylesheet" href="{{ asset('css/global-ui-polish.css') }}?v=1">
     <script src="{{ asset('js/pos-motion.js') }}?v=6" defer></script>
     <script src="{{ asset('js/page-motion.js') }}?v=2" defer></script>
 </head>
@@ -163,7 +162,7 @@
                         @else
                             <div class="sidebar-section">Kasir</div>
                             <a href="{{ route('transaksi.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('transaksi.*') ? 'active' : '' }}">{!! $svg('receipt') !!}<span>Transaksi</span></a>
-                            <a href="{{ route('laporan.harian') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">{!! $svg('chart') !!}<span>Laporan</span></a>
+                            <a href="{{ route('laporan.harian') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">{!! $svg('chart') !!}<span>Laporan Harian</span></a>
                         @endif
                     @endauth
                 </nav>

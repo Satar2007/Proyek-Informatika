@@ -33,7 +33,7 @@
                         Total Log
                     </p>
                     <p class="mt-2 text-3xl font-black text-[#4B2E1F]">
-                        {{ $totalLog }}
+                        {{ $logs->total() }}
                     </p>
                 </div>
 
@@ -50,7 +50,7 @@
                         Stok Masuk
                     </p>
                     <p class="mt-2 text-3xl font-black text-emerald-600">
-                        {{ $totalMasuk }}
+                        {{ $logs->where('tipe', 'in')->count() }}
                     </p>
                 </div>
 
@@ -67,7 +67,7 @@
                         Stok Keluar
                     </p>
                     <p class="mt-2 text-3xl font-black text-red-600">
-                        {{ $totalKeluar }}
+                        {{ $logs->where('tipe', 'out')->count() }}
                     </p>
                 </div>
 
@@ -77,46 +77,6 @@
             </div>
         </div>
     </div>
-
-    {{-- Filter --}}
-    <form method="GET" action="{{ route('admin.stok-log') }}"
-        class="rounded-3xl border border-[#D9B08C]/60 bg-white p-5 shadow-sm shadow-[#4B2E1F]/5">
-        <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_auto_auto] lg:items-end">
-            <div>
-                <label for="q" class="mb-2 block text-xs font-black uppercase tracking-wider text-[#7B4B2A]/70">
-                    Cari riwayat
-                </label>
-                <input id="q" name="q" type="search" value="{{ $search }}"
-                    placeholder="Nama menu, ID menu, atau catatan..."
-                    class="w-full rounded-2xl border border-[#D9B08C] bg-white px-4 py-3 text-sm font-semibold text-[#4B2E1F] outline-none transition placeholder:text-[#9B8574] focus:border-[#7B4B2A] focus:ring-4 focus:ring-[#D9B08C]/30">
-            </div>
-
-            <div>
-                <label for="type" class="mb-2 block text-xs font-black uppercase tracking-wider text-[#7B4B2A]/70">
-                    Jenis perubahan
-                </label>
-                <select id="type" name="type"
-                    class="w-full rounded-2xl border border-[#D9B08C] bg-white px-4 py-3 text-sm font-bold text-[#4B2E1F] outline-none focus:border-[#7B4B2A] focus:ring-4 focus:ring-[#D9B08C]/30">
-                    <option value="">Semua</option>
-                    <option value="in" @selected($selectedType === 'in')>Stok Masuk</option>
-                    <option value="out" @selected($selectedType === 'out')>Stok Keluar</option>
-                    <option value="adjustment" @selected($selectedType === 'adjustment')>Adjustment</option>
-                </select>
-            </div>
-
-            <button type="submit"
-                class="rounded-2xl bg-[#7B4B2A] px-5 py-3 text-sm font-black text-white transition hover:bg-[#4B2E1F]">
-                Terapkan
-            </button>
-
-            @if($search !== '' || $selectedType !== '')
-                <a href="{{ route('admin.stok-log') }}"
-                    class="rounded-2xl border border-[#D9B08C] bg-white px-5 py-3 text-center text-sm font-black text-[#7B4B2A] transition hover:bg-[#F8F5F0]">
-                    Reset
-                </a>
-            @endif
-        </div>
-    </form>
 
     {{-- Table --}}
     <div class="overflow-hidden rounded-3xl border border-[#D9B08C]/60 bg-white shadow-sm shadow-[#4B2E1F]/5">
@@ -140,7 +100,6 @@
                         <th class="px-6 py-4">Sebelum</th>
                         <th class="px-6 py-4">Perubahan</th>
                         <th class="px-6 py-4">Sesudah</th>
-                        <th class="px-6 py-4">Catatan / Alasan</th>
                         <th class="px-6 py-4">Oleh</th>
                         <th class="px-6 py-4">Tanggal</th>
                     </tr>
@@ -217,13 +176,6 @@
                                 </span>
                             </td>
 
-                            {{-- Catatan --}}
-                            <td class="px-6 py-4">
-                                <p class="max-w-xs text-sm font-semibold text-[#4B2E1F]">
-                                    {{ $log->catatan ?: 'Tanpa catatan' }}
-                                </p>
-                            </td>
-
                             {{-- Oleh --}}
                             <td class="px-6 py-4">
                                 <div>
@@ -250,7 +202,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-12 text-center">
+                            <td colspan="7" class="px-6 py-12 text-center">
                                 <div class="mx-auto max-w-sm">
                                     <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-[#F8F5F0] text-2xl ring-1 ring-[#D9B08C]/60">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="m12 3 9 5v9l-9 5-9-5V8ZM3 8l9 5 9-5M12 13v9M7 5l9 5"/></svg>

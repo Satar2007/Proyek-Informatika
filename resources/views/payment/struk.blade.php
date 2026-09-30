@@ -309,11 +309,11 @@
     {{-- Tombol Print --}}
     <div class="center no-print">
         <button onclick="window.print()" class="btn btn-print">
-            Cetak Struk
+            Print Struk
         </button>
 
         <a href="{{ route('kasir.index') }}" class="btn btn-close" style="display: inline-block; text-decoration: none;">
-            Pesanan Baru
+            Kembali ke POS Kasir
         </a>
     </div>
 
