@@ -49,6 +49,7 @@ Route::middleware(['auth', 'role:kasir,admin,owner'])->group(function () {
     // Laporan
     Route::get('/laporan/harian', [LaporanController::class, 'harian'])->name('laporan.harian');
     Route::get('/laporan/bulanan', [LaporanController::class, 'bulanan'])->name('laporan.bulanan');
+    Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
 
     // Transaksi lihat saja
     Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index');
