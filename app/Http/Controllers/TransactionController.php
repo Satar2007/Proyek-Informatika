@@ -5,26 +5,70 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Services\StockReservationService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
 
-        $query = Transaction::with(['user', 'details.menu', 'payment'])
-            ->latest();
+        $filters = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+            'status' => ['nullable', 'in:success,pending,cancelled,expired'],
+            'metode' => ['nullable', 'in:cash,qris'],
+            'tanggal_mulai' => ['nullable', 'date'],
+            'tanggal_akhir' => ['nullable', 'date', 'after_or_equal:tanggal_mulai'],
+        ]);
 
-        if ($user->role === 'kasir') {
-            $query->where('user_id', $user->id);
-        }
+        $filters['q'] = trim((string) ($filters['q'] ?? ''));
 
-        $statsQuery = Transaction::query();
+        $applyScopeAndFilters = function ($query, bool $includeStatus = true) use ($user, $filters) {
+            if ($user->role === 'kasir') {
+                $query->where('user_id', $user->id);
+            }
 
-        if ($user->role === 'kasir') {
-            $statsQuery->where('user_id', $user->id);
-        }
+            if ($filters['q'] !== '') {
+                $keyword = $filters['q'];
+
+                $query->where(function ($subQuery) use ($keyword) {
+                    $subQuery
+                        ->where('kode_transaksi', 'like', '%' . $keyword . '%')
+                        ->orWhere('nama_pelanggan', 'like', '%' . $keyword . '%');
+
+                    if (ctype_digit($keyword)) {
+                        $subQuery->orWhere('transactions.id', (int) $keyword);
+                    }
+                });
+            }
+
+            if (!empty($filters['metode'])) {
+                $query->where('payment_method', $filters['metode']);
+            }
+
+            if (!empty($filters['tanggal_mulai'])) {
+                $query->whereDate('created_at', '>=', $filters['tanggal_mulai']);
+            }
+
+            if (!empty($filters['tanggal_akhir'])) {
+                $query->whereDate('created_at', '<=', $filters['tanggal_akhir']);
+            }
+
+            if ($includeStatus && !empty($filters['status'])) {
+                $query->where('status', $filters['status']);
+            }
+
+            return $query;
+        };
+
+        $query = $applyScopeAndFilters(
+            Transaction::with(['user', 'details.menu', 'payment'])
+        )->latest();
+
+        // Kartu ringkasan mengikuti scope, pencarian, metode, dan rentang tanggal.
+        // Filter status sengaja tidak diterapkan ke kartu agar distribusi status tetap informatif.
+        $statsQuery = $applyScopeAndFilters(Transaction::query(), false);
 
         $transactionStats = [
             'success' => (clone $statsQuery)
@@ -40,11 +84,13 @@ class TransactionController extends Controller
                 ->count(),
         ];
 
-        $transaksis = $query->paginate(20);
+        $transaksis = $query
+            ->paginate(20)
+            ->withQueryString();
 
         return view(
             'transaksi.index',
-            compact('transaksis', 'transactionStats')
+            compact('transaksis', 'transactionStats', 'filters')
         );
     }
 
