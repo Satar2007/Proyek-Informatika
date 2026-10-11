@@ -34,8 +34,6 @@ class ShiftController extends Controller
             'user_id'       => ['required', 'exists:users,id'],
             'tanggal_mulai' => ['required', 'date'],
             'tanggal_akhir' => ['required', 'date', 'after_or_equal:tanggal_mulai'],
-            'hari_kerja'    => ['required', 'array', 'min:1'],
-            'hari_kerja.*'  => ['required', 'integer', 'between:0,6'],
             'jam_masuk'     => ['required'],
             'jam_keluar'    => ['required'],
             'catatan'       => ['nullable', 'string', 'max:255'],
@@ -44,7 +42,6 @@ class ShiftController extends Controller
             'tanggal_mulai.required' => 'Tanggal mulai wajib diisi.',
             'tanggal_akhir.required' => 'Tanggal akhir wajib diisi.',
             'tanggal_akhir.after_or_equal' => 'Tanggal akhir tidak boleh lebih awal dari tanggal mulai.',
-            'hari_kerja.required' => 'Minimal pilih satu hari kerja.',
             'jam_masuk.required' => 'Jam masuk wajib diisi.',
             'jam_keluar.required' => 'Jam keluar wajib diisi.',
         ]);
@@ -85,9 +82,9 @@ class ShiftController extends Controller
 
             $periode = CarbonPeriod::create($tanggalMulai, $tanggalAkhir);
 
-            // Format hari sesuai checkbox Blade:
-            // 0 = Minggu, 1 = Senin, 2 = Selasa, ..., 6 = Sabtu
-            $hariDipilih = array_map('intval', $validated['hari_kerja']);
+            // Generate shift untuk seluruh hari pada rentang tanggal.
+            // Carbon dayOfWeek: 0 = Minggu, ..., 6 = Sabtu.
+            $hariDipilih = range(0, 6);
 
             $jumlahDibuat = 0;
             $jumlahDilewati = 0;
@@ -132,7 +129,7 @@ class ShiftController extends Controller
             if ($jumlahDibuat === 0 && $jumlahDilewati === 0) {
                 return back()
                     ->withInput()
-                    ->with('error', 'Tidak ada shift yang dibuat. Pastikan hari kerja sesuai dengan rentang tanggal.');
+                    ->with('error', 'Tidak ada shift yang dibuat. Pastikan rentang tanggal valid dan belum memiliki shift.');
             }
 
             return back()->with(

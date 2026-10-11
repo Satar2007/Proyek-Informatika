@@ -93,7 +93,7 @@
                     Generate Shift
                 </h2>
                 <p class="mt-1 text-sm font-semibold text-[#7B4B2A]/75">
-                    Buat jadwal shift otomatis berdasarkan rentang tanggal dan hari kerja.
+                    Buat jadwal shift otomatis berdasarkan rentang tanggal.
                 </p>
             </div>
 
@@ -151,40 +151,6 @@
                         </div>
                     </div>
 
-                    {{-- Hari Kerja --}}
-                    <div>
-                        <label class="mb-2 block text-xs font-black uppercase tracking-wider text-[#7B4B2A]">
-                            Hari Kerja <span class="text-red-500">*</span>
-                        </label>
-
-                        @php
-                            $hariKerja = old('hari_kerja', ['1', '2', '3', '4', '5']);
-                            $hariList = [
-                                '1' => 'Senin',
-                                '2' => 'Selasa',
-                                '3' => 'Rabu',
-                                '4' => 'Kamis',
-                                '5' => 'Jumat',
-                                '6' => 'Sabtu',
-                                '0' => 'Minggu',
-                            ];
-                        @endphp
-
-                        <div class="grid grid-cols-2 gap-2">
-                            @foreach($hariList as $value => $label)
-                                <label class="flex cursor-pointer items-center gap-2 rounded-2xl border border-[#D9B08C]/70 bg-[#FFFDF9] px-3 py-2 text-sm font-bold text-[#4B2E1F] transition hover:bg-[#F8F5F0]">
-                                    <input type="checkbox" name="hari_kerja[]" value="{{ $value }}"
-                                        {{ in_array($value, $hariKerja) ? 'checked' : '' }}
-                                        class="rounded border-[#D9B08C] text-[#7B4B2A] focus:ring-[#D9B08C]">
-                                    {{ $label }}
-                                </label>
-                            @endforeach
-                        </div>
-
-                        @error('hari_kerja')
-                            <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
 
                     {{-- Jam --}}
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
