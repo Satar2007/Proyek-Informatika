@@ -198,7 +198,7 @@
         <p class="title">JIMNY COFFEE</p>
         <div class="brand-line"></div>
         <p class="subtitle">Coffee Shop</p>
-        <p class="subtitle">Jl. Kopi Nikmat No. 1</p>
+        <p class="subtitle">Jl. Cindelaras No. 44</p>
         <p class="subtitle">Telp: 0812-3456-7890</p>
     </div>
 
