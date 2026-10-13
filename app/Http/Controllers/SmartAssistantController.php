@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
+use App\Services\JsaAnalyticsService;
+
 class SmartAssistantController extends Controller
 {
     public function insights(Request $request): JsonResponse
@@ -289,5 +291,43 @@ class SmartAssistantController extends Controller
             'admin' => 'Sebagai Admin, saya membantu cek stok, menu terlaris, tren penjualan, jam ramai, dan kebutuhan restock.',
             default => 'Sebagai Owner, saya membantu membaca omzet, tren menu, jam ramai, kebutuhan stok, rekomendasi, dan prediksi penjualan.',
         };
+    }
+
+    public function analytics(
+        Request $request,
+        JsaAnalyticsService $service
+    ): JsonResponse {
+        $user = $request->user();
+
+        abort_unless(
+            $user && in_array(
+                $user->role,
+                ['admin', 'owner'],
+                true
+            ),
+            403
+        );
+
+        $validated = $request->validate([
+            'days' => [
+                'sometimes',
+                'integer',
+                'in:7,14,30',
+            ],
+            'menu_id' => [
+                'nullable',
+                'integer',
+                'exists:menus,id',
+            ],
+        ]);
+
+        return response()->json(
+            $service->analyze(
+                (int) ($validated['days'] ?? 30),
+                isset($validated['menu_id'])
+                    ? (int) $validated['menu_id']
+                    : null
+            )
+        );
     }
 }

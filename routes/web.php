@@ -139,3 +139,17 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     // Rekap Kehadiran Read-Only
     Route::get('/rekap-kehadiran', [OwnerController::class, 'rekapKehadiran'])->name('rekap-kehadiran');
 });
+
+/*
+|--------------------------------------------------------------------------
+| JIMNY Smart Assistant V2 Analytics
+|--------------------------------------------------------------------------
+| Authentication pada route.
+| Authorization Owner/Admin diperiksa kembali di controller.
+*/
+Route::middleware('auth')
+    ->get(
+        '/smart-assistant/analytics',
+        [SmartAssistantController::class, 'analytics']
+    )
+    ->name('smart-assistant.analytics');
