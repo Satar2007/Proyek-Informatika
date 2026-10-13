@@ -12,17 +12,42 @@
         <span class="smart-fab-pulse"></span>
     </button>
 
-    <section x-cloak x-show="open" x-transition class="smart-panel" x-ref="panel" :style="panelStyle" @click.outside="open = false">
+    <div x-cloak x-show="open && expanded"
+         class="smart-v2-backdrop"
+         @click="expanded = false; positionPanel()"></div>
+
+    <section x-cloak x-show="open" x-transition
+             class="smart-panel"
+             :class="{'smart-v2-expanded': expanded}"
+             x-ref="panel"
+             :style="panelStyle"
+             @click.outside="open = false; expanded = false">
         <div class="smart-header">
             <div class="smart-avatar"><img src="{{ asset('images/smart-assistant-barista.jpg') }}" alt="" draggable="false"></div>
             <div class="min-w-0">
                 <div class="smart-title">JIMNY Smart Assistant</div>
                 <div class="smart-subtitle">Mode {{ ucfirst(auth()->user()->role) }} · berbasis data POS</div>
             </div>
-            <button type="button" @click="open = false" class="smart-close">×</button>
+            @if(in_array(auth()->user()->role, ['owner', 'admin']))
+            <button type="button"
+                    class="smart-v2-expand-button"
+                    @click="toggleExpanded()"
+                    :aria-label="expanded ? 'Perkecil JSA' : 'Perbesar JSA'"
+                    :title="expanded ? 'Perkecil panel' : 'Lihat analitik'">
+                <span x-text="expanded ? 'Perkecil' : 'Perbesar'"></span>
+            </button>
+            @endif
+            <button type="button"
+                    @click="open = false; expanded = false"
+                    class="smart-close"
+                    aria-label="Tutup Smart Assistant">×</button>
         </div>
 
-        <div class="smart-insights" x-show="insights.length">
+
+
+        <div class="smart-v2-chat">
+
+        <div class="smart-insights" x-show="insights.length && !expanded">
             <template x-for="(item, index) in insights" :key="index">
                 <div class="smart-insight" x-text="item"></div>
             </template>
@@ -53,6 +78,203 @@
             <input x-model="input" type="text" maxlength="500" placeholder="Tanya JIMNY Smart Assistant..." autocomplete="off">
             <button type="submit" :disabled="loading || !input.trim()">Kirim</button>
         </form>
+        </div>
+
+        <div class="smart-v2-dashboard"
+             x-show="expanded && canAnalytics">
+
+            <div class="smart-v2-heading">
+                <div>
+                    <div class="smart-v2-eyebrow">JIMNY INTELLIGENCE</div>
+                    <h2>Analitik & Rekomendasi Bisnis</h2>
+                    <p>Grafik dan keputusan berdasarkan data POS.</p>
+                </div>
+                <button type="button"
+                        class="smart-v2-refresh"
+                        :disabled="analyticsLoading"
+                        @click="loadAnalytics(true)">
+                    Perbarui
+                </button>
+            </div>
+
+            <div x-show="analyticsLoading" class="smart-v2-notice">
+                Membaca data analitik dari server...
+            </div>
+
+            <div x-show="analyticsError"
+                 class="smart-v2-notice"
+                 role="status"
+                 x-text="analyticsError"></div>
+
+            <div x-show="!analytics && !analyticsLoading"
+                 class="smart-v2-charts smart-v2-preview">
+
+                <article class="smart-v2-chart-card">
+                    <h3>Tren Penjualan</h3>
+                    <p>Histori jumlah porsi terjual</p>
+                    <div class="smart-v2-empty">
+                        Grafik akan membaca transaksi valid
+                        dari API analitik JIMNY COFFEE.
+                    </div>
+                </article>
+
+                <article class="smart-v2-chart-card">
+                    <h3>Aktual vs Prediksi</h3>
+                    <p>Perbandingan hasil forecasting</p>
+                    <div class="smart-v2-empty">
+                        Prediksi akan ditampilkan setelah
+                        model dan evaluasinya tersedia.
+                    </div>
+                </article>
+
+                <article class="smart-v2-chart-card">
+                    <h3>Rekomendasi Restok</h3>
+                    <p>Prioritas kebutuhan persediaan</p>
+                    <div class="smart-v2-empty">
+                        Rekomendasi berdasarkan kondisi
+                        stok dan permintaan menu.
+                    </div>
+                </article>
+
+                <article class="smart-v2-chart-card">
+                    <h3>Pola Jam Ramai</h3>
+                    <p>Distribusi transaksi per jam</p>
+                    <div class="smart-v2-empty">
+                        Grafik akan tersedia setelah
+                        data analitik diterima.
+                    </div>
+                </article>
+
+            </div>
+            <template x-if="analytics">
+                <div class="smart-v2-content">
+
+                    <div class="smart-v2-kpis">
+                        <div class="smart-v2-kpi">
+                            <span>Transaksi valid</span>
+                            <strong x-text="analytics.summary?.transactions ?? '—'"></strong>
+                        </div>
+                        <div class="smart-v2-kpi">
+                            <span>Item terjual</span>
+                            <strong x-text="analytics.summary?.sold_qty ?? '—'"></strong>
+                        </div>
+                        <div class="smart-v2-kpi">
+                            <span>Hari aktif</span>
+                            <strong x-text="analytics.summary?.active_days ?? '—'"></strong>
+                        </div>
+                        <div class="smart-v2-kpi">
+                            <span>Status prediksi</span>
+                            <strong class="smart-v2-status"
+                                    x-text="analytics.forecast?.status === 'ready' ? 'Tersedia' : 'Data terbatas'"></strong>
+                        </div>
+                    </div>
+
+                    <div class="smart-v2-charts">
+
+                        <article class="smart-v2-chart-card">
+                            <h3>Tren Penjualan Menu</h3>
+                            <p>Jumlah porsi terjual berdasarkan tanggal</p>
+
+                            <template x-if="(analytics.sales_trend || []).length >= 2">
+                                <svg class="smart-v2-line-chart"
+                                     viewBox="0 0 520 190"
+                                     role="img"
+                                     aria-label="Grafik tren jumlah porsi terjual">
+                                    <line x1="24" y1="165" x2="500" y2="165"
+                                          stroke="#D8C6B5" stroke-width="1"/>
+                                    <line x1="24" y1="100" x2="500" y2="100"
+                                          stroke="#E8DDD3" stroke-dasharray="4 5"/>
+                                    <line x1="24" y1="35" x2="500" y2="35"
+                                          stroke="#E8DDD3" stroke-dasharray="4 5"/>
+                                    <polyline
+                                        :points="chartPoints(analytics.sales_trend, 'qty')"
+                                        fill="none"
+                                        stroke="#A66A43"
+                                        stroke-width="4"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"/>
+                                </svg>
+                            </template>
+
+                            <div class="smart-v2-empty"
+                                 x-show="(analytics.sales_trend || []).length < 2">
+                                Grafik tersedia setelah terdapat minimal dua titik data.
+                            </div>
+                        </article>
+
+                        <article class="smart-v2-chart-card">
+                            <h3>Aktual vs Prediksi</h3>
+                            <p>Estimasi permintaan per menu</p>
+                            <div class="smart-v2-empty"
+                                 x-show="analytics.forecast?.status !== 'ready'">
+                                Histori saat ini belum cukup untuk
+                                menampilkan prediksi yang tervalidasi.
+                            </div>
+                            <div class="smart-v2-empty"
+                                 x-show="analytics.forecast?.status === 'ready'">
+                                Model tersedia. Grafik perbandingan akan
+                                terhubung setelah kontrak data forecast final.
+                            </div>
+                        </article>
+
+                        <article class="smart-v2-chart-card">
+                            <h3>Rekomendasi Stok</h3>
+                            <p>Prioritas berdasarkan kondisi persediaan</p>
+                            <div class="smart-v2-bar-list">
+                                <template x-for="(item, index) in
+                                    (analytics.stock_recommendations || []).slice(0, 5)"
+                                    :key="item.menu_id ?? index">
+                                    <div class="smart-v2-bar-item">
+                                        <div class="smart-v2-bar-label">
+                                            <span x-text="item.name"></span>
+                                            <strong x-text="'Stok: ' + item.stock"></strong>
+                                        </div>
+                                        <div class="smart-v2-track">
+                                            <div class="smart-v2-fill"
+                                                 :style="'width:' + stockBarWidth(item) + '%'"></div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div class="smart-v2-empty"
+                                     x-show="!(analytics.stock_recommendations || []).length">
+                                    Belum ada rekomendasi stok.
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="smart-v2-chart-card">
+                            <h3>Pola Jam Ramai</h3>
+                            <p>Distribusi transaksi sukses per jam</p>
+                            <div class="smart-v2-hours">
+                                <template x-for="(item, index) in
+                                    (analytics.peak_hours || [])"
+                                    :key="item.hour ?? index">
+                                    <div class="smart-v2-hour">
+                                        <div class="smart-v2-hour-track">
+                                            <div :style="'height:' + hourBarHeight(item) + '%'"></div>
+                                        </div>
+                                        <span x-text="String(item.hour).padStart(2, '0')"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="smart-v2-empty"
+                                 x-show="!(analytics.peak_hours || []).length">
+                                Belum ada data jam transaksi.
+                            </div>
+                        </article>
+
+                    </div>
+
+                    <div class="smart-v2-disclaimer">
+                        Angka diambil dari API analitik JIMNY COFFEE.
+                        Prediksi hanya ditampilkan setelah memenuhi
+                        persyaratan data dan evaluasi model.
+                    </div>
+
+                </div>
+            </template>
+
+        </div>
     </section>
 </div>
 
@@ -76,6 +298,246 @@
     .smart-insights{padding:10px 12px 0;display:grid;gap:7px;max-height:145px;overflow:auto}.smart-insight{padding:9px 11px;border-radius:12px;background:#f5eee8;border:1px solid #ead9cb;color:#5b3c2a;font-size:11px;line-height:1.4;font-weight:700}
     .smart-messages{min-height:0;flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}.smart-message{max-width:88%;padding:10px 12px;border-radius:15px;font-size:12px;line-height:1.5}.smart-bot{align-self:flex-start;background:#f3eee9;color:#4B2E1F;border-bottom-left-radius:5px}.smart-user{align-self:flex-end;background:#4B2E1F;color:#fff;border-bottom-right-radius:5px}.smart-message-label{font-size:10px;font-weight:900;color:#8a5b3c;margin-bottom:3px}.smart-user .smart-message-label{color:#D9B08C}.smart-typing{font-style:italic;color:#7B4B2A}.smart-suggestions{padding:0 12px 10px;display:flex;gap:6px;overflow-x:auto}.smart-suggestions button{white-space:nowrap;border:1px solid #decfc3;background:#fff;color:#5d3c29;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:800;cursor:pointer}.smart-suggestions button:hover{background:#f7efe8}.smart-form{display:flex;gap:8px;padding:11px;border-top:1px solid #eaded5;background:#fff}.smart-form input{min-width:0;flex:1;border:1px solid #d8c9bd;border-radius:13px;padding:10px 12px;font-size:12px;outline:none;color:#1f1712!important}.smart-form input:focus{border-color:#C98A4A;box-shadow:0 0 0 3px rgba(201,138,74,.13)}.smart-form button{border:0;border-radius:13px;background:#C98A4A;color:#fff;padding:0 14px;font-weight:900;font-size:11px;cursor:pointer}.smart-form button:disabled{opacity:.5;cursor:not-allowed}
     @media(max-width:640px){.smart-panel{width:calc(100vw - 28px);height:min(620px,calc(100vh - 95px))}}
+    .smart-v2-backdrop{
+        position:fixed;inset:0;z-index:0;
+        background:rgba(34,21,14,.52);
+        backdrop-filter:blur(5px);
+        touch-action:auto;
+    }
+    .smart-panel.smart-v2-expanded{
+        z-index:2;
+        border-radius:22px;
+        max-width:none;
+        max-height:none;
+    }
+    .smart-v2-expand-button{
+        margin-left:auto;flex:none;
+        border:1px solid rgba(255,255,255,.35);
+        color:#fff;background:rgba(255,255,255,.12);
+        border-radius:10px;padding:8px 11px;
+        font-size:11px;font-weight:800;cursor:pointer;
+    }
+    .smart-v2-expand-button + .smart-close{margin-left:0}
+    .smart-v2-chat{
+        flex:1;min-height:0;
+        display:flex;flex-direction:column;
+        overflow:hidden;
+    }
+    .smart-v2-tabs{
+        display:flex;gap:8px;padding:10px 16px;
+        border-bottom:1px solid #eadbd0;
+        background:#fffaf6;
+    }
+    .smart-v2-tabs button{
+        padding:9px 16px;border:0;border-radius:10px;
+        background:transparent;color:#71523c;
+        font-size:12px;font-weight:800;cursor:pointer;
+    }
+    .smart-v2-tabs button.active{
+        background:#4B2E1F;color:white;
+    }
+    .smart-v2-dashboard{
+        flex:1;min-height:0;
+        overflow-y:auto;overscroll-behavior:contain;
+        padding:22px;background:#F8F4EF;
+        color:#4B2E1F;touch-action:pan-y;
+    }
+    .smart-v2-heading{
+        display:flex;justify-content:space-between;
+        align-items:center;gap:12px;margin-bottom:18px;
+    }
+    .smart-v2-eyebrow{
+        font-size:10px;font-weight:900;
+        letter-spacing:2px;color:#A66A43;
+    }
+    .smart-v2-heading h2{
+        font-size:22px;font-weight:900;
+        margin:4px 0;color:#4B2E1F;
+    }
+    .smart-v2-heading p{
+        font-size:12px;color:#967966;
+    }
+    .smart-v2-refresh{
+        border:1px solid #decbbb;border-radius:12px;
+        background:#fff;padding:10px 14px;
+        color:#674531;font-size:12px;
+        font-weight:800;cursor:pointer;
+    }
+    .smart-v2-notice{
+        padding:13px 16px;border-radius:12px;
+        border:1px solid #e8d4ba;
+        background:#fff7e9;color:#78502e;
+        font-size:12px;margin-bottom:14px;
+    }
+    .smart-v2-kpis{
+        display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+        gap:12px;margin-bottom:14px;
+    }
+    .smart-v2-kpi{
+        background:#fff;border:1px solid #eadfd4;
+        border-radius:16px;padding:16px;
+        display:flex;flex-direction:column;gap:9px;
+    }
+    .smart-v2-kpi span{
+        font-size:11px;color:#987865;font-weight:700;
+    }
+    .smart-v2-kpi strong{
+        font-size:27px;color:#4B2E1F;
+    }
+    .smart-v2-kpi strong.smart-v2-status{font-size:15px}
+    .smart-v2-charts{
+        display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:14px;
+    }
+    .smart-v2-chart-card{
+        background:white;border:1px solid #eadfd4;
+        border-radius:17px;padding:19px;
+        min-width:0;min-height:220px;
+    }
+    .smart-v2-chart-card h3{
+        font-size:15px;font-weight:900;
+        color:#4B2E1F;margin-bottom:3px;
+    }
+    .smart-v2-chart-card p{
+        font-size:11px;color:#9a7b68;
+        margin-bottom:18px;
+    }
+    .smart-v2-line-chart{
+        display:block;width:100%;height:auto;
+        max-height:210px;
+    }
+    .smart-v2-empty{
+        padding:18px;border:1px dashed #dcc8b9;
+        border-radius:12px;background:#fffcf8;
+        color:#927664;font-size:12px;
+        line-height:1.6;
+    }
+    .smart-v2-bar-list{
+        display:flex;flex-direction:column;gap:15px;
+    }
+    .smart-v2-bar-label{
+        display:flex;justify-content:space-between;
+        gap:8px;margin-bottom:6px;
+        font-size:11px;color:#60432f;
+    }
+    .smart-v2-track{
+        height:11px;border-radius:999px;
+        background:#eee1d5;overflow:hidden;
+    }
+    .smart-v2-fill{
+        height:100%;border-radius:999px;
+        background:linear-gradient(90deg,#C98A4A,#87502e);
+    }
+    .smart-v2-hours{
+        display:flex;align-items:flex-end;gap:8px;
+        height:140px;overflow-x:auto;
+    }
+    .smart-v2-hour{
+        display:flex;flex-direction:column;
+        align-items:center;gap:6px;
+        min-width:24px;height:100%;
+        font-size:10px;color:#785a47;
+    }
+    .smart-v2-hour-track{
+        flex:1;width:18px;display:flex;
+        align-items:flex-end;
+        border-radius:5px;background:#f5ede6;
+        overflow:hidden;
+    }
+    .smart-v2-hour-track div{
+        width:100%;border-radius:5px 5px 0 0;
+        background:#A66A43;
+    }
+    .smart-v2-disclaimer{
+        margin-top:16px;padding:12px;
+        font-size:11px;color:#846b59;
+        line-height:1.6;
+    }
+    @media(max-width:760px){
+        .smart-v2-dashboard{padding:12px}
+        .smart-v2-heading h2{font-size:17px}
+        .smart-v2-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+        .smart-v2-charts{grid-template-columns:1fr}
+        .smart-v2-kpi{padding:12px}
+        .smart-v2-kpi strong{font-size:22px}
+        .smart-v2-chart-card{padding:14px}
+    }
+    /* JSA V2 - Unified Intelligence Overlay */
+
+    .smart-panel.smart-v2-expanded {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 350px;
+        grid-template-rows: auto minmax(0, 1fr);
+        overflow: hidden;
+    }
+
+    .smart-panel.smart-v2-expanded .smart-header {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        min-width: 0;
+    }
+
+    .smart-panel.smart-v2-expanded .smart-v2-dashboard {
+        grid-column: 1;
+        grid-row: 2;
+        height: 100%;
+        min-width: 0;
+        min-height: 0;
+        overflow-y: auto;
+        border-right: 1px solid #eadbd0;
+    }
+
+    .smart-panel.smart-v2-expanded .smart-v2-chat {
+        grid-column: 2;
+        grid-row: 2;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        min-height: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #fffdfa;
+    }
+
+    .smart-panel.smart-v2-expanded .smart-messages {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .smart-panel.smart-v2-expanded .smart-suggestions {
+        flex-shrink: 0;
+    }
+
+    .smart-panel.smart-v2-expanded .smart-form {
+        flex-shrink: 0;
+    }
+
+    .smart-v2-preview .smart-v2-chart-card {
+        min-height: 190px;
+    }
+
+    @media (max-width: 760px) {
+        .smart-panel.smart-v2-expanded {
+            grid-template-columns: minmax(0, 1fr);
+            grid-template-rows:
+                auto
+                minmax(0, 1.2fr)
+                minmax(160px, .8fr);
+        }
+
+        .smart-panel.smart-v2-expanded .smart-v2-dashboard {
+            grid-column: 1;
+            grid-row: 2;
+            border-right: none;
+            border-bottom: 1px solid #eadbd0;
+        }
+
+        .smart-panel.smart-v2-expanded .smart-v2-chat {
+            grid-column: 1;
+            grid-row: 3;
+        }
+    }
 </style>
 
 <script>
@@ -83,6 +545,9 @@ function smartAssistant(){
     return {
         allowProactive: {{ request()->routeIs('owner.dashboard') ? 'false' : 'true' }},
         open:false, loading:false, input:'', messages:[], insights:[], proactiveVisible:false, currentInsight:'', proactiveTimer:null, proactiveDismissed:false,
+        expanded:false,
+        canAnalytics: {{ in_array(auth()->user()->role, ['owner', 'admin']) ? 'true' : 'false' }},
+        analytics:null, analyticsLoading:false, analyticsError:'',
         dragging:false, moved:false, dragStartX:0, dragStartY:0, startLeft:0, startTop:0,
         left:null, top:null, suppressClick:false, panelStyle:{}, bubbleStyle:{}, rootStyle:{},
         initialized:false, hideTimer:null, refreshTimer:null, firstTimer:null, layoutObserver:null, viewportHandler:null, moveHandler:null, endHandler:null,
@@ -254,11 +719,117 @@ function smartAssistant(){
         },
         positionPanel(){
             if(!this.open)return;
-            const v=this.viewport(),width=Math.max(1,Math.min(390,v.width-24));
+
+            const v=this.viewport();
+
+            if(this.expanded){
+                const width=Math.max(1,Math.min(1120,v.width-24));
+                const height=Math.max(1,Math.min(780,v.height-24));
+
+                this.panelStyle={
+                    left:(v.left+(v.width-width)/2)+'px',
+                    top:(v.top+(v.height-height)/2)+'px',
+                    right:'auto',
+                    bottom:'auto',
+                    width:width+'px',
+                    height:height+'px',
+                    boxSizing:'border-box'
+                };
+                return;
+            }
+
+            const width=Math.max(1,Math.min(390,v.width-24));
             const height=Math.max(1,Math.min(650,v.height-24));
-            this.panelStyle={...this.fitOverlay(width,height),width:width+'px',height:height+'px',boxSizing:'border-box'};
+
+            this.panelStyle={
+                ...this.fitOverlay(width,height),
+                width:width+'px',
+                height:height+'px',
+                boxSizing:'border-box'
+            };
         },
-        async ask(text){
+        toggleExpanded(){
+            if(!this.canAnalytics)return;
+            this.expanded=!this.expanded;
+            if(this.expanded)this.loadAnalytics();
+            this.$nextTick(()=>this.positionPanel());
+        },
+        async loadAnalytics(force=false){
+            if(!this.canAnalytics || this.analyticsLoading)return;
+            if(!force && this.analytics)return;
+
+            this.analyticsLoading=true;
+            this.analyticsError='';
+
+            try{
+                const response=await fetch('/smart-assistant/analytics',{
+                    headers:{
+                        'Accept':'application/json',
+                        'X-Requested-With':'XMLHttpRequest'
+                    }
+                });
+
+                if(!response.ok){
+                    if(response.status===404){
+                        throw new Error(
+                            'Tampilan JSA V2 siap. API analitik sedang dikerjakan oleh Dika.'
+                        );
+                    }
+                    if(response.status===403){
+                        throw new Error('Akses analitik tidak diizinkan.');
+                    }
+                    throw new Error('Gagal membaca analitik (HTTP '+response.status+').');
+                }
+
+                const data=await response.json();
+
+                if(!data || !Array.isArray(data.sales_trend)){
+                    throw new Error('Format respons API analitik belum sesuai.');
+                }
+
+                this.analytics=data;
+            }catch(error){
+                this.analyticsError=error.message ||
+                    'Tidak dapat membaca data analitik.';
+            }finally{
+                this.analyticsLoading=false;
+            }
+        },
+        chartPoints(series,key){
+            if(!Array.isArray(series) || !series.length)return '';
+
+            const values=series.map(item=>
+                Math.max(0,Number(item[key])||0)
+            );
+            const maximum=Math.max(1,...values);
+
+            return values.map((value,index)=>{
+                const x=series.length===1
+                    ? 260
+                    : 24+(index*476/(series.length-1));
+                const y=165-(value/maximum)*130;
+                return x.toFixed(1)+','+y.toFixed(1);
+            }).join(' ');
+        },
+        stockBarWidth(item){
+            const stock=Math.max(0,Number(item.stock)||0);
+            const reference=Math.max(
+                1,
+                Number(item.minimum_stock)||1
+            );
+            return Math.min(100,(stock/reference)*100);
+        },
+        hourBarHeight(item){
+            const hours=this.analytics?.peak_hours||[];
+            const maximum=Math.max(
+                1,
+                ...hours.map(hour=>Number(hour.transactions)||0)
+            );
+            return Math.max(
+                0,
+                Math.min(100,(Number(item.transactions)||0)/maximum*100)
+            );
+        },        async ask(text){
             text=(text||'').trim(); if(!text||this.loading)return;
             this.messages.push({role:'user',text}); this.input=''; this.loading=true; this.scroll();
             try{
