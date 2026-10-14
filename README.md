@@ -23,7 +23,7 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 
 **JIMNY COFFEE** adalah project aplikasi Point of Sale (POS) berbasis Laravel untuk membantu pengelolaan pesanan, transaksi, menu, stok, laporan penjualan, dan aktivitas karyawan dalam satu sistem. Tampilan aplikasi menggunakan nuansa warna kopi dan menyediakan halaman sesuai peran pengguna.
 
-> **Status repository:** dokumentasi antarmuka dan source code sedang digabungkan secara bertahap melalui kolaborasi GitHub. Beberapa halaman pada preview mungkin belum tersedia di branch `main` sampai semua kontribusi digabungkan.
+> **Status repository:** Fitur utama JIMNY COFFEE dan Smart Assistant V2 sudah terintegrasi ke branch `main`. Analitik penjualan telah tersedia; model prediksi machine learning belum diimplementasikan dan masih direncanakan.
 
 ## 🚀 Fitur Aplikasi
 
@@ -448,6 +448,18 @@ Gunakan:
 sebagai template konfigurasi.
 
 ------------------------------------------------------------------------
+
+## Dokumentasi Pendukung (Arsip)
+
+Dokumentasi teknis dari tahap pengembangan sebelumnya:
+
+- [Panduan Kasir Compact](docs/legacy/README-KASIR-COMPACT.md)
+- [Pembaruan Antarmuka](docs/legacy/README-PEMBARUAN-UI.md)
+- [Panduan Sidebar dan GUI](docs/legacy/README-SIDEBAR-GUI.md)
+- [Dokumentasi Tema Ember](docs/legacy/README-TEMA-EMBER.md)
+- [Dokumentasi Smart System](docs/legacy/SMART_SYSTEM.md)
+
+> Dokumen dalam folder ini merupakan arsip pengembangan. Untuk status fitur terbaru, gunakan README utama dan source code pada branch main.
 
 <div align="center">
 
