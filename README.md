@@ -1,10 +1,10 @@
 <div align="center">
 
-<img src="public/images/jimny-coffee-logo.png" alt="Logo JIMNY COFFEE" width="120" />
+<img src="docs/assets/jimny-coffee-brown-hero.gif" alt="JIMNY COFFEE hero gradasi cokelat dengan emblem mengambang" width="100%" />
 
-# ☕ JIMNY COFFEE
+# JIMNY COFFEE
 
-### Smart Point of Sale &amp; Coffee Shop Management
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&amp;weight=600&amp;size=23&amp;duration=3300&amp;pause=1200&amp;color=B78C62&amp;center=true&amp;vCenter=true&amp;width=820&amp;height=48&amp;lines=Smart+Point+of+Sale;Coffee+Shop+Management;Sales+Analytics+%26+Smart+Assistant+V2" alt="JIMNY COFFEE animated tagline" />
 
 Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, dengan antarmuka khusus **Owner**, **Admin**, dan **Kasir**.
 
@@ -13,19 +13,25 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 ![Tailwind CSS](https://img.shields.io/badge/UI-Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
 ![GitHub](https://img.shields.io/badge/Project-Kolaborasi-181717?logo=github&logoColor=white)
 
-[**Fitur**](#-fitur-aplikasi) · [**Preview**](#-preview-antarmuka) · [**Instalasi**](#-menjalankan-project) · [**Tim**](#-tim-pengembang)
+[**Fitur**](#fitur-aplikasi) · [**Preview**](#preview-antarmuka) · [**Instalasi**](#menjalankan-project) · [**Dokumentasi**](#dokumentasi-pendukung-arsip)
 
 </div>
 
 ---
 
-## ✨ Sekilas Project
+## Sekilas Project
+
+<p align="center"><img src="docs/assets/readme-brown/sekilas-project.png" width="100%" alt="01 / Overview - Jimny Coffee brown theme" /></p>
+
+<img src="docs/assets/jimny-coffee-brown-dashboard.png" alt="Ringkasan empat modul sistem JIMNY COFFEE" width="100%" />
 
 **JIMNY COFFEE** adalah project aplikasi Point of Sale (POS) berbasis Laravel untuk membantu pengelolaan pesanan, transaksi, menu, stok, laporan penjualan, dan aktivitas karyawan dalam satu sistem. Tampilan aplikasi menggunakan nuansa warna kopi dan menyediakan halaman sesuai peran pengguna.
 
 > **Status repository:** Fitur utama JIMNY COFFEE dan Smart Assistant V2 sudah terintegrasi ke branch `main`. Analitik penjualan telah tersedia; model prediksi machine learning belum diimplementasikan dan masih direncanakan.
 
-## 🚀 Fitur Aplikasi
+## Fitur Aplikasi
+
+<p align="center"><img src="docs/assets/readme-brown/fitur-aplikasi.png" width="100%" alt="02 / Core features - Jimny Coffee brown theme" /></p>
 
 | Peran | Area yang ditampilkan dalam project |
 | :-- | :-- |
@@ -34,7 +40,9 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 | **Owner** | Dashboard ringkasan bisnis, laporan penjualan, riwayat transaksi, dan rekap kehadiran. |
 | **Smart Insight** | Panel informasi kontekstual yang muncul pada antarmuka sebagai pendamping aktivitas pengguna. |
 
-## 🖼️ Preview Antarmuka
+## Preview Antarmuka
+
+<p align="center"><img src="docs/assets/readme-brown/preview-antarmuka.png" width="100%" alt="03 / Screenshots - Jimny Coffee brown theme" /></p>
 
 ### Halaman Login
 
@@ -69,7 +77,7 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 | <img src="docs/screenshots/07-owner-laporan-penjualan.webp" alt="Laporan penjualan Owner" width="100%" /> | <img src="docs/screenshots/09-owner-riwayat-transaksi.webp" alt="Riwayat transaksi Owner" width="100%" /> |
 
 <details>
-<summary><strong>📷 Lihat galeri tampilan lainnya (9 screenshot)</strong></summary>
+<summary><strong>Lihat galeri tampilan lainnya (9 screenshot)</strong></summary>
 
 <br />
 
@@ -89,7 +97,11 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 
 > Screenshot menunjukkan antarmuka pada saat pengambilan gambar. Angka penjualan, stok, dan transaksi yang terlihat merupakan contoh tampilan, bukan data operasional terkini.
 
-## 🛠️ Teknologi
+## Teknologi
+
+<p align="center"><img src="docs/assets/readme-brown/teknologi.png" width="100%" alt="04 / Technology - Jimny Coffee brown theme" /></p>
+
+<p align="center"><img src="docs/assets/readme-brown/technology-stack.png" width="100%" alt="Technology stack cards" /></p>
 
 - **Backend:** PHP & Laravel
 - **Database:** MySQL
@@ -97,7 +109,11 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 - **Build tools:** Composer, NPM, dan Vite
 - **Kolaborasi:** Git & GitHub (branch dan pull request)
 
-## ⚙️ Menjalankan Project
+## Menjalankan Project
+
+<p align="center"><img src="docs/assets/readme-brown/menjalankan-project.png" width="100%" alt="05 / Setup - Jimny Coffee brown theme" /></p>
+
+<p align="center"><img src="docs/assets/readme-brown/installation-roadmap.png" width="100%" alt="Installation roadmap" /></p>
 
 > Setelah seluruh source code tersedia, ikuti langkah berikut untuk
 > menyiapkan project JIMNY COFFEE pada komputer lokal. Pastikan PHP,
@@ -105,7 +121,7 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 
 ------------------------------------------------------------------------
 
-# 📋 Persyaratan Sistem
+### Persyaratan Sistem
 
 Pastikan perangkat memiliki:
 
@@ -130,21 +146,21 @@ mysql --version
 
 ------------------------------------------------------------------------
 
-# 1. Menyalakan Laragon
+### 1. Menyalakan Laragon
 
 Buka aplikasi **Laragon**.
 
 Pastikan:
 
-✅ MySQL aktif\
-✅ Apache/Nginx dapat diaktifkan jika diperlukan
+MySQL aktif\
+Apache/Nginx dapat diaktifkan jika diperlukan
 
 Laragon digunakan untuk menyediakan environment Laravel dan database
 MySQL lokal.
 
 ------------------------------------------------------------------------
 
-# 2. Masuk ke Folder Project
+### 2. Masuk ke Folder Project
 
 Buka PowerShell atau Terminal.
 
@@ -163,7 +179,7 @@ Pastikan berada pada folder utama project yang berisi:
 
 ------------------------------------------------------------------------
 
-# 3. Install Dependency Project
+### 3. Install Dependency Project
 
 Install dependency backend Laravel:
 
@@ -179,7 +195,7 @@ npm install
 
 ------------------------------------------------------------------------
 
-# 4. Konfigurasi Environment (.env)
+### 4. Konfigurasi Environment (.env)
 
 Jika file `.env` belum tersedia, buat dari `.env.example`.
 
@@ -199,7 +215,7 @@ php artisan key:generate
 
 ------------------------------------------------------------------------
 
-# 5. Konfigurasi Database
+### 5. Konfigurasi Database
 
 Buka file:
 
@@ -224,7 +240,7 @@ Catatan:
 
 ------------------------------------------------------------------------
 
-# 6. Membuat Database Lokal
+### 6. Membuat Database Lokal
 
 Buka salah satu:
 
@@ -245,7 +261,7 @@ migration Laravel.
 
 ------------------------------------------------------------------------
 
-# 7. Membersihkan Cache Laravel
+### 7. Membersihkan Cache Laravel
 
 Setelah mengubah `.env`, jalankan:
 
@@ -255,7 +271,7 @@ php artisan optimize:clear
 
 ------------------------------------------------------------------------
 
-# 8. Verifikasi Database Laravel
+### 8. Verifikasi Database Laravel
 
 Pastikan Laravel membaca database yang benar:
 
@@ -271,7 +287,7 @@ Jika hasil berbeda, periksa kembali file `.env`.
 
 ------------------------------------------------------------------------
 
-# 9. Migration dan Seeder
+### 9. Migration dan Seeder
 
 Buat tabel database dan data awal aplikasi:
 
@@ -287,9 +303,11 @@ Seeder yang dijalankan:
 
 ------------------------------------------------------------------------
 
-# 💳 Konfigurasi Midtrans Sandbox
+### Konfigurasi Midtrans Sandbox
 
-## ⚠️ Penting
+<p align="center"><img src="docs/assets/readme-brown/midtrans-sandbox.png" width="100%" alt="Midtrans Sandbox" /></p>
+
+#### Penting
 
 Fitur pembayaran QRIS **tidak dapat digunakan apabila pemilik project
 belum membuat credential Midtrans sendiri.**
@@ -325,7 +343,9 @@ ke repository publik.
 
 ------------------------------------------------------------------------
 
-# 🔔 Midtrans Webhook Notification
+### Midtrans Webhook Notification
+
+<p align="center"><img src="docs/assets/readme-brown/midtrans-webhook.png" width="100%" alt="Midtrans Webhook" /></p>
 
 Endpoint pembayaran:
 
@@ -352,7 +372,7 @@ sebagai Payment Notification URL pada Midtrans Sandbox.
 
 ------------------------------------------------------------------------
 
-# 10. Build Frontend
+### 10. Build Frontend
 
 Mode development:
 
@@ -368,7 +388,7 @@ npm run build
 
 ------------------------------------------------------------------------
 
-# 11. Menjalankan Aplikasi
+### 11. Menjalankan Aplikasi
 
 Jalankan Laravel:
 
@@ -382,21 +402,25 @@ Buka browser:
 
 ------------------------------------------------------------------------
 
-# 🔐 Akun Login Awal
+### Akun Login Awal
+
+<p align="center"><img src="docs/assets/readme-brown/akun-login.png" width="100%" alt="Initial accounts" /></p>
 
 Berikut adalah akun default yang dapat digunakan untuk pengujian aplikasi:
 
 | Role | Email | Password |
 | :-- | :-- | :-- |
-| 👨‍💼 Admin | admin@coffee.com | password |
-| 🧾 Kasir | kasir@coffee.com | password |
-| ☕ Owner | owner@coffee.com | password |
+| Admin | admin@coffee.com | password |
+| Kasir | kasir@coffee.com | password |
+| Owner | owner@coffee.com | password |
 
-> ⚠️ Disarankan untuk mengganti password default setelah deployment atau saat aplikasi digunakan pada lingkungan production.
+> Penting: Disarankan untuk mengganti password default setelah deployment atau saat aplikasi digunakan pada lingkungan production.
 
 ------------------------------------------------------------------------
 
-# 🧪 Pengujian QRIS
+### Pengujian QRIS
+
+<p align="center"><img src="docs/assets/readme-brown/pengujian-qris.png" width="100%" alt="QRIS testing" /></p>
 
 Alur pengujian:
 
@@ -413,7 +437,9 @@ Simulator QRIS:
 
 ------------------------------------------------------------------------
 
-# 🛠️ Troubleshooting
+### Troubleshooting
+
+<p align="center"><img src="docs/assets/readme-brown/troubleshooting.png" width="100%" alt="Troubleshooting" /></p>
 
 Jika terjadi error, jangan langsung mengubah source code.
 
@@ -429,7 +455,9 @@ php artisan about
 
 ------------------------------------------------------------------------
 
-# 🔒 Catatan Keamanan
+## Catatan Keamanan
+
+<p align="center"><img src="docs/assets/readme-brown/catatan-keamanan.png" width="100%" alt="06 / Security - Jimny Coffee brown theme" /></p>
 
 Jangan membagikan file:
 
@@ -451,6 +479,8 @@ sebagai template konfigurasi.
 
 ## Dokumentasi Pendukung (Arsip)
 
+<p align="center"><img src="docs/assets/readme-brown/dokumentasi-pendukung-arsip.png" width="100%" alt="07 / Documentation - Jimny Coffee brown theme" /></p>
+
 Dokumentasi teknis dari tahap pengembangan sebelumnya:
 
 - [Panduan Kasir Compact](docs/legacy/README-KASIR-COMPACT.md)
@@ -460,6 +490,8 @@ Dokumentasi teknis dari tahap pengembangan sebelumnya:
 - [Dokumentasi Smart System](docs/legacy/SMART_SYSTEM.md)
 
 > Dokumen dalam folder ini merupakan arsip pengembangan. Untuk status fitur terbaru, gunakan README utama dan source code pada branch main.
+
+<p align="center"><img src="docs/assets/readme-brown/footer-brown.png" width="100%" alt="JIMNY COFFEE footer" /></p>
 
 <div align="center">
 
