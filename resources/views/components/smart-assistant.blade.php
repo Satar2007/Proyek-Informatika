@@ -47,12 +47,37 @@
 
         <div class="smart-v2-chat">
 
-        <div class="smart-insights" x-show="insights.length && !expanded">
-            <template x-for="(item, index) in insights" :key="index">
-                <div class="smart-insight" x-text="item"></div>
-            </template>
+        <div class="smart-insights"
+             x-show="insights.length && !expanded"
+             aria-label="Ringkasan Smart Insight">
+
+            <div class="smart-v2-insights-list"
+                 :class="{'is-expanded': showAllInsights}">
+                <template x-for="(item, index) in insights" :key="index">
+                    <div class="smart-insight"
+                         x-show="showAllInsights || index < 2"
+                         x-text="item"></div>
+                </template>
+            </div>
+
+            <button type="button"
+                    class="smart-v2-insights-toggle"
+                    x-show="insights.length > 2"
+                    :aria-expanded="showAllInsights.toString()"
+                    @click="showAllInsights = !showAllInsights"
+                    x-text="showAllInsights ? 'Ringkas insight' : 'Lihat semua (' + insights.length + ')'">
+            </button>
         </div>
 
+        <div class="smart-v2-chat-head" x-show="expanded">
+            <div class="smart-v2-chat-head-title">
+                <span class="smart-v2-chat-dot"></span>
+                Percakapan Smart Assistant
+            </div>
+            <div class="smart-v2-chat-head-desc">
+                Tanyakan penjualan, stok, menu, atau prediksi.
+            </div>
+        </div>
         <div class="smart-messages" x-ref="messages">
             <div class="smart-message smart-bot">
                 <div class="smart-message-label">Smart Assistant</div>
@@ -89,12 +114,39 @@
                     <h2>Analitik & Rekomendasi Bisnis</h2>
                     <p>Grafik dan keputusan berdasarkan data POS.</p>
                 </div>
-                <button type="button"
-                        class="smart-v2-refresh"
-                        :disabled="analyticsLoading"
-                        @click="loadAnalytics(true)">
-                    Perbarui
-                </button>
+                <div class="smart-v2-actions">
+                    <label class="smart-v2-filter">
+                        <span>Periode</span>
+                        <select x-model="analyticsDays"
+                                :disabled="analyticsLoading"
+                                @change="loadAnalytics(true)">
+                            <option value="7">7 hari</option>
+                            <option value="14">14 hari</option>
+                            <option value="30">30 hari</option>
+                        </select>
+                    </label>
+
+                    <label class="smart-v2-filter">
+                        <span>Menu</span>
+                        <select x-model="analyticsMenu"
+                                :disabled="analyticsLoading"
+                                @change="loadAnalytics(true)">
+                            <option value="">Semua menu</option>
+                            <template x-for="menu in analyticsMenus"
+                                      :key="menu.id">
+                                <option :value="String(menu.id)"
+                                        x-text="menu.name"></option>
+                            </template>
+                        </select>
+                    </label>
+
+                    <button type="button"
+                            class="smart-v2-refresh"
+                            :disabled="analyticsLoading"
+                            @click="loadAnalytics(true)">
+                        Perbarui
+                    </button>
+                </div>
             </div>
 
             <div x-show="analyticsLoading" class="smart-v2-notice">
@@ -174,6 +226,11 @@
                         <article class="smart-v2-chart-card">
                             <h3>Tren Penjualan Menu</h3>
                             <p>Jumlah porsi terjual berdasarkan tanggal</p>
+                            <div class="smart-v2-chart-meta"
+                                 x-show="(analytics.sales_trend || []).length >= 2">
+                                <span>Nilai tertinggi</span>
+                                <strong x-text="trendPeak(analytics.sales_trend) + ' porsi/hari'"></strong>
+                            </div>
 
                             <template x-if="(analytics.sales_trend || []).length >= 2">
                                 <svg class="smart-v2-line-chart"
@@ -193,8 +250,28 @@
                                         stroke-width="4"
                                         stroke-linecap="round"
                                         stroke-linejoin="round"/>
+                                    <template
+                                        x-for="point in trendMarkers(analytics.sales_trend, 'qty')"
+                                        :key="point.index">
+                                        <circle
+                                            :cx="point.x"
+                                            :cy="point.y"
+                                            r="5"
+                                            fill="#fff"
+                                            stroke="#A66A43"
+                                            stroke-width="3">
+                                            <title x-text="point.date + ': ' + point.qty + ' porsi'"></title>
+                                        </circle>
+                                    </template>
                                 </svg>
                             </template>
+
+                            <div class="smart-v2-axis"
+                                 x-show="(analytics.sales_trend || []).length >= 2">
+                                <span x-text="shortDate(analytics.sales_trend[0]?.date)"></span>
+                                <span>Tanggal transaksi</span>
+                                <span x-text="shortDate(analytics.sales_trend[analytics.sales_trend.length - 1]?.date)"></span>
+                            </div>
 
                             <div class="smart-v2-empty"
                                  x-show="(analytics.sales_trend || []).length < 2">
@@ -229,8 +306,14 @@
                                             <span x-text="item.name"></span>
                                             <strong x-text="'Stok: ' + item.stock"></strong>
                                         </div>
+                                        <div class="smart-v2-stock-note"
+                                             x-text="'Batas minimum: ' + item.minimum_stock +
+                                             ' | Kekurangan menuju batas: ' +
+                                             Math.max(0, Number(item.minimum_stock || 0) - Number(item.stock || 0))">
+                                        </div>
                                         <div class="smart-v2-track">
                                             <div class="smart-v2-fill"
+                                                 :class="{'smart-v2-fill-warning': Number(item.stock) <= Number(item.minimum_stock)}"
                                                  :style="'width:' + stockBarWidth(item) + '%'"></div>
                                         </div>
                                     </div>
@@ -245,11 +328,16 @@
                         <article class="smart-v2-chart-card">
                             <h3>Pola Jam Ramai</h3>
                             <p>Distribusi transaksi sukses per jam</p>
+                            <div class="smart-v2-chart-meta">
+                                <span x-text="peakSummary()"></span>
+                            </div>
                             <div class="smart-v2-hours">
                                 <template x-for="(item, index) in
                                     (analytics.peak_hours || [])"
                                     :key="item.hour ?? index">
-                                    <div class="smart-v2-hour">
+                                    <div class="smart-v2-hour"
+                                         :title="String(item.hour).padStart(2, '0') +
+                                         ':00 - ' + item.transactions + ' transaksi'">
                                         <div class="smart-v2-hour-track">
                                             <div :style="'height:' + hourBarHeight(item) + '%'"></div>
                                         </div>
@@ -538,6 +626,204 @@
             grid-row: 3;
         }
     }
+    /* JSA V2 - Analytics Filters */
+    .smart-v2-heading{
+        flex-wrap:wrap;
+    }
+    .smart-v2-actions{
+        display:flex;
+        align-items:end;
+        flex-wrap:wrap;
+        gap:9px;
+    }
+    .smart-v2-filter{
+        display:flex;
+        flex-direction:column;
+        gap:5px;
+        min-width:110px;
+        color:#795a45;
+        font-size:11px;
+        font-weight:800;
+    }
+    .smart-v2-filter select{
+        width:100%;
+        max-width:210px;
+        min-height:37px;
+        padding:8px 30px 8px 10px;
+        background:#fff;
+        border:1px solid #decbbb;
+        border-radius:10px;
+        color:#4B2E1F;
+        font-size:12px;
+        outline-offset:2px;
+        cursor:pointer;
+    }
+    .smart-v2-filter select:disabled{
+        opacity:.55;
+        cursor:wait;
+    }
+    @media(max-width:760px){
+        .smart-v2-actions{
+            width:100%;
+        }
+        .smart-v2-filter{
+            flex:1;
+        }
+        .smart-v2-filter select{
+            max-width:none;
+        }
+    }
+    /* JSA V2 - Enhanced Data Visualizations */
+
+    .smart-v2-chart-meta{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+        padding:9px 11px;
+        margin-bottom:12px;
+        background:#F8F1E9;
+        border:1px solid #EBDDD0;
+        border-radius:10px;
+        color:#7C5C46;
+        font-size:11px;
+    }
+
+    .smart-v2-chart-meta strong{
+        color:#72472D;
+        font-size:12px;
+        font-weight:900;
+    }
+
+    .smart-v2-axis{
+        display:flex;
+        justify-content:space-between;
+        gap:8px;
+        margin-top:8px;
+        color:#927462;
+        font-size:10px;
+        font-weight:700;
+    }
+
+    .smart-v2-stock-note{
+        margin-bottom:7px;
+        color:#927462;
+        font-size:10px;
+        line-height:1.45;
+    }
+
+    .smart-v2-fill-warning{
+        background:linear-gradient(90deg,#E5A147,#B65F38);
+    }
+
+    .smart-v2-hour{
+        cursor:help;
+    }
+
+    .smart-v2-hour:hover .smart-v2-hour-track div{
+        background:#70432A;
+    }
+
+    .smart-v2-line-chart circle{
+        transition:r .15s ease;
+    }
+
+    .smart-v2-line-chart circle:hover{
+        r:7;
+        cursor:crosshair;
+    }
+
+    .smart-v2-preview .smart-v2-chart-card{
+        background:linear-gradient(
+            150deg,#FFFFFF 20%,#FFFBF6 100%
+        );
+    }
+
+    .smart-v2-preview .smart-v2-empty{
+        border-color:#DCC8B7;
+        background:#FDF7F0;
+    }
+    /* JSA V2 - Insight & Conversation Polish */
+
+    .smart-insights{
+        display:flex;
+        flex-direction:column;
+        gap:7px;
+        padding:10px 12px 8px;
+        max-height:none;
+        overflow:visible;
+        flex-shrink:0;
+    }
+
+    .smart-v2-insights-list{
+        display:grid;
+        gap:7px;
+    }
+
+    .smart-v2-insights-list.is-expanded{
+        max-height:220px;
+        overflow-y:auto;
+        overscroll-behavior:contain;
+        padding-right:3px;
+    }
+
+    .smart-v2-insights-toggle{
+        align-self:flex-start;
+        background:#FFF8F1;
+        border:1px solid #E8D3BE;
+        border-radius:9px;
+        color:#795038;
+        padding:6px 10px;
+        font-size:10px;
+        font-weight:800;
+        cursor:pointer;
+    }
+
+    .smart-v2-insights-toggle:hover{
+        background:#F4E6D8;
+    }
+
+    .smart-v2-chat-head{
+        flex-shrink:0;
+        padding:12px 15px;
+        background:#FFFCF8;
+        border-bottom:1px solid #EDE1D5;
+    }
+
+    .smart-v2-chat-head-title{
+        display:flex;
+        align-items:center;
+        gap:8px;
+        color:#4B2E1F;
+        font-size:12px;
+        font-weight:900;
+    }
+
+    .smart-v2-chat-dot{
+        width:8px;
+        height:8px;
+        border-radius:50%;
+        background:#538B62;
+        flex:none;
+    }
+
+    .smart-v2-chat-head-desc{
+        margin-top:4px;
+        color:#987966;
+        font-size:10px;
+        line-height:1.4;
+    }
+
+    @media(max-width:640px){
+        .smart-v2-insights-list.is-expanded{
+            max-height:160px;
+        }
+
+        .smart-v2-chat-head{
+            padding:9px 12px;
+        }
+    }
 </style>
 
 <script>
@@ -545,9 +831,9 @@ function smartAssistant(){
     return {
         allowProactive: {{ request()->routeIs('owner.dashboard') ? 'false' : 'true' }},
         open:false, loading:false, input:'', messages:[], insights:[], proactiveVisible:false, currentInsight:'', proactiveTimer:null, proactiveDismissed:false,
-        expanded:false,
+        expanded:false, showAllInsights:false,
         canAnalytics: {{ in_array(auth()->user()->role, ['owner', 'admin']) ? 'true' : 'false' }},
-        analytics:null, analyticsLoading:false, analyticsError:'',
+        analytics:null, analyticsLoading:false, analyticsError:'', analyticsDays:'30', analyticsMenu:'', analyticsMenus:[],
         dragging:false, moved:false, dragStartX:0, dragStartY:0, startLeft:0, startTop:0,
         left:null, top:null, suppressClick:false, panelStyle:{}, bubbleStyle:{}, rootStyle:{},
         initialized:false, hideTimer:null, refreshTimer:null, firstTimer:null, layoutObserver:null, viewportHandler:null, moveHandler:null, endHandler:null,
@@ -762,7 +1048,14 @@ function smartAssistant(){
             this.analyticsError='';
 
             try{
-                const response=await fetch('/smart-assistant/analytics',{
+                const params=new URLSearchParams({
+                    days:String(this.analyticsDays)
+                });
+                if(this.analyticsMenu!==''){
+                    params.set('menu_id',this.analyticsMenu);
+                }
+                const response=await fetch(
+                    '/smart-assistant/analytics?'+params.toString(),{
                     headers:{
                         'Accept':'application/json',
                         'X-Requested-With':'XMLHttpRequest'
@@ -772,7 +1065,7 @@ function smartAssistant(){
                 if(!response.ok){
                     if(response.status===404){
                         throw new Error(
-                            'Tampilan JSA V2 siap. API analitik sedang dikerjakan oleh Dika.'
+                            'Data analitik belum tersedia. Silakan coba Perbarui setelah layanan terhubung.'
                         );
                     }
                     if(response.status===403){
@@ -787,6 +1080,9 @@ function smartAssistant(){
                     throw new Error('Format respons API analitik belum sesuai.');
                 }
 
+                this.analyticsMenus=Array.isArray(data.menu_options)
+                    ? data.menu_options
+                    : [];
                 this.analytics=data;
             }catch(error){
                 this.analyticsError=error.message ||
@@ -795,7 +1091,60 @@ function smartAssistant(){
                 this.analyticsLoading=false;
             }
         },
-        chartPoints(series,key){
+        trendMarkers(series,key){
+            if(!Array.isArray(series) || !series.length)return [];
+
+            const values=series.map(item =>
+                Math.max(0,Number(item[key])||0)
+            );
+            const maximum=Math.max(1,...values);
+
+            return series.map((item,index)=>{
+                const x=series.length===1
+                    ? 260
+                    : 24+(index*476/(series.length-1));
+
+                const y=165-(values[index]/maximum)*130;
+
+                return {
+                    index,
+                    x:x.toFixed(2),
+                    y:y.toFixed(2),
+                    qty:values[index],
+                    date:String(item.date||'')
+                };
+            });
+        },
+        trendPeak(series){
+            if(!Array.isArray(series) || !series.length)return 0;
+            return Math.max(
+                0,
+                ...series.map(item=>Math.max(0,Number(item.qty)||0))
+            );
+        },
+        shortDate(value){
+            if(!value)return '—';
+            const parts=String(value).split('-');
+            if(parts.length!==3)return String(value);
+            return parts[2]+'/'+parts[1];
+        },
+        peakSummary(){
+            const hours=this.analytics?.peak_hours||[];
+            const valid=hours.filter(item=>
+                Number(item.transactions)>0
+            );
+
+            if(!valid.length)return 'Belum ada transaksi pada periode ini';
+
+            const peak=valid.reduce((best,item)=>
+                Number(item.transactions)>Number(best.transactions)
+                    ? item : best
+            );
+
+            return 'Transaksi terbanyak tercatat pukul '+
+                String(peak.hour).padStart(2,'0')+
+                ':00 ('+peak.transactions+' transaksi)';
+        },        chartPoints(series,key){
             if(!Array.isArray(series) || !series.length)return '';
 
             const values=series.map(item=>
