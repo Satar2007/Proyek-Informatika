@@ -201,17 +201,21 @@
             <template x-if="analytics">
                 <div class="smart-v2-content">
 
+                    <div class="smart-v2-kpi-scope">
+                        Ringkasan seluruh riwayat transaksi valid.
+                        Filter periode dan menu berlaku untuk grafik penjualan.
+                    </div>
                     <div class="smart-v2-kpis">
                         <div class="smart-v2-kpi">
-                            <span>Transaksi valid</span>
+                            <span>Total transaksi valid</span>
                             <strong x-text="analytics.summary?.transactions ?? '—'"></strong>
                         </div>
                         <div class="smart-v2-kpi">
-                            <span>Item terjual</span>
+                            <span>Total porsi terjual</span>
                             <strong x-text="analytics.summary?.sold_qty ?? '—'"></strong>
                         </div>
                         <div class="smart-v2-kpi">
-                            <span>Hari aktif</span>
+                            <span>Hari dengan transaksi</span>
                             <strong x-text="analytics.summary?.active_days ?? '—'"></strong>
                         </div>
                         <div class="smart-v2-kpi">
@@ -232,6 +236,12 @@
                                 <strong x-text="trendPeak(analytics.sales_trend) + ' porsi/hari'"></strong>
                             </div>
 
+                            <div class="smart-v2-chart-scope"
+                                 x-show="(analytics.sales_trend || []).length">
+                                <span x-text="periodScope()"></span>
+                                <strong x-text="totalGraphQty(analytics.sales_trend) + ' porsi'"></strong>
+                            </div>
+
                             <template x-if="(analytics.sales_trend || []).length >= 2">
                                 <svg class="smart-v2-line-chart"
                                      viewBox="0 0 520 190"
@@ -243,6 +253,22 @@
                                           stroke="#E8DDD3" stroke-dasharray="4 5"/>
                                     <line x1="24" y1="35" x2="500" y2="35"
                                           stroke="#E8DDD3" stroke-dasharray="4 5"/>
+                                    <text x="18" y="168"
+                                          text-anchor="end"
+                                          class="smart-v2-svg-label">0</text>
+
+                                    <text x="18" y="103"
+                                          text-anchor="end"
+                                          class="smart-v2-svg-label"
+                                          x-text="Math.round(trendPeak(analytics.sales_trend)/2)">
+                                    </text>
+
+                                    <text x="18" y="38"
+                                          text-anchor="end"
+                                          class="smart-v2-svg-label"
+                                          x-text="trendPeak(analytics.sales_trend)">
+                                    </text>
+
                                     <polyline
                                         :points="chartPoints(analytics.sales_trend, 'qty')"
                                         fill="none"
@@ -331,13 +357,29 @@
                             <div class="smart-v2-chart-meta">
                                 <span x-text="peakSummary()"></span>
                             </div>
+                            <div class="smart-v2-hours-toolbar">
+                                <span x-text="showAllHours ?
+                                    'Distribusi seluruh 24 jam' :
+                                    'Jam yang memiliki transaksi'"></span>
+
+                                <button type="button"
+                                        x-show="(analytics.peak_hours || []).length"
+                                        @click="showAllHours = !showAllHours"
+                                        x-text="showAllHours ?
+                                            'Jam aktif saja' :
+                                            'Lihat 24 jam'">
+                                </button>
+                            </div>
+
                             <div class="smart-v2-hours">
                                 <template x-for="(item, index) in
-                                    (analytics.peak_hours || [])"
+                                    visiblePeakHours()"
                                     :key="item.hour ?? index">
                                     <div class="smart-v2-hour"
                                          :title="String(item.hour).padStart(2, '0') +
                                          ':00 - ' + item.transactions + ' transaksi'">
+                                        <span class="smart-v2-hour-value"
+                                              x-text="item.transactions"></span>
                                         <div class="smart-v2-hour-track">
                                             <div :style="'height:' + hourBarHeight(item) + '%'"></div>
                                         </div>
@@ -346,7 +388,7 @@
                                 </template>
                             </div>
                             <div class="smart-v2-empty"
-                                 x-show="!(analytics.peak_hours || []).length">
+                                 x-show="!visiblePeakHours().length">
                                 Belum ada data jam transaksi.
                             </div>
                         </article>
@@ -824,6 +866,84 @@
             padding:9px 12px;
         }
     }
+    /* JSA V2 - Final Analytics Readability */
+
+    .smart-v2-kpi-scope{
+        margin-bottom:12px;
+        color:#8D705C;
+        font-size:11px;
+        line-height:1.6;
+    }
+
+    .smart-v2-chart-scope{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:8px;
+        flex-wrap:wrap;
+        margin:-4px 0 12px;
+        color:#846750;
+        font-size:10px;
+    }
+
+    .smart-v2-chart-scope strong{
+        color:#653E28;
+        font-size:12px;
+        font-weight:900;
+    }
+
+    .smart-v2-svg-label{
+        fill:#886D5B;
+        font-size:13px;
+        font-weight:700;
+    }
+
+    .smart-v2-hours-toolbar{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:12px;
+        color:#937360;
+        font-size:10px;
+    }
+
+    .smart-v2-hours-toolbar button{
+        border:1px solid #DFCBBB;
+        background:#FFF9F3;
+        border-radius:9px;
+        padding:7px 10px;
+        color:#69442C;
+        font-size:10px;
+        font-weight:800;
+        cursor:pointer;
+    }
+
+    .smart-v2-hours-toolbar button:hover{
+        background:#F2E4D7;
+    }
+
+    .smart-v2-hour-value{
+        font-size:10px;
+        color:#79533A;
+        font-weight:900;
+        line-height:1;
+    }
+
+    .smart-v2-hour{
+        min-width:30px;
+    }
+
+    @media(max-width:760px){
+        .smart-v2-hours-toolbar{
+            align-items:flex-start;
+        }
+
+        .smart-v2-chart-scope{
+            font-size:10px;
+        }
+    }
 </style>
 
 <script>
@@ -831,7 +951,7 @@ function smartAssistant(){
     return {
         allowProactive: {{ request()->routeIs('owner.dashboard') ? 'false' : 'true' }},
         open:false, loading:false, input:'', messages:[], insights:[], proactiveVisible:false, currentInsight:'', proactiveTimer:null, proactiveDismissed:false,
-        expanded:false, showAllInsights:false,
+        expanded:false, showAllInsights:false, showAllHours:false,
         canAnalytics: {{ in_array(auth()->user()->role, ['owner', 'admin']) ? 'true' : 'false' }},
         analytics:null, analyticsLoading:false, analyticsError:'', analyticsDays:'30', analyticsMenu:'', analyticsMenus:[],
         dragging:false, moved:false, dragStartX:0, dragStartY:0, startLeft:0, startTop:0,
@@ -1091,7 +1211,42 @@ function smartAssistant(){
                 this.analyticsLoading=false;
             }
         },
-        trendMarkers(series,key){
+        totalGraphQty(series){
+            if(!Array.isArray(series))return 0;
+
+            return series.reduce((sum,item)=>
+                sum+Math.max(0,Number(item.qty)||0),0
+            );
+        },
+        periodScope(){
+            if(!this.analytics)return '';
+
+            const days=Number(this.analytics.period_days)||
+                Number(this.analyticsDays)||30;
+
+            const id=this.analytics.selected_menu_id;
+
+            let menu='Semua menu';
+
+            if(id!==null && id!==undefined){
+                const found=this.analyticsMenus.find(
+                    item=>String(item.id)===String(id)
+                );
+
+                menu=found?.name||'Menu terpilih';
+            }
+
+            return 'Total '+days+' hari - '+menu;
+        },
+        visiblePeakHours(){
+            const hours=this.analytics?.peak_hours||[];
+
+            if(this.showAllHours)return hours;
+
+            return hours.filter(item=>
+                Number(item.transactions)>0
+            );
+        },        trendMarkers(series,key){
             if(!Array.isArray(series) || !series.length)return [];
 
             const values=series.map(item =>
