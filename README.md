@@ -1,8 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/jimny-emblem-floating.gif" alt="Emblem JIMNY COFFEE bergaya 3D yang mengambang" width="315" />
-
-# JIMNY COFFEE
+<img src="docs/assets/jimny-coffee-brown-hero.gif" alt="JIMNY COFFEE hero gradasi cokelat dengan emblem mengambang" width="100%" />
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&amp;weight=600&amp;size=23&amp;duration=3300&amp;pause=1200&amp;color=B78C62&amp;center=true&amp;vCenter=true&amp;width=820&amp;height=48&amp;lines=Smart+Point+of+Sale;Coffee+Shop+Management;Sales+Analytics+%26+Smart+Assistant+V2" alt="JIMNY COFFEE animated tagline" />
 
@@ -20,6 +18,8 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 ---
 
 ## Sekilas Project
+
+<img src="docs/assets/jimny-coffee-brown-dashboard.png" alt="Ringkasan empat modul sistem JIMNY COFFEE" width="100%" />
 
 **JIMNY COFFEE** adalah project aplikasi Point of Sale (POS) berbasis Laravel untuk membantu pengelolaan pesanan, transaksi, menu, stok, laporan penjualan, dan aktivitas karyawan dalam satu sistem. Tampilan aplikasi menggunakan nuansa warna kopi dan menyediakan halaman sesuai peran pengguna.
 
