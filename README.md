@@ -2,9 +2,9 @@
 
 <img src="public/images/jimny-coffee-logo.png" alt="Logo JIMNY COFFEE" width="120" />
 
-# ☕ JIMNY COFFEE
+# JIMNY COFFEE
 
-### Smart Point of Sale &amp; Coffee Shop Management
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&amp;weight=600&amp;size=23&amp;duration=3300&amp;pause=1200&amp;color=B78C62&amp;center=true&amp;vCenter=true&amp;width=820&amp;height=48&amp;lines=Smart+Point+of+Sale;Coffee+Shop+Management;Sales+Analytics+%26+Smart+Assistant+V2" alt="JIMNY COFFEE animated tagline" />
 
 Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, dengan antarmuka khusus **Owner**, **Admin**, dan **Kasir**.
 
@@ -13,19 +13,19 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 ![Tailwind CSS](https://img.shields.io/badge/UI-Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
 ![GitHub](https://img.shields.io/badge/Project-Kolaborasi-181717?logo=github&logoColor=white)
 
-[**Fitur**](#-fitur-aplikasi) · [**Preview**](#-preview-antarmuka) · [**Instalasi**](#-menjalankan-project) · [**Tim**](#-tim-pengembang)
+[**Fitur**](#fitur-aplikasi) · [**Preview**](#preview-antarmuka) · [**Instalasi**](#menjalankan-project) · [**Dokumentasi**](#dokumentasi-pendukung-arsip)
 
 </div>
 
 ---
 
-## ✨ Sekilas Project
+## Sekilas Project
 
 **JIMNY COFFEE** adalah project aplikasi Point of Sale (POS) berbasis Laravel untuk membantu pengelolaan pesanan, transaksi, menu, stok, laporan penjualan, dan aktivitas karyawan dalam satu sistem. Tampilan aplikasi menggunakan nuansa warna kopi dan menyediakan halaman sesuai peran pengguna.
 
 > **Status repository:** Fitur utama JIMNY COFFEE dan Smart Assistant V2 sudah terintegrasi ke branch `main`. Analitik penjualan telah tersedia; model prediksi machine learning belum diimplementasikan dan masih direncanakan.
 
-## 🚀 Fitur Aplikasi
+## Fitur Aplikasi
 
 | Peran | Area yang ditampilkan dalam project |
 | :-- | :-- |
@@ -34,7 +34,7 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 | **Owner** | Dashboard ringkasan bisnis, laporan penjualan, riwayat transaksi, dan rekap kehadiran. |
 | **Smart Insight** | Panel informasi kontekstual yang muncul pada antarmuka sebagai pendamping aktivitas pengguna. |
 
-## 🖼️ Preview Antarmuka
+## Preview Antarmuka
 
 ### Halaman Login
 
@@ -89,7 +89,7 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 
 > Screenshot menunjukkan antarmuka pada saat pengambilan gambar. Angka penjualan, stok, dan transaksi yang terlihat merupakan contoh tampilan, bukan data operasional terkini.
 
-## 🛠️ Teknologi
+## Teknologi
 
 - **Backend:** PHP & Laravel
 - **Database:** MySQL
@@ -97,7 +97,7 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 - **Build tools:** Composer, NPM, dan Vite
 - **Kolaborasi:** Git & GitHub (branch dan pull request)
 
-## ⚙️ Menjalankan Project
+## Menjalankan Project
 
 > Setelah seluruh source code tersedia, ikuti langkah berikut untuk
 > menyiapkan project JIMNY COFFEE pada komputer lokal. Pastikan PHP,
@@ -105,7 +105,7 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 
 ------------------------------------------------------------------------
 
-# 📋 Persyaratan Sistem
+### Persyaratan Sistem
 
 Pastikan perangkat memiliki:
 
@@ -130,7 +130,7 @@ mysql --version
 
 ------------------------------------------------------------------------
 
-# 1. Menyalakan Laragon
+### 1. Menyalakan Laragon
 
 Buka aplikasi **Laragon**.
 
@@ -144,7 +144,7 @@ MySQL lokal.
 
 ------------------------------------------------------------------------
 
-# 2. Masuk ke Folder Project
+### 2. Masuk ke Folder Project
 
 Buka PowerShell atau Terminal.
 
@@ -163,7 +163,7 @@ Pastikan berada pada folder utama project yang berisi:
 
 ------------------------------------------------------------------------
 
-# 3. Install Dependency Project
+### 3. Install Dependency Project
 
 Install dependency backend Laravel:
 
@@ -179,7 +179,7 @@ npm install
 
 ------------------------------------------------------------------------
 
-# 4. Konfigurasi Environment (.env)
+### 4. Konfigurasi Environment (.env)
 
 Jika file `.env` belum tersedia, buat dari `.env.example`.
 
@@ -199,7 +199,7 @@ php artisan key:generate
 
 ------------------------------------------------------------------------
 
-# 5. Konfigurasi Database
+### 5. Konfigurasi Database
 
 Buka file:
 
@@ -224,7 +224,7 @@ Catatan:
 
 ------------------------------------------------------------------------
 
-# 6. Membuat Database Lokal
+### 6. Membuat Database Lokal
 
 Buka salah satu:
 
@@ -245,7 +245,7 @@ migration Laravel.
 
 ------------------------------------------------------------------------
 
-# 7. Membersihkan Cache Laravel
+### 7. Membersihkan Cache Laravel
 
 Setelah mengubah `.env`, jalankan:
 
@@ -255,7 +255,7 @@ php artisan optimize:clear
 
 ------------------------------------------------------------------------
 
-# 8. Verifikasi Database Laravel
+### 8. Verifikasi Database Laravel
 
 Pastikan Laravel membaca database yang benar:
 
@@ -271,7 +271,7 @@ Jika hasil berbeda, periksa kembali file `.env`.
 
 ------------------------------------------------------------------------
 
-# 9. Migration dan Seeder
+### 9. Migration dan Seeder
 
 Buat tabel database dan data awal aplikasi:
 
@@ -287,9 +287,9 @@ Seeder yang dijalankan:
 
 ------------------------------------------------------------------------
 
-# 💳 Konfigurasi Midtrans Sandbox
+### Konfigurasi Midtrans Sandbox
 
-## ⚠️ Penting
+#### Penting
 
 Fitur pembayaran QRIS **tidak dapat digunakan apabila pemilik project
 belum membuat credential Midtrans sendiri.**
@@ -325,7 +325,7 @@ ke repository publik.
 
 ------------------------------------------------------------------------
 
-# 🔔 Midtrans Webhook Notification
+### Midtrans Webhook Notification
 
 Endpoint pembayaran:
 
@@ -352,7 +352,7 @@ sebagai Payment Notification URL pada Midtrans Sandbox.
 
 ------------------------------------------------------------------------
 
-# 10. Build Frontend
+### 10. Build Frontend
 
 Mode development:
 
@@ -368,7 +368,7 @@ npm run build
 
 ------------------------------------------------------------------------
 
-# 11. Menjalankan Aplikasi
+### 11. Menjalankan Aplikasi
 
 Jalankan Laravel:
 
@@ -382,7 +382,7 @@ Buka browser:
 
 ------------------------------------------------------------------------
 
-# 🔐 Akun Login Awal
+### Akun Login Awal
 
 Berikut adalah akun default yang dapat digunakan untuk pengujian aplikasi:
 
@@ -396,7 +396,7 @@ Berikut adalah akun default yang dapat digunakan untuk pengujian aplikasi:
 
 ------------------------------------------------------------------------
 
-# 🧪 Pengujian QRIS
+### Pengujian QRIS
 
 Alur pengujian:
 
@@ -413,7 +413,7 @@ Simulator QRIS:
 
 ------------------------------------------------------------------------
 
-# 🛠️ Troubleshooting
+### Troubleshooting
 
 Jika terjadi error, jangan langsung mengubah source code.
 
@@ -429,7 +429,7 @@ php artisan about
 
 ------------------------------------------------------------------------
 
-# 🔒 Catatan Keamanan
+## Catatan Keamanan
 
 Jangan membagikan file:
 
