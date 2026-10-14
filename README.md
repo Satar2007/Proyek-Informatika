@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/images/jimny-coffee-logo.png" alt="Logo JIMNY COFFEE" width="120" />
+<img src="docs/assets/jimny-emblem-floating.gif" alt="Emblem JIMNY COFFEE bergaya 3D yang mengambang" width="315" />
 
 # JIMNY COFFEE
 
