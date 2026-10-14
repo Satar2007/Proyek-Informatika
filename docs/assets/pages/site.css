@@ -398,3 +398,208 @@ body{
         padding:8px 12px;
     }
 }
+
+/* JIMNY PAGES V2 POLISH */
+
+/* Futuristic coffee-themed background */
+body {
+    background:
+        radial-gradient(
+            ellipse at 82% 12%,
+            rgba(188,67,13,.38),
+            transparent 38%
+        ),
+        radial-gradient(
+            ellipse at 15% 65%,
+            rgba(115,48,12,.28),
+            transparent 42%
+        ),
+        linear-gradient(
+            125deg,
+            #241705 0%,
+            #311808 42%,
+            #582307 74%,
+            #BC430D 100%
+        );
+}
+
+/* Hero */
+.hero {
+    position: relative;
+    gap: 36px;
+}
+
+.hero-copy {
+    position: relative;
+    z-index: 2;
+}
+
+.hero h1 {
+    background: linear-gradient(
+        110deg,
+        #FFF4E6,
+        #FFD19E 55%,
+        #E58A45
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 12px 48px rgba(0,0,0,.12);
+}
+
+.hero-visual {
+    min-height: 400px;
+}
+
+.hero-image {
+    width: min(100%, 620px);
+    filter:
+        drop-shadow(0 25px 45px rgba(0,0,0,.55))
+        drop-shadow(0 0 35px rgba(188,67,13,.32));
+    animation: jimnyFloatV2 5s ease-in-out infinite;
+}
+
+.hero-orb {
+    width: min(90%, 470px);
+    height: auto;
+    aspect-ratio: 1;
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,180,100,.26),
+            rgba(188,67,13,.11) 42%,
+            transparent 72%
+        );
+}
+
+/* Cards */
+.panel {
+    transition:
+        transform .3s ease,
+        border-color .3s ease,
+        box-shadow .3s ease;
+    border-color: rgba(237,150,77,.23);
+}
+
+.panel:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255,174,97,.58);
+    box-shadow:
+        0 24px 55px rgba(0,0,0,.35),
+        0 0 28px rgba(188,67,13,.12);
+}
+
+/* Navigation */
+.nav a {
+    transition:
+        background .25s ease,
+        border-color .25s ease,
+        transform .25s ease;
+}
+
+.nav a:hover,
+.nav a.active {
+    background: rgba(188,67,13,.25);
+    border-color: rgba(255,180,105,.55);
+}
+
+.nav a:hover {
+    transform: translateY(-2px);
+}
+
+/* Smooth section positioning */
+.section {
+    scroll-margin-top: 110px;
+}
+
+/* Image presentation */
+.panel img {
+    transition: filter .3s ease;
+}
+
+.panel:hover img {
+    filter: brightness(1.08);
+}
+
+/* Motion */
+@keyframes jimnyFloatV2 {
+    0%, 100% {
+        transform: translateY(0) rotate(-1deg);
+    }
+    50% {
+        transform: translateY(-15px) rotate(1deg);
+    }
+}
+
+/* Tablet and mobile */
+@media (max-width: 980px) {
+    .hero-visual {
+        min-height: 300px;
+    }
+
+    .hero-image {
+        width: min(100%, 550px);
+    }
+
+    .section {
+        scroll-margin-top: 24px;
+    }
+}
+
+@media (max-width: 640px) {
+    .hero {
+        gap: 16px;
+        padding-top: 30px;
+    }
+
+    .hero-visual {
+        min-height: 220px;
+    }
+
+    .hero h1 {
+        font-size: clamp(36px, 10vw, 48px);
+        line-height: 1.08;
+    }
+
+    .hero-status {
+        gap: 10px;
+    }
+
+    .panel {
+        padding: 16px;
+        border-radius: 18px;
+    }
+
+    .panel h3 {
+        font-size: 20px;
+    }
+
+    .nav {
+        gap: 8px;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .hero-image,
+    .hero-orb {
+        animation: none;
+    }
+
+    .panel,
+    .panel img,
+    .nav a,
+    .btn {
+        transition: none;
+    }
+
+    .panel:hover,
+    .nav a:hover,
+    .btn:hover {
+        transform: none;
+    }
+}
