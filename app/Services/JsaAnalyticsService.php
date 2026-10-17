@@ -223,12 +223,10 @@ class JsaAnalyticsService
          * Minimum 14 hari penjualan aktif digunakan sebagai gerbang
          * awal sebelum model forecasting dievaluasi.
          */
-        $minimumActiveDays = 14;
-
-        $forecastStatus =
-            $activeDays < $minimumActiveDays
-                ? 'insufficient_data'
-                : 'model_not_trained';
+        $forecastAnalysis = $this->evaluateWma(
+            $salesTrend,
+            $activeDays
+        );
 
         return [
             'summary' => [
@@ -245,24 +243,14 @@ class JsaAnalyticsService
 
             'sales_trend' => $salesTrend,
 
-            'forecast' => [
-                'status' => $forecastStatus,
-                'method' => null,
-                'values' => [],
-                'observed_active_days' => $activeDays,
-                'minimum_active_days' => $minimumActiveDays,
-                'message' =>
-                    $forecastStatus === 'insufficient_data'
-                        ? 'Data penjualan aktif belum cukup untuk mengevaluasi model prediksi.'
-                        : 'Data dasar tersedia, tetapi model prediksi belum dilatih dan dievaluasi.',
-            ],
+            'forecast' => $forecastAnalysis['forecast'],
 
             'stock_recommendations' =>
                 $stockRecommendations,
 
             'peak_hours' => $peakHours,
 
-            'model_evaluation' => null,
+            'model_evaluation' => $forecastAnalysis['model_evaluation'],
 
             'data_notes' => [
                 'transaction_filter' =>
@@ -273,6 +261,123 @@ class JsaAnalyticsService
 
                 'zero_sales_note' =>
                     'Hari tanpa transaksi diisi 0 untuk visualisasi; status kedai tutup belum tersedia.',
+            ],
+        ];
+    }
+
+    private function evaluateWma(array $trend, int $activeDays): array
+    {
+        $minimumActiveDays = 14;
+        $minimumCalendarDays = 21;
+        $observations = count($trend);
+
+        $notReady = [
+            'forecast' => [
+                'status' => 'insufficient_data',
+                'method' => null,
+                'values' => [],
+                'backtest' => [],
+                'observed_active_days' => $activeDays,
+                'minimum_active_days' => $minimumActiveDays,
+                'minimum_calendar_days' => $minimumCalendarDays,
+                'message' => 'Histori belum memadai untuk mengevaluasi WMA.',
+            ],
+            'model_evaluation' => null,
+        ];
+
+        if (
+            $activeDays < $minimumActiveDays ||
+            $observations < $minimumCalendarDays
+        ) {
+            return $notReady;
+        }
+
+        $quantities = array_map(
+            static fn (array $day): int =>
+                max(0, (int) ($day['qty'] ?? 0)),
+            $trend
+        );
+
+        $weights = [1, 2, 3, 4, 5, 6, 7];
+
+        $estimate = static function (array $history) use ($weights): float {
+            $lastSeven = array_slice($history, -7);
+            $weightedSum = 0;
+
+            foreach ($lastSeven as $index => $quantity) {
+                $weightedSum += $quantity * $weights[$index];
+            }
+
+            return $weightedSum / array_sum($weights);
+        };
+
+        $backtest = [];
+        $sumWmaAbsoluteError = 0.0;
+        $sumNaiveAbsoluteError = 0.0;
+        $holdoutDays = 14;
+
+        // Evaluasi bergulir: prediksi setiap hari hanya
+        // menggunakan data dari hari-hari sebelumnya.
+        for (
+            $index = $observations - $holdoutDays;
+            $index < $observations;
+            $index++
+        ) {
+            $history = array_slice($quantities, 0, $index);
+
+            $prediction = $estimate($history);
+            $naivePrediction = (float) $quantities[$index - 1];
+            $actual = $quantities[$index];
+
+            $backtest[] = [
+                'date' => $trend[$index]['date'],
+                'actual_qty' => $actual,
+                'predicted_qty' => round($prediction, 2),
+                'naive_qty' => (int) $naivePrediction,
+            ];
+
+            $sumWmaAbsoluteError += abs($actual - $prediction);
+            $sumNaiveAbsoluteError += abs($actual - $naivePrediction);
+        }
+
+        $nextDayPrediction = $estimate($quantities);
+
+        $wmaMae = round(
+            $sumWmaAbsoluteError / $holdoutDays,
+            2
+        );
+
+        $naiveMae = round(
+            $sumNaiveAbsoluteError / $holdoutDays,
+            2
+        );
+
+        return [
+            'forecast' => [
+                'status' => 'experimental',
+                'method' => 'WMA-7',
+                'values' => [
+                    [
+                        'date' => \Illuminate\Support\Carbon::parse(
+                            $trend[array_key_last($trend)]['date']
+                        )->addDay()->toDateString(),
+                        'qty' => max(0, (int) round($nextDayPrediction)),
+                        'raw_qty' => round($nextDayPrediction, 2),
+                    ],
+                ],
+                'backtest' => $backtest,
+                'observed_active_days' => $activeDays,
+                'minimum_active_days' => $minimumActiveDays,
+                'minimum_calendar_days' => $minimumCalendarDays,
+                'message' => 'WMA eksperimental. Belum untuk restok otomatis.',
+            ],
+            'model_evaluation' => [
+                'method' => 'rolling_one_step_backtest',
+                'days' => $holdoutDays,
+                'wma_mae' => $wmaMae,
+                'naive_mae' => $naiveMae,
+                'wma_better_than_naive' => $wmaMae < $naiveMae,
+                'note' => 'Backtesting 14 hari terakhir. Hari tutup belum dibedakan dari hari tanpa transaksi.',
             ],
         ];
     }

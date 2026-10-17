@@ -26,3 +26,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /public/images/qris-asli.jpeg
+
+# Python
+__pycache__/
+*.py[cod]
