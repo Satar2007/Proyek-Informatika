@@ -2,7 +2,7 @@
 
 <img src="docs/assets/jimny-coffee-brown-hero.gif" alt="JIMNY COFFEE" width="100%" />
 
-# JIMNY COFFEE
+
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=25&duration=3000&pause=1000&color=BC783F&center=true&vCenter=true&width=500&lines=Smart+Point+of+Sale;Coffee+Shop+Management" alt="Smart Point of Sale" />
 
