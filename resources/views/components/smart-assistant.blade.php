@@ -221,7 +221,7 @@
                         <div class="smart-v2-kpi">
                             <span>Status prediksi</span>
                             <strong class="smart-v2-status"
-                                    x-text="analytics.forecast?.status === 'ready' ? 'Tersedia' : 'Data terbatas'"></strong>
+                                    x-text="analytics.forecast?.status === 'experimental' ? 'Eksperimental (WMA-7)' : (analytics.forecast?.status === 'ready' ? 'Tersedia' : 'Data terbatas')"></strong>
                         </div>
                     </div>
 
@@ -306,19 +306,64 @@
                         </article>
 
                         <article class="smart-v2-chart-card">
-                            <h3>Aktual vs Prediksi</h3>
-                            <p>Estimasi permintaan per menu</p>
-                            <div class="smart-v2-empty"
-                                 x-show="analytics.forecast?.status !== 'ready'">
-                                Histori saat ini belum cukup untuk
-                                menampilkan prediksi yang tervalidasi.
-                            </div>
-                            <div class="smart-v2-empty"
-                                 x-show="analytics.forecast?.status === 'ready'">
-                                Model tersedia. Grafik perbandingan akan
-                                terhubung setelah kontrak data forecast final.
-                            </div>
-                        </article>
+    <h3>Aktual vs Prediksi</h3>
+    <p>Prediksi permintaan menggunakan WMA-7</p>
+
+    <div class="smart-v2-empty"
+         x-show="!['experimental', 'ready'].includes(analytics.forecast?.status)"
+         x-text="analytics.forecast?.message || 'Data historis belum mencukupi untuk prediksi.'">
+    </div>
+
+    <template x-if="['experimental', 'ready'].includes(analytics.forecast?.status)">
+        <div>
+            <div class="smart-v2-chart-meta">
+                <span x-text="analytics.forecast?.method || 'Metode tidak tersedia'"></span>
+                <strong x-text="analytics.forecast?.status === 'experimental' ? 'Eksperimental' : 'Tersedia'"></strong>
+            </div>
+
+            <div class="smart-v2-kpis">
+                <div class="smart-v2-kpi">
+                    <span>Prediksi hari berikutnya</span>
+                    <strong x-text="(analytics.forecast?.values?.[0]?.qty ?? '—') + ' porsi'"></strong>
+                </div>
+
+                <div class="smart-v2-kpi">
+                    <span>Tanggal prediksi</span>
+                    <strong x-text="analytics.forecast?.values?.[0]?.date || '—'"></strong>
+                </div>
+            </div>
+
+            <template x-if="analytics.model_evaluation">
+                <div>
+                    <div class="smart-v2-chart-meta">
+                        <span>MAE WMA-7</span>
+                        <strong x-text="analytics.model_evaluation.wma_mae ?? '—'"></strong>
+                    </div>
+
+                    <div class="smart-v2-chart-meta">
+                        <span>MAE Naive</span>
+                        <strong x-text="analytics.model_evaluation.naive_mae ?? '—'"></strong>
+                    </div>
+
+                    <div class="smart-v2-chart-meta">
+                        <span>Perbandingan akurasi</span>
+                        <strong x-text="analytics.model_evaluation.wma_better_than_naive ? 'WMA lebih akurat' : 'WMA belum lebih akurat'"></strong>
+                    </div>
+                </div>
+            </template>
+
+            <div class="smart-v2-chart-meta"
+                 x-show="(analytics.forecast?.backtest || []).length > 0">
+                <span>Evaluasi historis</span>
+                <strong x-text="(analytics.forecast?.backtest || []).length + ' hari'"></strong>
+            </div>
+
+            <div class="smart-v2-empty"
+                 x-text="analytics.forecast?.message || 'Prediksi eksperimental, bukan keputusan restok otomatis.'">
+            </div>
+        </div>
+    </template>
+</article>
 
                         <article class="smart-v2-chart-card">
                             <h3>Rekomendasi Stok</h3>
