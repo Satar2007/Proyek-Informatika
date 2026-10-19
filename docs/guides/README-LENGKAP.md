@@ -1,3 +1,19 @@
+## Lokasi Aplikasi Laravel
+
+Seluruh aplikasi JIMNY COFFEE berada di folder `jimny-coffee/`.
+
+Setelah clone repository, jalankan perintah berikut dari root repository:
+
+    cd jimny-coffee
+    composer install
+    npm ci
+    php artisan serve
+
+Frontend Blade dan Vite tetap terintegrasi dengan Laravel.
+Machine Learning berada di `jimny-coffee/scripts/`.
+
+---
+
 <div align="center">
 
 <img src="../assets/jimny-coffee-brown-hero.gif" alt="JIMNY COFFEE hero gradasi cokelat dengan emblem mengambang" width="100%" />
