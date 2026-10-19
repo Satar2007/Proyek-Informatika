@@ -482,3 +482,17 @@ Dokumentasi teknis dari tahap pengembangan sebelumnya:
 **JIMNY COFFEE** · Project kolaborasi Informatika
 
 </div>
+
+## Kontributor Tim
+
+JIMNY COFFEE dikembangkan secara kolaboratif oleh mahasiswa Informatika Universitas Sanata Dharma.
+
+| Nama | Kontribusi Utama |
+| --- | --- |
+| [Rafael Paskah Bintang Pinasthi](https://github.com/Satar2007) | Integrasi proyek, pembayaran, stok, testing, dan CI/CD |
+| [Dion](https://github.com/dion1727) | Point of Sale (POS) dan kasir |
+| [Andika (Dika)](https://github.com/Tayzarrr) | Laporan penjualan dan JSA Intelligence |
+| Afrino Alka Daraya | Shift, absensi, dan pengajuan izin |
+| Valentinus | Autentikasi, manajemen akun, dan dokumentasi |
+
+Terima kasih kepada seluruh anggota tim yang telah berkontribusi dalam pengembangan JIMNY COFFEE.
