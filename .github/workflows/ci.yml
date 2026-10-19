@@ -48,6 +48,9 @@ jobs:
       MAIL_MAILER: array
       BCRYPT_ROUNDS: "4"
 
+    defaults:
+      run:
+        working-directory: jimny-coffee
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -90,6 +93,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
 
+    defaults:
+      run:
+        working-directory: jimny-coffee
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -99,7 +105,7 @@ jobs:
         with:
           python-version: "3.13"
           cache: pip
-          cache-dependency-path: scripts/requirements.txt
+          cache-dependency-path: jimny-coffee/scripts/requirements.txt
 
       - name: Install Python dependencies
         run: |
