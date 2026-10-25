@@ -330,4 +330,42 @@ class SmartAssistantController extends Controller
             )
         );
     }
+
+    /**
+     * Membaca hasil handoff JSA terbaru.
+     *
+     * Admin/Owner only dan read-only.
+     */
+    public function decisions(
+        \Illuminate\Http\Request $request,
+        \App\Services\JsaDecisionService $service
+    ): \Illuminate\Http\JsonResponse {
+        $user = $request->user();
+
+        abort_unless(
+            $user
+                && in_array(
+                    $user->role,
+                    ['admin', 'owner'],
+                    true
+                ),
+            403
+        );
+
+        try {
+            return response()->json(
+                $service->latest()
+            );
+        } catch (\RuntimeException $exception) {
+            return response()->json(
+                [
+                    'phase' => 5,
+                    'status' => 'BLOCKED',
+                    'message' =>
+                        'Paket keputusan JSA tidak tersedia atau gagal verifikasi integritas.',
+                ],
+                409
+            );
+        }
+    }
 }

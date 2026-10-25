@@ -153,3 +153,17 @@ Route::middleware('auth')
         [SmartAssistantController::class, 'analytics']
     )
     ->name('smart-assistant.analytics');
+
+/*
+|--------------------------------------------------------------------------
+| JSA Fase 5 — Read-only Decision Package
+|--------------------------------------------------------------------------
+| Authentication dilakukan pada route.
+| Authorization Admin/Owner diperiksa di controller.
+*/
+Route::middleware('auth')
+    ->get(
+        '/smart-assistant/decisions',
+        [SmartAssistantController::class, 'decisions']
+    )
+    ->name('smart-assistant.decisions');
