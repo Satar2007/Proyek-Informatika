@@ -1,0 +1,388 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "source": "synthetic",
+  "stock_basis": "available_after_reservations",
+  "timing": "before_service",
+  "notes": "SEMUA stok, minimum, kategori dan status contoh dibuat untuk DEMO, bukan data database Dion.",
+  "menus": [
+    {
+      "menu_id": 1,
+      "nama_menu": "Tubruk",
+      "category_id": 1,
+      "stok": 1,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 2,
+      "nama_menu": "Espresso",
+      "category_id": 1,
+      "stok": 2,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 3,
+      "nama_menu": "Lungo",
+      "category_id": 1,
+      "stok": 3,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 4,
+      "nama_menu": "Ristretto",
+      "category_id": 1,
+      "stok": 4,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 5,
+      "nama_menu": "Americano",
+      "category_id": 1,
+      "stok": 5,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 6,
+      "nama_menu": "Limericano",
+      "category_id": 1,
+      "stok": 6,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 7,
+      "nama_menu": "Long Black",
+      "category_id": 1,
+      "stok": 7,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 8,
+      "nama_menu": "Americano Premium Beans",
+      "category_id": 1,
+      "stok": 0,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 9,
+      "nama_menu": "Magic Latte",
+      "category_id": 1,
+      "stok": 1,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 10,
+      "nama_menu": "Dirty Latte",
+      "category_id": 1,
+      "stok": 2,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 11,
+      "nama_menu": "Cafe Latte",
+      "category_id": 1,
+      "stok": 3,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 12,
+      "nama_menu": "Cappuccino",
+      "category_id": 1,
+      "stok": 4,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 13,
+      "nama_menu": "Aren Latte",
+      "category_id": 1,
+      "stok": 5,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 14,
+      "nama_menu": "Spanish Latte",
+      "category_id": 1,
+      "stok": 6,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 15,
+      "nama_menu": "Hazelnut Latte",
+      "category_id": 1,
+      "stok": 7,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 16,
+      "nama_menu": "Caramel Latte",
+      "category_id": 1,
+      "stok": 0,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 17,
+      "nama_menu": "Vanilla Latte",
+      "category_id": 1,
+      "stok": 1,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 18,
+      "nama_menu": "Sea Salt Latte",
+      "category_id": 1,
+      "stok": 2,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 19,
+      "nama_menu": "Butterscotch Latte",
+      "category_id": 1,
+      "stok": 3,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 20,
+      "nama_menu": "Caramel Macchiato",
+      "category_id": 1,
+      "stok": 4,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 21,
+      "nama_menu": "Butterscotch Caramel",
+      "category_id": 1,
+      "stok": 5,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 22,
+      "nama_menu": "Offroad Creamy Latte",
+      "category_id": 1,
+      "stok": 6,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 23,
+      "nama_menu": "Matcha",
+      "category_id": 1,
+      "stok": 7,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 24,
+      "nama_menu": "Signature Chocolate",
+      "category_id": 1,
+      "stok": 0,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 25,
+      "nama_menu": "Taro Latte",
+      "category_id": 1,
+      "stok": 1,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 26,
+      "nama_menu": "Red Velvet Latte",
+      "category_id": 1,
+      "stok": 2,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 27,
+      "nama_menu": "Signature Tea",
+      "category_id": 1,
+      "stok": 3,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 28,
+      "nama_menu": "Tea Telang",
+      "category_id": 1,
+      "stok": 4,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 29,
+      "nama_menu": "Vanilla Tea",
+      "category_id": 1,
+      "stok": 5,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 30,
+      "nama_menu": "Lychee Tea",
+      "category_id": 1,
+      "stok": 6,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 31,
+      "nama_menu": "Lemon Tea",
+      "category_id": 1,
+      "stok": 7,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 32,
+      "nama_menu": "Milk Tea",
+      "category_id": 1,
+      "stok": 0,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 33,
+      "nama_menu": "Nasi Ayam Betutu",
+      "category_id": 1,
+      "stok": 1,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 34,
+      "nama_menu": "Indomie",
+      "category_id": 1,
+      "stok": 2,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 35,
+      "nama_menu": "Indomie Telur",
+      "category_id": 1,
+      "stok": 3,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 36,
+      "nama_menu": "Roti",
+      "category_id": 1,
+      "stok": 4,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 37,
+      "nama_menu": "Dimsum",
+      "category_id": 1,
+      "stok": 5,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 38,
+      "nama_menu": "Roti Bakar",
+      "category_id": 1,
+      "stok": 6,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 39,
+      "nama_menu": "Kentang Goreng",
+      "category_id": 1,
+      "stok": 7,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 40,
+      "nama_menu": "Nugget",
+      "category_id": 1,
+      "stok": 0,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 41,
+      "nama_menu": "Affogato",
+      "category_id": 1,
+      "stok": 1,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    },
+    {
+      "menu_id": 42,
+      "nama_menu": "Extra Ice Cream",
+      "category_id": 1,
+      "stok": 2,
+      "minimum_stok": 5,
+      "is_active": true,
+      "deleted_at": null
+    }
+  ]
+}
