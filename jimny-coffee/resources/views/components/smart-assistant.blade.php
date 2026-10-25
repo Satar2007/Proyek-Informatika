@@ -346,8 +346,13 @@
                     </div>
 
                     <div class="smart-v2-chart-meta">
-                        <span>Perbandingan akurasi</span>
-                        <strong x-text="analytics.model_evaluation.wma_better_than_naive ? 'WMA lebih akurat' : 'WMA belum lebih akurat'"></strong>
+                        <span>MAE Seasonal-naive (lag-7)</span>
+                        <strong x-text="analytics.model_evaluation.seasonal_naive_mae ?? '—'"></strong>
+                    </div>
+
+                    <div class="smart-v2-chart-meta">
+                        <span>Metode paling akurat (backtest)</span>
+                        <strong x-text="({ wma: 'WMA-7', seasonal_naive: 'Seasonal-naive (lag-7)', naive: 'Naive (kemarin)' })[analytics.model_evaluation.best_by_mae] ?? '—'"></strong>
                     </div>
                 </div>
             </template>
