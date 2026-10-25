@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "description": "CONTOH kebijakan demo: target 90%, bukan kebijakan toko yang telah disetujui. Sesuaikan sebelum penggunaan operasional.",
+  "horizon_days": 1,
+  "lead_time_days": 0,
+  "minimum_stock_rule": "floor",
+  "default_service_level": 0.9,
+  "category_service_levels": {},
+  "minimum_calibration": 20,
+  "calibration_window": 60
+}
