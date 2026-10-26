@@ -151,6 +151,20 @@ class User extends Authenticatable
             |--------------------------------------------------------------------------
             */
 
+            // Shift, attendance, dan izin masih menggunakan ON DELETE CASCADE.
+            // Tolak hard delete agar riwayat operasional tidak hilang diam-diam.
+            // Ini sengaja tidak menghapus atau memindahkan record lama.
+            if (
+                Shift::query()->where('user_id', $lockedUser->id)->exists()
+                || Attendance::query()->where('user_id', $lockedUser->id)->exists()
+                || LeaveRequest::query()->where('user_id', $lockedUser->id)->exists()
+            ) {
+                throw ValidationException::withMessages([
+                    'account' => 'Akun memiliki riwayat shift, presensi, atau izin. '
+                        .'Penghapusan permanen ditolak agar histori tetap aman.',
+                ]);
+            }
+
             Transaction::query()
                 ->where('user_id', $lockedUser->id)
                 ->whereNull('cashier_name_snapshot')
