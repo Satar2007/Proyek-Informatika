@@ -25,6 +25,19 @@ class LaporanController extends Controller
         'qris' => 'QRIS',
     ];
 
+    /**
+     * Prevent spreadsheet programs from evaluating untrusted text as a formula.
+     * Apply to textual CSV columns, not numeric amounts.
+     */
+    private static function safeCsvText(?string $value): string
+    {
+        $text = (string) $value;
+
+        return preg_match('/\A[\x00-\x20\x7F-\x9F]*[=+\-@]/', $text) === 1
+            ? "'".$text
+            : $text;
+    }
+
     public function harian(Request $request)
     {
         $validated = $request->validate([
@@ -96,13 +109,12 @@ class LaporanController extends Controller
 
         $filters = $this->normalizeFilters($request, $validated);
 
-        $transactions = $this->scopedQuery($request, $filters)
+        $transactionsQuery = $this->scopedQuery($request, $filters)
             ->where('created_at', '>=', $start)
             ->where('created_at', '<', $end)
             ->with('user')
             ->orderBy('created_at')
-            ->orderBy('id')
-            ->get();
+            ->orderBy('id');
 
         $filename = sprintf(
             'laporan-%s-%s.csv',
@@ -110,7 +122,7 @@ class LaporanController extends Controller
             $monthly ? $start->format('Y-m') : $start->format('Y-m-d')
         );
 
-        return response()->streamDownload(function () use ($transactions) {
+        return response()->streamDownload(function () use ($transactionsQuery) {
             $handle = fopen('php://output', 'wb');
 
             // BOM membantu Excel membaca UTF-8 dengan benar.
@@ -127,17 +139,21 @@ class LaporanController extends Controller
                 'Grand Total',
             ], ';', '"', '', "\r\n");
 
-            foreach ($transactions as $transaction) {
+            foreach ($transactionsQuery->lazy(500) as $transaction) {
                 fputcsv($handle, [
-                    $transaction->kode_transaksi,
+                    self::safeCsvText($transaction->kode_transaksi),
                     $transaction->created_at->format('d/m/Y'),
                     $transaction->created_at->format('H:i:s'),
-                    $transaction->nama_pelanggan,
-                    $transaction->cashier_display_name,
-                    self::PAYMENT_OPTIONS[$transaction->payment_method]
-                        ?? strtoupper((string) $transaction->payment_method),
-                    self::STATUS_OPTIONS[$transaction->status]
-                        ?? ucfirst((string) $transaction->status),
+                    self::safeCsvText($transaction->nama_pelanggan),
+                    self::safeCsvText($transaction->cashier_display_name),
+                    self::safeCsvText(
+                        self::PAYMENT_OPTIONS[$transaction->payment_method]
+                            ?? strtoupper((string) $transaction->payment_method)
+                    ),
+                    self::safeCsvText(
+                        self::STATUS_OPTIONS[$transaction->status]
+                            ?? ucfirst((string) $transaction->status)
+                    ),
                     (int) $transaction->grand_total,
                 ], ';', '"', '', "\r\n");
             }

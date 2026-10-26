@@ -62,9 +62,14 @@ class OwnerDashboardTest extends TestCase
     {
         $cashier = User::factory()->create(['role' => 'kasir']);
         User::factory()->create(['role' => 'kasir']);
-        foreach ([['08:00:00', '10:00:00'], ['12:00:00', '14:00:00']] as [$start, $end]) {
-            $shift = DB::table('shifts')->insertGetId(['user_id' => $cashier->id, 'tanggal' => '2031-03-03', 'jam_masuk' => $start, 'jam_keluar' => $end, 'status' => 'selesai']);
-            Attendance::create(['user_id' => $cashier->id, 'shift_id' => $shift, 'tanggal' => '2031-03-03', 'clock_in' => '2031-03-03 '.$start, 'clock_out' => '2031-03-03 '.$end, 'status' => 'hadir']);
+        // Riwayat dua hari untuk satu kasir: sesuai UNIQUE(user_id, tanggal).
+        // Dashboard harus menghitung hanya kasir yang clock-in hari ini.
+        foreach ([
+            ['2031-03-02', '08:00:00', '10:00:00'],
+            ['2031-03-03', '12:00:00', '14:00:00'],
+        ] as [$date, $start, $end]) {
+            $shift = DB::table('shifts')->insertGetId(['user_id' => $cashier->id, 'tanggal' => $date, 'jam_masuk' => $start, 'jam_keluar' => $end, 'status' => 'selesai']);
+            Attendance::create(['user_id' => $cashier->id, 'shift_id' => $shift, 'tanggal' => $date, 'clock_in' => $date.' '.$start, 'clock_out' => $date.' '.$end, 'status' => 'hadir']);
         }
         $category = DB::table('categories')->insertGetId(['nama_kategori' => 'Stock Test']);
         $menus = [];

@@ -99,6 +99,12 @@ class ShiftController extends Controller
                 &$jumlahDibuat,
                 &$jumlahDilewati
             ) {
+                // Serialize all shift generation for this cashier. The unique
+                // index in the accompanying migration provides DB enforcement.
+                User::query()->whereKey($kasir->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
                 foreach ($periode as $tanggal) {
                     if (!in_array((int) $tanggal->dayOfWeek, $hariDipilih, true)) {
                         continue;

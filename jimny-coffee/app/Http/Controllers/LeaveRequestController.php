@@ -30,51 +30,56 @@ class LeaveRequestController extends Controller
 
         $user = auth()->user();
 
-        $shift = Shift::where('user_id', $user->id)
-            ->whereDate('tanggal', $request->tanggal)
-            ->first();
+        return DB::transaction(function () use ($request, $user) {
+            // Kunci shift: satu user+tanggal hanya dapat membuat satu
+            // pengajuan aktif pada suatu waktu, walaupun request bersamaan.
+            $shift = Shift::where('user_id', $user->id)
+                ->whereDate('tanggal', $request->tanggal)
+                ->lockForUpdate()
+                ->first();
 
-        if (!$shift) {
+            if (!$shift) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak bisa mengajukan izin karena tidak ada jadwal shift pada tanggal tersebut.',
+                ], 422);
+            }
+
+            $attendance = Attendance::where('user_id', $user->id)
+                ->whereDate('tanggal', $request->tanggal)
+                ->first();
+
+            if ($attendance && $attendance->clock_in) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak bisa mengajukan izin karena Anda sudah clock in pada tanggal tersebut.',
+                ], 422);
+            }
+
+            $existingRequest = LeaveRequest::where('user_id', $user->id)
+                ->whereDate('tanggal', $request->tanggal)
+                ->whereIn('status', ['pending', 'approved'])
+                ->first();
+
+            if ($existingRequest) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pengajuan izin untuk tanggal tersebut sudah ada.',
+                ], 422);
+            }
+
+            LeaveRequest::create([
+                'user_id' => $user->id,
+                'tanggal' => $request->tanggal,
+                'alasan' => $request->alasan,
+                'status' => 'pending',
+            ]);
+
             return response()->json([
-                'success' => false,
-                'message' => 'Tidak bisa mengajukan izin karena tidak ada jadwal shift pada tanggal tersebut.',
-            ], 422);
-        }
-
-        $attendance = Attendance::where('user_id', $user->id)
-            ->whereDate('tanggal', $request->tanggal)
-            ->first();
-
-        if ($attendance && $attendance->clock_in) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tidak bisa mengajukan izin karena Anda sudah clock in pada tanggal tersebut.',
-            ], 422);
-        }
-
-        $existingRequest = LeaveRequest::where('user_id', $user->id)
-            ->whereDate('tanggal', $request->tanggal)
-            ->whereIn('status', ['pending', 'approved'])
-            ->first();
-
-        if ($existingRequest) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Pengajuan izin untuk tanggal tersebut sudah ada.',
-            ], 422);
-        }
-
-        LeaveRequest::create([
-            'user_id' => $user->id,
-            'tanggal' => $request->tanggal,
-            'alasan' => $request->alasan,
-            'status' => 'pending',
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Pengajuan izin berhasil dikirim. Menunggu persetujuan admin.',
-        ]);
+                'success' => true,
+                'message' => 'Pengajuan izin berhasil dikirim. Menunggu persetujuan admin.',
+            ]);
+        }, 3);
     }
 
     public function approve($id)

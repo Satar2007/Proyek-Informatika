@@ -13,13 +13,13 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $totalTransaksi = Transaction::where('status', 'success')->count();
+        $totalTransaksi = Transaction::where('status', 'success')->where('payment_status', 'paid')->count();
 
-        $omzetHarian = Transaction::where('status', 'success')
+        $omzetHarian = Transaction::where('status', 'success')->where('payment_status', 'paid')
             ->whereDate('created_at', today())
             ->sum('grand_total');
 
-        $omzetBulanan = Transaction::where('status', 'success')
+        $omzetBulanan = Transaction::where('status', 'success')->where('payment_status', 'paid')
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('grand_total');
@@ -36,6 +36,7 @@ class AdminController extends Controller
             ->join('transaction_details', 'menus.id', '=', 'transaction_details.menu_id')
             ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
             ->where('transactions.status', 'success')
+            ->where('transactions.payment_status', 'paid')
             ->groupBy('menus.id', 'menus.nama_menu', 'menus.harga', 'menus.stok')
             ->orderByDesc('total_terjual')
             ->take(5)
@@ -47,6 +48,7 @@ class AdminController extends Controller
 
         $transaksiTerbaru = Transaction::with('user')
             ->where('status', 'success')
+            ->where('payment_status', 'paid')
             ->latest()
             ->take(5)
             ->get();

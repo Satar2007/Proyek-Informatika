@@ -1,2 +1,2 @@
-numpy==2.5.3
+numpy==2.4.6
 scikit-learn==1.9.1
