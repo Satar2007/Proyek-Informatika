@@ -1,0 +1,107 @@
+/* JIMNY COFFEE / POS PHOTO FIT V14.3
+ * Restore the original two-row card layout in both themes.
+ * Edge-to-edge pictures: no padding, no crop, no letterbox, no blurred duplicates.
+ * The image is stretched slightly when its native aspect ratio differs from the
+ * media slot. That trade-off is intentional: no cropping + no empty margins.
+ * Applies ONLY to the POS page, not other role views or menu management.
+ */
+body.pos-screen .pos-workspace .product-grid .product-card {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+/* The product photo gets all of the available area above the item details. */
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 1 1 0% !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    line-height: 0 !important;
+    isolation: isolate;
+}
+
+/* Uploaded photos: fill original card photo slot with every pixel visible. */
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-image {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    object-fit: fill !important;
+    object-position: center center !important;
+    transform: none !important;
+    filter: none !important;
+}
+
+/* Do not show blurred overlays left over by old implementations. */
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .jimny-photo-backdrop {
+    display: none !important;
+}
+
+/* Without a photo, the fallback keeps its original proportions. */
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-placeholder {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    aspect-ratio: auto !important;
+    border-radius: 0 !important;
+}
+
+/* Restore the original compact metadata, price and + button layout. */
+body.pos-screen .pos-workspace .product-grid .product-card > .product-name,
+body.pos-screen .pos-workspace .product-grid .product-card > .product-info-row,
+body.pos-screen .pos-workspace .product-grid .product-card > .product-bottom {
+    flex: none !important;
+    position: relative;
+    z-index: 1;
+}
+body.pos-screen .pos-workspace .product-grid .product-card > .product-bottom {
+    margin-top: 0 !important;
+}
+
+/* Keep V13 lift on cards, but avoid cropping the picture on hover. */
+body.pos-screen .pos-workspace .product-grid .product-card:hover > .product-photo > .menu-photo-image {
+    transform: none !important;
+}
+
+/* On narrow screens keep the original 4:3 media band and natural card height. */
+@media (max-width: 1023px) {
+    body.pos-screen .pos-workspace .product-grid .product-card {
+        height: auto !important;
+    }
+    body.pos-screen .pos-workspace .product-grid .product-card > .product-photo {
+        flex: 0 0 auto !important;
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 4 / 3 !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-image {
+        transition: none !important;
+    }
+}

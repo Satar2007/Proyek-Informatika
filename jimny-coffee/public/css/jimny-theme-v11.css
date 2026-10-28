@@ -1,0 +1,540 @@
+/* JIMNY COFFEE V11.2 - Scoped Coffee Liquid Glass System.
+   Loaded AFTER previous themes; no modifications to routes/POS/ML/AI. */
+:root {
+  --jimny-scheme:light; --jimny-field-ink:#4b3021; --jimny-field-bg:#fffaf3;
+  --jimny-picker-filter:invert(0); --jimny-page-ink:#483022;
+  --jimny-page-muted:#84654d; --jimny-card:rgba(255,250,242,.82);
+  --jimny-panel:rgba(255,250,242,.74); --jimny-line:rgba(190,143,99,.32);
+  --jimny-accent:#a96731; --jimny-accent-hi:#edc48c;
+}
+html[data-theme="dark"] {
+  --jimny-scheme:dark; --jimny-field-ink:#f6e8d5; --jimny-field-bg:#382920;
+  --jimny-picker-filter:invert(1); --jimny-page-ink:#f2e3d0;
+  --jimny-page-muted:#cfad8c; --jimny-card:rgba(63,46,36,.93);
+  --jimny-panel:rgba(48,34,27,.89); --jimny-line:rgba(218,164,110,.32);
+  --jimny-accent:#e4ad72; --jimny-accent-hi:#f5d6ab;
+}
+html[data-theme="dark"] {color-scheme: dark}
+html[data-theme="light"] {color-scheme: light}
+
+/* Preserved original coffee wallpaper in both themes. */
+html[data-theme="light"] body.ember-theme.jimny-v11 {
+  background-color:#efdfc9!important;
+  background-image:radial-gradient(ellipse at 10% 0%,rgba(255,238,206,.48),transparent 56%),
+    linear-gradient(rgba(244,228,204,.51),rgba(244,228,204,.51)),
+    url('../images/coffee-bg-seamless.jpg')!important;
+  background-repeat:no-repeat,no-repeat,repeat!important;
+  background-size:auto,auto,920px auto!important;
+  background-attachment:fixed!important;
+  color:#483022!important;
+}
+html[data-theme="dark"] body.ember-theme.jimny-v11 {
+  background-color:#1e1713!important;
+  background-image:radial-gradient(circle at 35% 0%,rgba(146,86,37,.15),transparent 56%),
+    linear-gradient(rgba(24,16,12,.87),rgba(24,16,12,.87)),
+    url('../images/coffee-bg-seamless.jpg')!important;
+  background-repeat:no-repeat,no-repeat,repeat!important;
+  background-size:auto,auto,920px auto!important;
+  background-attachment:fixed!important;
+  color:var(--jimny-page-ink)!important;
+}
+body.jimny-v11 {font-synthesis:none}
+
+/* Accessible custom light saber inspired switch in app/sidebar + login. */
+.jimny-theme-switch {display:inline-flex;align-items:center;gap:9px;border:0;background:transparent;
+  padding:4px 3px;cursor:pointer;color:inherit;font:inherit;font-weight:800;font-size:11px;white-space:nowrap;
+  -webkit-tap-highlight-color:transparent}
+.jimny-theme-switch:focus-visible {outline:3px solid #e2af68;outline-offset:3px;border-radius:14px}
+.jimny-theme-track {position:relative;display:inline-block;width:64px;height:30px;border-radius:999px;
+  overflow:hidden;border:1px solid rgba(255,225,181,.42);background:linear-gradient(110deg,#c99960,#65402b);
+  box-shadow:inset 0 2px 7px rgba(28,14,8,.26),0 4px 14px rgba(31,17,10,.15);isolation:isolate}
+.jimny-theme-sun,.jimny-theme-moon {position:absolute;top:5px;font-size:13px;color:#fff3d9;z-index:1}
+.jimny-theme-sun {left:8px}.jimny-theme-moon {right:8px}
+.jimny-theme-saber {position:absolute;inset:3px auto 3px 7px;width:42px;border-radius:999px;
+  opacity:.72;background:linear-gradient(90deg,transparent,#fff2c1b0,transparent);
+  filter:blur(5px);transform:translateX(-20px);transition:transform .5s ease}
+.jimny-theme-thumb {position:absolute;top:3px;left:3px;width:22px;height:22px;z-index:3;border-radius:45% 55% 49% 51%;
+  background:radial-gradient(circle at 35% 27%,#fff,#ffeac4 46%,#d0a26e 100%);
+  box-shadow:inset -2px -3px 5px #c99d6e,0 1px 6px #28150d8c,0 0 11px #ffe0a099;
+  transition:transform .48s cubic-bezier(.2,1.3,.2,1),border-radius .42s ease}
+html[data-theme="dark"] .jimny-theme-track {background:linear-gradient(100deg,#372117,#160f0d)}
+html[data-theme="dark"] .jimny-theme-thumb {transform:translateX(34px);border-radius:55% 42% 53% 48%;background:radial-gradient(circle at 38% 26%,#ffedcc,#cfa16d 70%,#92613e)}
+html[data-theme="dark"] .jimny-theme-saber {transform:translateX(30px)}
+.jimny-theme-switch:active .jimny-theme-thumb {scale:.9}
+
+/* APP SIDEBAR: same role conditions and links, text only. */
+body.jimny-v11 {--sb-w:280px}
+body.jimny-v11 .app-sidebar {
+  border-color:rgba(236,188,126,.34);
+  background:linear-gradient(144deg,rgba(100,62,41,.89),rgba(34,22,18,.92)),
+    url('../images/coffee-bg-seamless.jpg') center / 430px auto;
+  backdrop-filter:blur(23px) saturate(1.2);-webkit-backdrop-filter:blur(23px) saturate(1.2);
+  box-shadow:0 25px 60px rgba(33,16,10,.30),inset 0 1px rgba(255,246,225,.19);
+}
+body.jimny-v11 .app-sidebar::before {background:
+  radial-gradient(ellipse at 10% 0%,rgba(237,195,144,.25),transparent 44%),
+  linear-gradient(105deg,rgba(255,255,255,.04),transparent 42%,rgba(255,255,255,.03) 60%,transparent);
+}
+body.jimny-v11 .brand-card {padding:7px 4px 12px}
+body.jimny-v11 .brand-logo {width:47px;height:47px}
+body.jimny-v11 .brand-title {font-size:15px;letter-spacing:.022em}
+body.jimny-v11 .sidebar-inner {isolation:isolate}
+body.jimny-v11 .jimny-sidebar-theme {display:flex;align-items:center;justify-content:space-between;gap:6px;
+  margin:12px 2px 4px;padding:7px 9px;border-radius:15px;color:#f5dfc0;
+  background:rgba(255,239,213,.085);border:1px solid rgba(255,231,192,.19);
+  box-shadow:inset 0 1px rgba(255,255,255,.08)}
+body.jimny-v11 .jimny-sidebar-theme-caption {font-size:11px;font-weight:800}
+body.jimny-v11 .sidebar-nav {margin-top:7px;gap:5px;padding-right:5px}
+body.jimny-v11 .sidebar-link {position:relative;isolation:isolate;min-height:45px;gap:0;padding:10px 15px;
+  border-radius:17px;overflow:hidden;font-size:13px;letter-spacing:.005em;transition:transform .2s cubic-bezier(.2,.8,.2,1),color .2s,box-shadow .2s}
+body.jimny-v11 .sidebar-link > span {position:relative;z-index:2}
+body.jimny-v11 .sidebar-link::before {content:"";position:absolute;z-index:-1;inset:0;border-radius:inherit;
+  background:linear-gradient(115deg,rgba(255,248,235,.13),rgba(237,175,108,.07));
+  opacity:0;transform:translateX(-9px) scale(.98);transition:opacity .2s,transform .25s ease;
+  box-shadow:inset 0 1px rgba(255,255,255,.18)}
+body.jimny-v11 .sidebar-link:hover::before,body.jimny-v11 .sidebar-link:focus-visible::before {opacity:1;transform:translateX(0) scale(1)}
+body.jimny-v11 .sidebar-link:hover {transform:translateX(2px);background:transparent;color:#fff6df}
+body.jimny-v11 .sidebar-link:active:not(:disabled) {transform:translateX(2px) scale(.982) skewX(-.8deg)}
+body.jimny-v11 .sidebar-link.active {border-color:rgba(255,237,188,.84);color:#432816;
+  background:linear-gradient(130deg,rgba(254,221,164,.96),rgba(192,119,55,.95));
+  box-shadow:0 9px 22px rgba(32,17,9,.22),inset 0 1px rgba(255,255,255,.50);
+  animation:jimny-fluid-appear .42s cubic-bezier(.2,.9,.2,1) both}
+body.jimny-v11 .sidebar-link.active::after {content:"";position:absolute;inset:-20% auto -20% -40%;width:80%;transform:skewX(-18deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);pointer-events:none;
+  transition:transform .5s ease;opacity:.55}
+body.jimny-v11 .sidebar-link.active:hover::after {transform:translateX(170%) skewX(-18deg)}
+body.jimny-v11 .sidebar-user {background:rgba(255,244,219,.09);backdrop-filter:blur(12px);border-color:rgba(253,215,163,.25)}
+body.jimny-v11 .sidebar-logout {border-radius:15px}
+body.jimny-v11 .app-topbar {backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+@keyframes jimny-fluid-appear {0%{opacity:.65;transform:scale(.97) skewX(-1deg)}65%{opacity:1;transform:scale(1.015) skewX(.3deg)}100%{transform:scale(1);opacity:1}}
+@media (min-width:1024px) and (max-width:1279px) {body.jimny-v11 {--sb-w:246px}body.jimny-v11 .brand-title{font-size:14px}}
+
+/* App main glass: light and dark tokens. */
+body.jimny-v11 .content-glass {background:var(--jimny-panel);border:1px solid var(--jimny-line);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 24px 60px rgba(36,22,13,.15),inset 0 1px rgba(255,255,255,.12)}
+html[data-theme="dark"] body.ember-theme.jimny-v11 .content-glass {color:var(--jimny-page-ink)}
+html[data-theme="dark"] body.jimny-v11 :is(.app-topbar,.coffee-art-header) {background:rgba(52,36,28,.88)!important;border-color:rgba(201,152,102,.4);box-shadow:0 10px 32px #100a075c}
+html[data-theme="dark"] body.jimny-v11 .coffee-art-header::before {opacity:.16;mix-blend-mode:screen}
+html[data-theme="dark"] body.jimny-v11 .topbar-role {background:rgba(105,75,52,.66)!important;border-color:#956e4e;color:#f4dfc4}
+html[data-theme="dark"] body.jimny-v11 .mobile-sidebar-toggle {background:#503929;color:#ffebcc}
+html[data-theme="dark"] body.jimny-v11 .content-glass :is(.page-lead h1,.page-heading h1,.pos-compact-heading h1,.owner-heading h1) {color:#f4e2c8!important}
+html[data-theme="dark"] body.jimny-v11 .content-glass :is(.page-lead p,.page-heading p,.pos-compact-heading p,.report-context,.eyebrow) {color:#d0ad90!important}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.panel,.owner-panel,.owner-stat,.owner-compact,.metric-card,.order-cart,.pos-catalog,.catalog-toolbar,.cart-line,.product-card,.presensi-dialog,.insight-strip,.report-table,.chart-data,.cart-totals) {background:var(--jimny-card)!important;border-color:var(--jimny-line)!important;color:#f4e5d4!important;box-shadow:0 6px 26px rgba(18,10,7,.13)!important}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.report-table,.chart-data) :is(th,td) {background-color:#403027;color:#f0decb;border-color:#72543f}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.report-table,.chart-data) th {background-color:#624633!important}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.empty-state,.section-heading p,.metric-card small,.metric-card>span,.stock-badge,.chart-data summary,.report-context,.bar-item small) {color:#cbaa8b!important}
+html[data-theme="dark"] body.jimny-v11 .page-ready .bar-track {background:#534032}
+html[data-theme="dark"] body.jimny-v11 .page-ready .bg-white:not(.text-white) {background-color:#48362a!important;color:#f2e2d0!important}
+html[data-theme="dark"] body.jimny-v11 .page-ready .bg-\[\#FFFDF9\],html[data-theme="dark"] body.jimny-v11 .page-ready .bg-\[\#F8F5F0\] {background-color:#48362a!important;color:#f2e2d0!important}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select) {background:var(--jimny-field-bg)!important;color:var(--jimny-field-ink)!important;caret-color:var(--jimny-field-ink)!important;border-color:#937254!important;color-scheme:dark!important}
+html[data-theme="dark"] body.ember-theme.jimny-v11 input:-webkit-autofill { -webkit-text-fill-color:#f6e8d5!important;-webkit-box-shadow:0 0 0 1000px #382920 inset!important }
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(input,textarea)::placeholder {color:#bea28b!important}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.category-tabs button,.soft-button,.catalog-pager button) {background:#5b4130!important;color:#f8e8d6!important;border-color:#957252!important}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.category-tabs button[aria-pressed="true"],.primary-action) {background:linear-gradient(115deg,#ba824b,#93572d)!important;color:#24170f!important}
+html[data-theme="dark"] body.jimny-v11 .page-ready .text-\[\#4B2E1F\] {color:#f5e7d6!important}
+html[data-theme="dark"] body.jimny-v11 .page-ready .text-\[\#7B4B2A\] {color:#dfba96!important}
+
+/* Preserve V10 Smart Assistant behavior, tone only. */
+html[data-theme="dark"] body.jimny-v11 .jimny-glass-v9 .smart-panel.jimny-glass-shell {
+  background:rgba(36,26,22,.96)!important;color:#f5e9db!important;border-color:rgba(211,166,118,.45)!important}
+html[data-theme="dark"] body.jimny-v11 .jimny-glass-v9 :is(.smart-v2-chat,.smart-v2-chat-head,.smart-messages,.smart-v10-cashier-hero,.smart-insights) {
+  background:rgba(47,32,26,.85)!important;color:#f2e5d6!important}
+html[data-theme="dark"] body.jimny-v11 .jimny-glass-v9 .smart-message.smart-bot {
+  background:#4d362a!important;color:#f3e6d5!important;border-color:#826046!important}
+html[data-theme="dark"] body.jimny-v11 .jimny-glass-v9 .smart-message.smart-user {
+  background:linear-gradient(135deg,#9b6a45,#5c3b2a)!important;color:#fff7eb!important}
+html[data-theme="dark"] body.jimny-v11 .jimny-glass-v9 :is(.smart-input,.smart-v2-chat-input,input,textarea) {
+  background:#49352a!important;color:#f3e5d4!important;border-color:#937052!important}
+
+/* Login: clean, static glass with preserved coffee wallpaper. No spotlight. */
+body.jimny-v11.guest-page .guest-shell:has(.jimny-login-stage){display:block!important;max-width:none!important;
+  min-height:100dvh!important;width:100%!important;margin:0!important;padding:0!important;
+  border:0!important;background:transparent!important;box-shadow:none!important}
+body.jimny-v11.guest-page .jimny-login-stage {position:relative;min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column;isolation:isolate;overflow:hidden;color:var(--jimny-page-ink);background:transparent!important}
+.jimny-login-topline {display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:20px clamp(18px,4vw,58px);width:100%;z-index:1}
+.jimny-login-top-brand {font-size:12px;letter-spacing:.16em;font-weight:900;color:var(--jimny-page-ink)}
+.jimny-login-theme-wrap {display:flex;align-items:center;gap:10px;padding:7px 11px;
+  background:var(--jimny-card);border:1px solid var(--jimny-line);border-radius:18px;
+  backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
+.jimny-login-theme-caption {color:var(--jimny-page-muted);font-size:11px;font-weight:800}
+.jimny-login-center {position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;padding:36px 17px 25px}
+body.ember-theme.jimny-v11 .jimny-stage-card.login-card {position:relative;isolation:isolate;z-index:2;display:block;
+  width:min(94vw,450px);border-radius:32px!important;overflow:hidden;
+  background:linear-gradient(155deg,rgba(255,253,246,.87),rgba(248,234,210,.73))!important;
+  border:1px solid rgba(255,255,255,.86)!important;box-shadow:0 36px 100px rgba(68,36,21,.24),
+  inset 0 1px rgba(255,255,255,.95),0 0 0 1px rgba(212,164,111,.27)!important;
+  backdrop-filter:blur(26px) saturate(1.35);-webkit-backdrop-filter:blur(26px) saturate(1.35);
+  animation:jimny-login-rise .48s cubic-bezier(.17,.85,.18,1) both}
+body.jimny-v11 .jimny-stage-brand {position:relative;text-align:center;padding:34px 28px 25px;
+  border-bottom:1px solid var(--jimny-line);background:linear-gradient(150deg,rgba(255,249,236,.53),rgba(221,182,132,.13))}
+body.jimny-v11 .jimny-stage-logo-wrap {margin:0 auto 14px;width:94px;height:94px;padding:5px;border-radius:50%;
+  background:linear-gradient(125deg,#fff9ed,#d4a873);box-shadow:0 12px 30px rgba(71,40,22,.21),inset 0 1px white}
+body.jimny-v11 .jimny-stage-logo {display:block;width:100%;height:100%;border-radius:50%;object-fit:cover}
+.jimny-stage-overline {color:#a87948;font-size:10px;font-weight:850;letter-spacing:.13em}
+body.jimny-v11 .jimny-stage-brand h1 {margin:9px 0 4px;font-size:clamp(24px,4vw,29px);font-weight:900;letter-spacing:-.035em;color:#503322}
+.jimny-stage-tagline {color:#926a4f;font-size:12px;font-weight:600}
+body.jimny-v11 .jimny-stage-form-wrap {position:relative;padding:27px clamp(20px,5vw,34px) 32px;color:var(--jimny-page-ink)}
+.jimny-stage-form-wrap h2 {font-size:21px;font-weight:900;letter-spacing:-.02em;margin:0 0 4px}
+.jimny-stage-description {font-size:12px;color:var(--jimny-page-muted);margin-bottom:23px}
+.jimny-login-form {display:flex;flex-direction:column;gap:17px}
+.jimny-field-group {display:flex;flex-direction:column;gap:8px;min-width:0}
+.jimny-field-group > label {font-size:12px;font-weight:850}
+body.jimny-v11 .jimny-field-group input:not([type="checkbox"]) {display:block;width:100%;height:47px;min-width:0;
+  border:1px solid #d9bba0!important;border-radius:16px;background:var(--jimny-field-bg)!important;
+  color:var(--jimny-field-ink)!important;caret-color:var(--jimny-field-ink)!important;
+  padding:0 14px;font-size:14px;outline:none;transition:box-shadow .2s,border-color .2s}
+body.jimny-v11 .jimny-field-group input:focus {border-color:#c38d51!important;
+  box-shadow:0 0 0 4px rgba(193,133,75,.22)!important}
+body.jimny-v11 .jimny-field-group input::placeholder {color:#a08771!important}
+.jimny-password-field {position:relative}
+body.jimny-v11 .jimny-password-field input {padding-right:91px!important}
+.jimny-password-eye {position:absolute;right:6px;top:6px;height:35px;padding:0 12px;border:0;border-radius:10px;
+  cursor:pointer;color:var(--jimny-page-ink);background:rgba(175,134,94,.12);font-weight:750;font-size:11px}
+.jimny-password-eye:hover {background:rgba(175,134,94,.25)}
+.jimny-form-options {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  color:var(--jimny-page-muted);font-size:11px;font-weight:750}
+.jimny-form-options a {color:var(--jimny-accent);text-decoration:underline;text-underline-offset:3px}
+.jimny-remember {display:inline-flex;align-items:center;gap:7px;cursor:pointer}
+.jimny-remember input {width:16px;height:16px;accent-color:#a66e41}
+.jimny-login-validation {font-size:11px;color:#ac4035!important}
+.jimny-login-status {margin-bottom:14px;font-size:12px;color:#296047}
+.jimny-caps-hint:not([hidden]) {font-size:11px;color:#a9682d}
+body.jimny-v11 button.jimny-login-submit {position:relative;display:flex;align-items:center;justify-content:center;gap:12px;
+  width:100%;min-height:49px;margin-top:5px;border-radius:16px!important;border:1px solid rgba(255,216,176,.36)!important;
+  background:linear-gradient(117deg,#9c542c,#543323)!important;color:#fff6e9!important;
+  font-size:13px;font-weight:900;letter-spacing:.01em;cursor:pointer;
+  box-shadow:0 12px 26px rgba(86,47,26,.22),inset 0 1px rgba(255,255,255,.25);
+  transition:transform .2s,box-shadow .2s,filter .2s}
+body.jimny-v11 button.jimny-login-submit:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.08);
+  box-shadow:0 18px 35px rgba(86,47,26,.28),inset 0 1px rgba(255,255,255,.25)}
+body.jimny-v11 button.jimny-login-submit:active {transform:scale(.986)}
+body.jimny-v11 button.jimny-login-submit:disabled {opacity:.7;cursor:wait}
+.jimny-login-arrow {font-size:19px;line-height:1}
+.jimny-stage-copyright {font-size:11px;font-weight:750;color:var(--jimny-page-muted);margin-top:22px}
+html[data-theme="dark"] body.jimny-v11 .jimny-stage-card.login-card {background:linear-gradient(160deg,rgba(81,54,40,.91),rgba(37,26,22,.95))!important;
+  border-color:rgba(222,179,123,.34)!important;box-shadow:0 35px 110px rgba(6,4,3,.58),inset 0 1px rgba(255,236,202,.15)!important}
+html[data-theme="dark"] body.jimny-v11 .jimny-stage-brand {background:linear-gradient(135deg,rgba(126,82,53,.27),rgba(48,32,25,.2))}
+html[data-theme="dark"] body.jimny-v11 .jimny-stage-brand h1 {color:#ffebd0}
+html[data-theme="dark"] body.jimny-v11 .jimny-stage-tagline {color:#ddb894}
+html[data-theme="dark"] body.jimny-v11 .jimny-stage-overline {color:#e4b176}
+html[data-theme="dark"] body.jimny-v11 .jimny-field-group input:not([type="checkbox"]) {border-color:#896548!important}
+@keyframes jimny-login-rise {from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}
+
+/* Responsive; never modify original POS desktop constraints. */
+@media(max-width:1023px){
+  body.jimny-v11 .app-sidebar{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  body.jimny-v11 .jimny-sidebar-theme {margin:10px 0}
+}
+@media(max-width:540px){
+  .jimny-login-topline{padding:12px 14px}
+  .jimny-login-center{padding:18px 12px 19px}
+  body.ember-theme.jimny-v11 .jimny-stage-card.login-card{border-radius:24px!important;width:min(100%,420px)}
+  body.jimny-v11 .jimny-stage-brand{padding:25px 22px 18px}
+  body.jimny-v11 .jimny-stage-logo-wrap{width:78px;height:78px}
+  body.jimny-v11 .jimny-stage-form-wrap{padding:20px 20px 24px}
+  .jimny-login-theme-caption{display:none}
+  .jimny-stage-description{margin-bottom:16px}
+}
+@media (prefers-reduced-motion:reduce) {
+  .jimny-v11 .jimny-stage-card,
+  .jimny-v11 .sidebar-link.active{animation:none!important}
+  .jimny-v11 .sidebar-link,.jimny-v11 .sidebar-link::before,.jimny-v11 .jimny-theme-thumb,
+  .jimny-v11 .jimny-theme-saber,.jimny-v11 button.jimny-login-submit{transition:none!important}
+}
+@media print {
+  html[data-theme="dark"] body.jimny-v11{background:#fff!important;color:#222!important}
+  body.jimny-v11 .app-sidebar,body.jimny-v11 .jimny-sidebar-theme{display:none!important}
+}
+/* Guest auth pages other than login keep their Laravel content, but follow theme. */
+html[data-theme="dark"] body.jimny-v11.guest-page .guest-shell:not(:has(.jimny-login-stage)) {
+  background:rgba(52,38,29,.95)!important;border-color:rgba(215,170,111,.4)!important;
+  color:#f3e4d1!important;box-shadow:0 24px 55px #140c09b0!important}
+html[data-theme="dark"] body.jimny-v11.guest-page .guest-shell:not(:has(.jimny-login-stage)) :is(h1,h2,h3,label,p) {color:#f3e4d1!important}
+html[data-theme="dark"] body.jimny-v11.guest-page .guest-shell:not(:has(.jimny-login-stage)) :is(input,select,textarea) {
+  color:#f5e6d3!important;background:#3d2c22!important;border-color:#96704d!important}
+body.jimny-v11 .jimny-stage-card.login-card>.jimny-stage-brand {background:linear-gradient(150deg,rgba(255,249,236,.65),rgba(221,182,132,.18))!important}
+html[data-theme="dark"] body.jimny-v11 .jimny-stage-card.login-card>.jimny-stage-brand {background:linear-gradient(135deg,rgba(126,82,53,.24),rgba(48,32,25,.15))!important}
+
+
+
+/* =======================================================================
+   V11.2 DESIGN CORRECTIONS — effective in dark mode only (except login).
+   Important: no form POST, data query, route, or AI functionality is changed.
+   ======================================================================= */
+
+/* Login: the only lighting is the static edge/refraction of the frosted card. */
+body.jimny-v11.guest-page .jimny-login-topline {
+    justify-content: flex-end;
+    padding-block: 18px 4px;
+}
+body.jimny-v11.guest-page .jimny-stage-card.login-card::before,
+body.jimny-v11.guest-page .jimny-stage-card.login-card::after {
+    content: none !important;
+    animation: none !important;
+}
+body.jimny-v11.guest-page .jimny-stage-card.login-card {
+    background-clip: padding-box !important;
+    box-shadow: 0 18px 56px rgba(38, 22, 14, .22),
+                inset 0 1px 0 rgba(255,255,255,.75),
+                0 0 0 1px rgba(196, 151, 103, .22) !important;
+}
+html[data-theme="dark"] body.jimny-v11.guest-page .jimny-stage-card.login-card {
+    background: linear-gradient(155deg,rgba(85,57,43,.91),rgba(39,29,24,.96)) !important;
+    box-shadow: 0 20px 58px rgba(12,7,5,.50),
+                inset 0 1px 0 rgba(255,238,210,.16),
+                0 0 0 1px rgba(205,163,116,.17) !important;
+}
+body.jimny-v11.guest-page .jimny-stage-brand {
+    isolation: isolate;
+}
+/* Override global input width/min-height inherited from guest styles. */
+body.ember-theme.jimny-v11.guest-page .jimny-form-options .jimny-remember {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 9px !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    line-height: 1.3;
+    color: var(--jimny-page-ink);
+}
+body.ember-theme.jimny-v11.guest-page .jimny-remember input[type="checkbox"]#remember_me {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    display: inline-block !important;
+    position: static !important;
+    flex: 0 0 18px !important;
+    width: 18px !important;
+    min-width: 18px !important;
+    max-width: 18px !important;
+    height: 18px !important;
+    min-height: 18px !important;
+    max-height: 18px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 4px !important;
+    accent-color: #C17E3F !important;
+    box-shadow: none !important;
+    vertical-align: middle !important;
+    cursor: pointer;
+}
+body.jimny-v11.guest-page .jimny-form-options {
+    flex-wrap: nowrap;
+    align-items: center;
+    min-height: 22px;
+}
+body.jimny-v11.guest-page .jimny-form-options > a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    color: var(--jimny-accent);
+}
+body.jimny-v11.guest-page .jimny-password-eye:focus-visible,
+body.jimny-v11.guest-page .jimny-form-options :focus-visible {
+    outline: 2px solid #E3AB6E;
+    outline-offset: 3px;
+}
+@media (max-width:370px) {
+    body.jimny-v11.guest-page .jimny-form-options {
+        flex-wrap: wrap;
+    }
+}
+
+/* Dark foundation: panel, typography and soft surfaces share one palette. */
+html[data-theme="dark"] body.jimny-v11 {
+    --jimny-dark-surface: rgba(57,40,31,.95);
+    --jimny-dark-raised: #4B3528;
+    --jimny-dark-surface-soft: #533B2D;
+    --jimny-dark-border: #84654D;
+    --jimny-dark-heading: #FFF0DA;
+    --jimny-dark-body: #E9D1B7;
+    --jimny-dark-muted: #C8AA8B;
+    --jimny-dark-accent: #E9B981;
+    --ui-surface: #483328;
+    --ui-surface-soft: #50392D;
+    --ui-line: #866447;
+    --ui-line-strong: #9D7956;
+    --ui-text: #F4E3D0;
+    --ui-muted: #CEAE90;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready {
+    color: var(--jimny-dark-body);
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(h1,h2,h3,h4,h5,h6) {
+    color: var(--jimny-dark-heading) !important;
+}
+/* Explicit text utilities: the older Ember theme hardcodes dark text. */
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(
+    .text-\[\#4B2E1F\],
+    .text-\[\#432B1C\],
+    .text-\[\#7B4B2A\],
+    .text-\[\#7B4B2A\]\/50,
+    .text-\[\#7B4B2A\]\/60,
+    .text-\[\#7B4B2A\]\/70,
+    .text-\[\#7B4B2A\]\/75,
+    .text-\[\#7B4B2A\]\/80,
+    .text-\[\#C98A4A\],
+    .text-amber-900,
+    .text-stone-800,
+    .text-gray-700
+) { color: #F0DBC4 !important; }
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(
+    small, .eyebrow, .report-context, .page-lead > p,
+    .page-heading > p, .owner-heading > p, .section-heading > p,
+    .metric-card > span, .metric-card small,
+    .owner-panel small, .owner-stat small, .owner-compact small,
+    .stock-badge, .bar-item small
+) {color: var(--jimny-dark-muted) !important;}
+/* Keep success/failure states clearly legible instead of generic pale text. */
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.text-emerald-600,.text-green-600,.text-green-700,.text-green-800,.text-emerald-700,.text-emerald-800) {
+    color: #71E9B7 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.text-red-500,.text-red-600,.text-red-700,.text-red-800) {
+    color: #FFACA0 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.text-amber-600,.text-amber-700,.text-orange-600,.text-yellow-700) {
+    color: #FFCE8C !important;
+}
+/* Large surface containers and nested background utilities: no more white bands. */
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(
+    .panel, .owner-panel, .owner-stat, .owner-compact, .metric-card,
+    .rounded-3xl.border.bg-white, .rounded-2xl.border.bg-white,
+    .report-table, .chart-data, .pos-catalog, .order-cart, .catalog-toolbar,
+    .cart-totals, .insight-strip, .cart-line
+) {
+    background: var(--jimny-dark-surface) !important;
+    border-color: var(--jimny-dark-border) !important;
+    color: var(--jimny-dark-body) !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(
+    .bg-white, .bg-\[\#FFFDF9\], .bg-\[\#F8F5F0\],
+    .bg-\[\#F1E5D8\], .bg-\[\#FFF3E4\], .bg-\[\#E8D8C7\]
+):not(button):not(a):not(.smart-message) {
+    background-color: var(--jimny-dark-raised) !important;
+    color: var(--jimny-dark-body) !important;
+    border-color: var(--jimny-dark-border) !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(
+    .metric-sage, .metric-blue, .metric-sand, .metric-lilac,
+    .product-cream,.product-blue,.product-sage,.product-sand,.product-lilac,
+    .segmented,.insight-strip
+) {background: var(--jimny-dark-surface-soft) !important;color:var(--jimny-dark-body) !important;}
+/* Selectors for panel headers rendered with hardcoded Tailwind light utility. */
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.panel,.owner-panel,.owner-stat,.owner-compact,.rounded-3xl) > :is(.bg-white,.bg-\[\#FFFDF9\],.bg-\[\#F8F5F0\]) {
+    background: #564032 !important;
+    color: var(--jimny-dark-heading) !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready table {
+    border-color: var(--jimny-dark-border);
+    color: var(--jimny-dark-body);
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready table :is(th,td) {
+    border-color: rgba(194,152,108,.28) !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready table thead,
+html[data-theme="dark"] body.jimny-v11 .page-ready table thead tr,
+html[data-theme="dark"] body.jimny-v11 .page-ready table thead th {
+    background: #584131 !important;
+    color: #F4E0C6 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready table tbody tr {
+    color: var(--jimny-dark-body);
+    background: transparent;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready table tbody tr:nth-child(even) {
+    background: rgba(255,220,167,.035);
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready table tbody tr:hover {
+    background: rgba(238,180,114,.11) !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready table td {
+    background-color: transparent !important;
+    color: var(--jimny-dark-body) !important;
+}
+/* Color specific semantic elements AFTER general cell styling. */
+html[data-theme="dark"] body.jimny-v11 .page-ready table td :is(.text-emerald-600,.text-green-700,.text-green-800) {
+    color: #71E9B7 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready table td :is(.text-red-500,.text-red-600,.text-red-700) {
+    color: #FFACA0 !important;
+}
+/* Badges, pills and alert banners: surfaces and inks must be paired. */
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.bg-green-50,.bg-green-100,.bg-emerald-50,.bg-emerald-100) {
+    background: #24483B !important;
+    color: #B2F6D5 !important;
+    border-color: #568D72 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.bg-red-50,.bg-red-100,.bg-rose-50,.bg-rose-100) {
+    background: #542C2A !important;
+    color: #FFD0C9 !important;
+    border-color: #A3655F !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.bg-amber-50,.bg-amber-100,.bg-orange-50,.bg-yellow-50) {
+    background: #55402B !important;
+    color: #FFE0AC !important;
+    border-color: #A47E51 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.bg-blue-50,.bg-blue-100,.bg-sky-50) {
+    background: #2B4152 !important;
+    color: #CCE8FE !important;
+}
+/* Value badges are not stretched or washed out by other rules. */
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.stock-badge,.owner-stock-status) {
+    color: #F2D5B2 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.report-table,.chart-data) th {
+    background: #584131 !important;
+    color: #FFE8CD !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.report-table,.chart-data) td {
+    background: transparent !important;
+    color: #F0DDC6 !important;
+}
+/* Controls remain dark but have legible labels, focus and menu overlays. */
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(
+    input:not([type="checkbox"]):not([type="radio"]),select,textarea
+) {
+    background: #32231B !important;
+    color: #F5E6D1 !important;
+    border-color: #967255 !important;
+    caret-color: #F5E6D1 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(input,textarea)::placeholder {
+    color: #C4A88D !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(label,legend) {
+    color: #DAB895;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.soft-button,.segmented button,.catalog-pager button) {
+    color: #FDE8CF !important;
+    background: #604431 !important;
+    border-color: #A6815B !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.soft-button,.segmented button,.catalog-pager button):hover {
+    background: #785338 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.primary-action,.category-tabs button[aria-pressed="true"]) {
+    color: #FFF7E9 !important;
+    background: linear-gradient(110deg,#AB5427,#86401E) !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.bar-item small,.trend-chart text) {
+    color: #C9A685 !important;
+    fill: #C9A685 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.bar-track,.chart-track) {
+    background: #5A4131 !important;
+}
+html[data-theme="dark"] body.jimny-v11 .page-ready :is(.empty-state,.owner-empty-state) {
+    background-color: rgba(98,68,47,.23);
+    color: #D7B899 !important;
+    border-color: rgba(211,158,106,.27);
+}
+/* Don't change Light Mode surfaces; it is approved in V11.1. */
+@media (prefers-reduced-motion:reduce) {
+    body.jimny-v11.guest-page .jimny-stage-card {animation:none !important;}
+}

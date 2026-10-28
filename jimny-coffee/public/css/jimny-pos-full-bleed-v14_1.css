@@ -1,0 +1,45 @@
+/* JIMNY POS V14.1 - DARK MODE: edge-to-edge product photography.
+   Limited to the POS route in dark mode. Never changes Light Mode,
+   card metadata, stock, selection state, checkout, or image source. */
+
+/* Remove the 6px cream picture frame from the media region. */
+html[data-theme="dark"] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card > .product-photo {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    background: #3c281f !important;
+}
+
+/* Fill the frame, crop naturally (like a premium coffee menu photo).
+   Existing V13 hover zoom stays enabled. */
+html[data-theme="dark"] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-image {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Placeholder for a menu without an image: dark, never a pale empty border. */
+html[data-theme="dark"] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-placeholder {
+    background: linear-gradient(130deg, #4e3728, #2c1c17) !important;
+    color: #f0d1ae !important;
+    border-radius: 0 !important;
+}
+
+/* Retain rounded top corners of each card while the image touches its edges. */
+html[data-theme="dark"] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card {
+    overflow: hidden !important;
+}
+
+@media print {
+    html[data-theme="dark"] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card > .product-photo {
+        background: transparent !important;
+    }
+}

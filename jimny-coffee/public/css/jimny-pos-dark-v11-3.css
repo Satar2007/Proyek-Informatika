@@ -1,0 +1,83 @@
+/*
+ * JIMNY COFFEE | POS Cashier Midnight Background v11.3
+ * Dark mode ONLY. Scoped to the cashier POS route (body.pos-screen).
+ * Does not change POS functionality, cards, payment buttons or Light Mode.
+ * User-provided art: public/images/jimny-pos-dragon-dark.jpg
+ */
+
+/* A textured espresso/charcoal layer behind BOTH the menu and the cart. */
+html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready .pos-workspace {
+    background-color: #171414 !important;
+    background-image:
+        linear-gradient(120deg,
+            rgba(21, 16, 15, .67) 0%,
+            rgba(33, 22, 18, .79) 52%,
+            rgba(23, 18, 17, .70) 100%),
+        url('../images/jimny-pos-dragon-dark.jpg') !important;
+    background-size: cover, cover !important;
+    background-position: center center, center center !important;
+    background-repeat: no-repeat, no-repeat !important;
+    background-attachment: scroll, scroll !important;
+    border: 1px solid rgba(197, 143, 98, .28) !important;
+    border-radius: 19px !important;
+    padding: 11px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 240, 219, .09), 0 16px 36px rgba(7, 5, 5, .18);
+}
+
+/* Let the local wallpaper appear in the space BETWEEN catalog and order cards. */
+html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready .pos-columns {
+    background: transparent !important;
+}
+
+/* Warm latte glass header, not blinding white. */
+html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready #order-cart > div:first-child {
+    background: linear-gradient(125deg, rgba(246, 225, 195, .97), rgba(219, 181, 135, .96)) !important;
+    border-bottom-color: rgba(119, 78, 50, .42) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4) !important;
+}
+
+/* Explicit high-contrast dark text to defeat older dark-mode heading overrides. */
+html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready #order-cart > div:first-child h2 {
+    color: #482b1d !important;
+    -webkit-text-fill-color: #482b1d !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+}
+html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready #order-cart > div:first-child p,
+html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready #order-cart > div:first-child p span {
+    color: #6c4830 !important;
+    -webkit-text-fill-color: #6c4830 !important;
+    opacity: 1 !important;
+}
+
+/* The cart icon is a dark espresso chip with an ivory glyph. */
+html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready #order-cart > div:first-child > .flex > div:last-child {
+    background: #59392a !important;
+    color: #fff3de !important;
+    border: 1px solid rgba(94, 62, 40, .55) !important;
+    box-shadow: 0 4px 12px rgba(67, 38, 24, .15) !important;
+}
+html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready #order-cart > div:first-child > .flex > div:last-child svg {
+    stroke: #fff3de !important;
+}
+
+/* POS order panel border: subtle separation from the dragon texture. */
+html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready #order-cart {
+    border-color: rgba(201, 157, 112, .68) !important;
+    box-shadow: 0 12px 30px rgba(7, 5, 5, .22) !important;
+}
+
+@media (max-width: 767px) {
+    html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready .pos-workspace {
+        padding: 7px !important;
+        border-radius: 14px !important;
+    }
+}
+
+@media print {
+    html[data-theme="dark"] body.jimny-v11.pos-screen .page-ready .pos-workspace {
+        background: #fff !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+}

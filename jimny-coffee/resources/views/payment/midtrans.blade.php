@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="mx-auto max-w-3xl space-y-6">
+<div class="mx-auto max-w-3xl space-y-6 jimny-midtrans-v13" data-payment-status="{{ $payment->payment_status }}">
     <div class="rounded-3xl border border-amber-200 bg-white p-6 shadow-sm">
         <div class="mb-5">
             <p class="text-sm font-semibold text-amber-800">

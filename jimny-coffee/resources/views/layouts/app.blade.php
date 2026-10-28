@@ -7,6 +7,8 @@
 
     <title>JIMNY COFFEE</title>
 
+    <script src="{{ asset('js/jimny-theme-v11.js') }}?v=11.1"></script>
+    <script src="{{ asset('js/jimny-theme-motion-v12.js') }}?v=12.0" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -22,8 +24,8 @@
         input,
         textarea,
         select {
-            color: #000000 !important;
-            caret-color: #000000 !important;
+            color: var(--jimny-field-ink, #000000) !important;
+            caret-color: var(--jimny-field-ink, #000000) !important;
         }
 
         input::placeholder,
@@ -41,10 +43,10 @@
         select:-webkit-autofill,
         select:-webkit-autofill:hover,
         select:-webkit-autofill:focus {
-            -webkit-text-fill-color: #000000 !important;
-            caret-color: #000000 !important;
-            box-shadow: 0 0 0px 1000px #ffffff inset !important;
-            -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+            -webkit-text-fill-color: var(--jimny-field-ink, #000000) !important;
+            caret-color: var(--jimny-field-ink, #000000) !important;
+            box-shadow: 0 0 0px 1000px var(--jimny-field-bg, #ffffff) inset !important;
+            -webkit-box-shadow: 0 0 0px 1000px var(--jimny-field-bg, #ffffff) inset !important;
             transition: background-color 9999s ease-in-out 0s;
         }
 
@@ -56,12 +58,12 @@
         input[type="text"],
         textarea,
         select {
-            color-scheme: light !important;
+            color-scheme: var(--jimny-scheme, light) !important;
         }
 
         input[type="date"]::-webkit-calendar-picker-indicator,
         input[type="time"]::-webkit-calendar-picker-indicator {
-            filter: invert(0) !important;
+            filter: var(--jimny-picker-filter, invert(0)) !important;
             opacity: 1 !important;
         }
 
@@ -82,8 +84,19 @@
 <link rel="stylesheet" href="{{ asset('css/page-transition.css') }}?v=7">
 <link rel="stylesheet" href="{{ asset('css/menu-photos.css') }}?v=2">
 <link rel="stylesheet" href="{{ asset('css/global-ui-polish.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('css/jimny-theme-v11.css') }}?v=11.2">
+    <link rel="stylesheet" href="{{ asset('css/jimny-theme-motion-v12.css') }}?v=12.0">
+    <link rel="stylesheet" href="{{ asset('css/jimny-admin-dark-v12_1.css') }}?v=12.1">
+    <link rel="stylesheet" href="{{ asset('css/jimny-owner-dark-v12_2.css') }}?v=12.2">
+    <link rel="stylesheet" href="{{ asset('css/jimny-pos-dark-v11-3.css') }}?v=11.3">
     <script src="{{ asset('js/pos-motion.js') }}?v=6" defer></script>
+    <script src="{{ asset('js/jimny-pos-barista-v13.js') }}?v=13.0" defer></script>
     <script src="{{ asset('js/page-motion.js') }}?v=2" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/jimny-pos-barista-v13.css') }}?v=13.0">
+    <link rel="stylesheet" href="{{ asset('css/jimny-payment-dark-v13_1.css') }}?v=13.1">
+    <link rel="stylesheet" href="{{ asset('css/jimny-kasir-transaksi-dark-v13_2.css') }}?v=13.2">
+    <link rel="stylesheet" href="{{ asset('css/jimny-pos-repair-v14_4.css') }}?v=14.4">
+    <script defer src="{{ asset('js/jimny-pos-repair-v14_4.js') }}?v=14.4"></script>
 </head>
 
 @php
@@ -105,7 +118,7 @@
     $svg = fn (string $name) => '<svg class="sidebar-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . ($svgPaths[$name] ?? '') . '</svg>';
 @endphp
 
-<body class="ember-theme {{ request()->routeIs('kasir.index') ? 'pos-screen' : '' }} min-h-screen text-[#4B2E1F] antialiased">
+<body data-jimny-v12-role="{{ auth()->user()->role }}" class="ember-theme jimny-v11 {{ request()->routeIs('kasir.index') ? 'pos-screen' : '' }} min-h-screen text-[#4B2E1F] antialiased">
     <x-page-transition />
 
     <a href="#main-content" class="skip-link">Langsung ke konten</a>
@@ -118,8 +131,13 @@
                     <img src="{{ asset('images/jimny-logo-round.png') }}" alt="Logo JIMNY COFFEE" class="brand-logo">
                     <div class="min-w-0">
                         <div class="brand-title">JIMNY COFFEE</div>
-                        <div class="brand-sub">GOOD COFFEE · BETTER MOOD</div>
+                        <div class="brand-sub">GOOD COFFEE Â· BETTER MOOD</div>
                     </div>
+                </div>
+
+                <div class="jimny-sidebar-theme" aria-label="Pengaturan tema">
+                    <span class="jimny-sidebar-theme-caption">Tampilan</span>
+                    @include('components.jimny-theme-toggle')
                 </div>
 
                 <nav class="sidebar-nav" aria-label="Menu">
@@ -127,43 +145,43 @@
                         <div class="sidebar-section">Navigasi</div>
 
                         @if(auth()->user()->role === 'admin')
-                            <a href="{{ route('admin.dashboard') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif>{!! $svg('home') !!}<span>Dashboard</span></a>
-                            <a href="{{ route('kasir.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('kasir.index') ? 'active' : '' }}" @if(request()->routeIs('kasir.index')) aria-current="page" @endif>{!! $svg('cup') !!}<span>Kasir / POS</span></a>
+                            <a href="{{ route('admin.dashboard') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif><span>Dashboard</span></a>
+                            <a href="{{ route('kasir.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('kasir.index') ? 'active' : '' }}" @if(request()->routeIs('kasir.index')) aria-current="page" @endif><span>Kasir / POS</span></a>
                         @elseif(auth()->user()->role === 'owner')
-                            <a href="{{ route('owner.dashboard') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('owner.dashboard') ? 'active' : '' }}" @if(request()->routeIs('owner.dashboard')) aria-current="page" @endif>{!! $svg('home') !!}<span>Dashboard</span></a>
+                            <a href="{{ route('owner.dashboard') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('owner.dashboard') ? 'active' : '' }}" @if(request()->routeIs('owner.dashboard')) aria-current="page" @endif><span>Dashboard</span></a>
                         @else
-                            <a href="{{ route('kasir.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('kasir.index') ? 'active' : '' }}" @if(request()->routeIs('kasir.index')) aria-current="page" @endif>{!! $svg('cup') !!}<span>Kasir / POS</span></a>
+                            <a href="{{ route('kasir.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('kasir.index') ? 'active' : '' }}" @if(request()->routeIs('kasir.index')) aria-current="page" @endif><span>Kasir / POS</span></a>
                         @endif
 
                         @if(in_array(auth()->user()->role, ['admin', 'kasir']))
                             @if(request()->routeIs('kasir.index'))
-                                <button type="button" class="sidebar-link" @click="mobileOpen = false; $dispatch('open-presensi')">{!! $svg('clock') !!}<span>Presensi &amp; Izin</span></button>
+                                <button type="button" class="sidebar-link" @click="mobileOpen = false; $dispatch('open-presensi')"><span>Presensi &amp; Izin</span></button>
                             @else
-                                <a href="{{ route('kasir.index', ['presensi' => 1]) }}" @click="mobileOpen = false" class="sidebar-link">{!! $svg('clock') !!}<span>Presensi &amp; Izin</span></a>
+                                <a href="{{ route('kasir.index', ['presensi' => 1]) }}" @click="mobileOpen = false" class="sidebar-link"><span>Presensi &amp; Izin</span></a>
                             @endif
                         @endif
 
                         @if(auth()->user()->role === 'admin')
                             <div class="sidebar-section">Operasional</div>
-                            <a href="{{ route('admin.menu.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.menu.*') ? 'active' : '' }}">{!! $svg('box') !!}<span>Menu &amp; Stok</span></a>
-                            <a href="{{ route('admin.stok-log') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.stok-log') ? 'active' : '' }}">{!! $svg('list') !!}<span>Log Stok</span></a>
-                            <a href="{{ route('admin.shift.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.shift.*') ? 'active' : '' }}">{!! $svg('calendar') !!}<span>Shift &amp; Absensi</span></a>
-                            <a href="{{ route('admin.izin.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.izin.*') ? 'active' : '' }}">{!! $svg('check') !!}<span>Pengajuan Izin</span></a>
-                            <a href="{{ route('admin.akun.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.akun.*') ? 'active' : '' }}">{!! $svg('users') !!}<span>Kelola Akun</span></a>
+                            <a href="{{ route('admin.menu.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.menu.*') ? 'active' : '' }}"><span>Menu &amp; Stok</span></a>
+                            <a href="{{ route('admin.stok-log') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.stok-log') ? 'active' : '' }}"><span>Log Stok</span></a>
+                            <a href="{{ route('admin.shift.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.shift.*') ? 'active' : '' }}"><span>Shift &amp; Absensi</span></a>
+                            <a href="{{ route('admin.izin.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.izin.*') ? 'active' : '' }}"><span>Pengajuan Izin</span></a>
+                            <a href="{{ route('admin.akun.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('admin.akun.*') ? 'active' : '' }}"><span>Kelola Akun</span></a>
 
                             <div class="sidebar-section">Bisnis</div>
-                            <a href="{{ route('transaksi.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('transaksi.*') ? 'active' : '' }}">{!! $svg('receipt') !!}<span>Transaksi</span></a>
-                            <a href="{{ route('laporan.harian') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">{!! $svg('chart') !!}<span>Laporan</span></a>
+                            <a href="{{ route('transaksi.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('transaksi.*') ? 'active' : '' }}"><span>Transaksi</span></a>
+                            <a href="{{ route('laporan.harian') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}"><span>Laporan</span></a>
                         @elseif(auth()->user()->role === 'owner')
                             <div class="sidebar-section">Bisnis</div>
-                            <a href="{{ route('laporan.harian') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('laporan.harian') ? 'active' : '' }}">{!! $svg('chart') !!}<span>Laporan Harian</span></a>
-                            <a href="{{ route('laporan.bulanan') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('laporan.bulanan') ? 'active' : '' }}">{!! $svg('chart') !!}<span>Laporan Bulanan</span></a>
-                            <a href="{{ route('transaksi.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('transaksi.*') ? 'active' : '' }}">{!! $svg('receipt') !!}<span>Transaksi</span></a>
-                            <a href="{{ route('owner.rekap-kehadiran') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('owner.rekap-kehadiran') ? 'active' : '' }}">{!! $svg('calendar') !!}<span>Rekap Kehadiran</span></a>
+                            <a href="{{ route('laporan.harian') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('laporan.harian') ? 'active' : '' }}"><span>Laporan Harian</span></a>
+                            <a href="{{ route('laporan.bulanan') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('laporan.bulanan') ? 'active' : '' }}"><span>Laporan Bulanan</span></a>
+                            <a href="{{ route('transaksi.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('transaksi.*') ? 'active' : '' }}"><span>Transaksi</span></a>
+                            <a href="{{ route('owner.rekap-kehadiran') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('owner.rekap-kehadiran') ? 'active' : '' }}"><span>Rekap Kehadiran</span></a>
                         @else
                             <div class="sidebar-section">Kasir</div>
-                            <a href="{{ route('transaksi.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('transaksi.*') ? 'active' : '' }}">{!! $svg('receipt') !!}<span>Transaksi</span></a>
-                            <a href="{{ route('laporan.harian') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">{!! $svg('chart') !!}<span>Laporan</span></a>
+                            <a href="{{ route('transaksi.index') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('transaksi.*') ? 'active' : '' }}"><span>Transaksi</span></a>
+                            <a href="{{ route('laporan.harian') }}" @click="mobileOpen = false" class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}"><span>Laporan</span></a>
                         @endif
                     @endauth
                 </nav>

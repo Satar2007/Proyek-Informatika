@@ -1,0 +1,156 @@
+/* JIMNY COFFEE | POS Barista Flow V13
+   Animations only. All rules scoped to actual POS route + workspace.
+   V11 Light/Dark colors, V11.3 dragon art, and V12 theme transition stay intact. */
+body.pos-screen .pos-workspace {
+  --barista-ease: cubic-bezier(.22,1,.36,1);
+  --barista-caramel: #c98a4a;
+}
+
+/* Coffee Lift: keep every card's image, dimensions, and colors untouched. */
+body.pos-screen .pos-workspace .product-card {
+  isolation: isolate;
+  transition: transform 220ms var(--barista-ease),
+              box-shadow 220ms var(--barista-ease),
+              border-color 220ms var(--barista-ease) !important;
+  will-change: auto;
+}
+body.pos-screen .pos-workspace .product-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  background: linear-gradient(112deg, transparent 25%, rgba(255,248,224,.28) 49%, transparent 75%);
+  transform: translateX(-52%);
+  transition: opacity 240ms ease, transform 420ms var(--barista-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  body.pos-screen .pos-workspace .product-card:hover:not(:disabled) {
+    transform: translateY(-4px) scale(1.008);
+    border-color: rgba(196,134,70,.8) !important;
+    box-shadow: 0 12px 28px rgba(70,38,16,.15), 0 0 0 1px rgba(203,148,90,.16);
+    z-index: 2;
+  }
+  body.pos-screen .pos-workspace .product-card:hover::after {
+    opacity: .68;
+    transform: translateX(50%);
+  }
+  body.pos-screen .pos-workspace .product-card:hover .product-photo img {
+    transform: scale(1.045);
+  }
+}
+body.pos-screen .pos-workspace .product-card:focus-visible {
+  outline: 3px solid #d8a16a;
+  outline-offset: 3px;
+}
+body.pos-screen .pos-workspace .product-card:active:not(:disabled) {
+  transform: scale(.98);
+}
+body.pos-screen .pos-workspace .product-photo {
+  overflow: hidden;
+}
+body.pos-screen .pos-workspace .product-photo img {
+  transition: transform 340ms var(--barista-ease);
+  transform-origin: center;
+}
+body.pos-screen .pos-workspace .product-plus {
+  transition: transform 200ms var(--barista-ease), box-shadow 200ms ease;
+}
+body.pos-screen .pos-workspace .product-card:hover:not(:disabled) .product-plus,
+body.pos-screen .pos-workspace .product-card:focus-visible .product-plus {
+  transform: rotate(8deg) scale(1.09);
+  box-shadow: 0 4px 13px rgba(138,86,34,.18);
+}
+
+/* Liquid category tabs: no modification to selected category or search state. */
+body.pos-screen .pos-workspace .category-tabs button {
+  position: relative;
+  isolation: isolate;
+  transition: background-color 220ms ease, border-color 220ms ease,
+              box-shadow 220ms ease, transform 180ms var(--barista-ease) !important;
+}
+body.pos-screen .pos-workspace .category-tabs button[aria-pressed="true"] {
+  box-shadow: 0 5px 16px rgba(125,73,36,.15), inset 0 1px rgba(255,255,255,.18) !important;
+}
+body.pos-screen .pos-workspace .category-tabs button:active {
+  transform: scale(.94);
+}
+body.pos-screen .pos-workspace .catalog-pager button:not(:disabled) {
+  transition: transform 180ms var(--barista-ease), box-shadow 180ms ease;
+}
+body.pos-screen .pos-workspace .catalog-pager button:not(:disabled):active {
+  transform: scale(.90);
+}
+
+/* Cart rows & confirmation feedback; does not change quantity or calculations. */
+body.pos-screen .pos-workspace .cart-line {
+  animation: barista-row-in 230ms var(--barista-ease) both !important;
+}
+body.pos-screen .pos-workspace .cart-line:focus-within {
+  outline: 2px solid rgba(201,138,74,.45);
+  outline-offset: 1px;
+}
+body.pos-screen .pos-workspace #order-cart .cart-totals {
+  transition: border-color 260ms ease, box-shadow 260ms ease;
+}
+body.pos-screen .pos-workspace #order-cart.barista-cart-received .cart-totals {
+  border-color: rgba(201,138,74,.72) !important;
+  box-shadow: 0 0 0 3px rgba(201,138,74,.12);
+}
+body.pos-screen .pos-workspace .cart-body .grid.grid-cols-2 button:not(:disabled) {
+  transition: transform 170ms var(--barista-ease), filter 170ms ease,
+              box-shadow 200ms ease !important;
+}
+body.pos-screen .pos-workspace .cart-body .grid.grid-cols-2 button:not(:disabled):hover {
+  filter: brightness(1.04);
+  box-shadow: 0 7px 18px rgba(101,66,37,.15);
+}
+body.pos-screen .pos-workspace .cart-body .grid.grid-cols-2 button:not(:disabled):active {
+  transform: scale(.965);
+}
+body.pos-screen .pos-workspace .cart-body input:focus-visible {
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+}
+
+/* Decorative flight particles use a fixed layer, never change POS DOM flow. */
+.barista-flight-dot {
+  position: fixed;
+  z-index: 5500;
+  display: block;
+  width: 11px;
+  height: 11px;
+  border: 1px solid rgba(255,245,213,.85);
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 34%, #fff4da 0%, #e7b576 45%, #aa6b37 100%);
+  box-shadow: 0 0 11px rgba(205,149,80,.55);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+@keyframes barista-row-in {
+  from { opacity: .6; transform: translateY(7px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* No hover jump on touchscreens; honor OS reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  body.pos-screen .pos-workspace .product-card,
+  body.pos-screen .pos-workspace .product-photo img,
+  body.pos-screen .pos-workspace .product-plus,
+  body.pos-screen .pos-workspace .category-tabs button,
+  body.pos-screen .pos-workspace .catalog-pager button,
+  body.pos-screen .pos-workspace .cart-line,
+  body.pos-screen .pos-workspace .cart-totals,
+  body.pos-screen .pos-workspace .cart-body button,
+  body.pos-screen .pos-workspace .product-card::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+@media print {
+  .barista-flight-dot { display:none !important; }
+  body.pos-screen .pos-workspace .product-card { animation:none !important; transform:none !important; }
+}
