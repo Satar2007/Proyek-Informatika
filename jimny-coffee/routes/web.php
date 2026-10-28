@@ -40,6 +40,7 @@ Route::middleware(['auth', 'role:kasir,admin,owner'])->group(function () {
     // Smart Assistant: bantuan kontekstual untuk semua role tanpa menambah menu baru
     Route::get('/smart-assistant/insights', [SmartAssistantController::class, 'insights'])->name('smart-assistant.insights');
     Route::post('/smart-assistant/chat', [SmartAssistantController::class, 'chat'])->name('smart-assistant.chat');
+    Route::post('/smart-assistant/ai-chat', [\App\Http\Controllers\JimnyLocalAiController::class, 'chat'])->middleware('throttle:12,1')->name('smart-assistant.ai-chat');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -167,3 +168,20 @@ Route::middleware('auth')
         [SmartAssistantController::class, 'decisions']
     )
     ->name('smart-assistant.decisions');
+
+// JIMNY_INTELLIGENCE_360: read-only Owner/Admin forecasting endpoint.
+\Illuminate\Support\Facades\Route::middleware(['auth','role:admin,owner'])
+    ->get('/smart-assistant/intelligence-360', [\App\Http\Controllers\JimnyIntelligenceController::class, 'dashboard'])
+    ->middleware('throttle:30,1')
+    ->name('smart-assistant.intelligence-360');
+
+// JIMNY_SIMULATION_V19: data sintetis saja, tidak membaca transaksi atau stok POS.
+\Illuminate\Support\Facades\Route::middleware(['auth','role:admin,owner'])
+    ->get('/smart-assistant/simulation-v19', [\App\Http\Controllers\JimnySimulationLabController::class, 'show'])
+    ->middleware('throttle:30,1')
+    ->name('smart-assistant.simulation-v19');
+
+// JIMNY_OWNER_V20: same JSA panel, read-only business data.
+\Illuminate\Support\Facades\Route::middleware(['auth','role:admin,owner'])
+    ->get('/smart-assistant/owner-v20', [\App\Http\Controllers\JimnyOwnerV20Controller::class, 'data'])
+    ->middleware('throttle:60,1')->name('smart-assistant.owner-v20');
