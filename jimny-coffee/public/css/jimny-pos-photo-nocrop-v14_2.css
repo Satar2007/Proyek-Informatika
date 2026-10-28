@@ -1,0 +1,111 @@
+/* JIMNY POS PHOTO NO-CROP V14.2
+   Light + dark, every POS product card, original image preserved.
+   Adaptive image height honors intrinsic SVG viewBox and real uploaded photos.
+   If the photo cannot fit vertically, an aria-hidden blurred duplicate fills
+   the leftover area; the original image is still shown fully via contain. */
+
+/* Primary light/dark styling. More specific than V14.1 dark-only overrides. */
+html[data-theme] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card,
+body.pos-screen .pos-workspace .product-grid .product-card {
+  overflow: hidden !important;
+  min-width: 0;
+}
+html[data-theme] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card > .product-photo,
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  flex: 0 0 auto !important;
+  aspect-ratio: auto !important;
+  height: var(--jimny-photo-natural-height, auto) !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  isolation: isolate;
+}
+
+html[data-theme] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-image,
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-image {
+  position: relative !important;
+  z-index: 1 !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  transform: none !important;
+}
+
+/* The main media is fitted inside its measured display area, never cropped. */
+html[data-theme] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card > .product-photo.jimny-photo-measured > .menu-photo-image,
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo.jimny-photo-measured > .menu-photo-image {
+  height: 100% !important;
+}
+
+/* Only visible if the available card height is smaller than the natural image. */
+html[data-theme] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .jimny-photo-backdrop,
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .jimny-photo-backdrop {
+  position: absolute !important;
+  z-index: 0 !important;
+  display: block !important;
+  inset: -12% !important;
+  width: 124% !important;
+  height: 124% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  pointer-events: none !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  filter: blur(16px) saturate(1.08) brightness(.88);
+  transform: scale(1.06) !important;
+  opacity: .95;
+}
+
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-placeholder {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  height: auto !important;
+  aspect-ratio: 4 / 3 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+body.pos-screen .pos-workspace .product-grid .product-card > .product-bottom {
+  margin-top: auto !important;
+}
+
+/* Override V13 photo-only scale: image should remain uncropped on hover. */
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme] body.jimny-v11.pos-screen .pos-workspace .product-grid .product-card:hover .product-photo > .menu-photo-image,
+  body.pos-screen .pos-workspace .product-grid .product-card:hover .product-photo > .menu-photo-image {
+    transform: none !important;
+  }
+}
+
+/* Mobile cards naturally grow to the full image height. */
+@media (max-width: 1023px) {
+  body.pos-screen .pos-workspace .product-grid .product-card {
+    height: auto !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-image {
+    transition: none !important;
+  }
+}

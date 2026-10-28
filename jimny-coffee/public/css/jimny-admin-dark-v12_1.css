@@ -1,0 +1,137 @@
+/* JIMNY Admin Dark Patch V12.1 */
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] {
+    --adm-surface: rgba(57,34,22,.92);
+    --adm-surface-2: rgba(72,43,29,.95);
+    --adm-surface-3: rgba(90,56,38,.96);
+    --adm-header: linear-gradient(180deg, rgba(97,61,40,.94), rgba(70,43,29,.98));
+    --adm-border: rgba(217,176,140,.34);
+    --adm-border-strong: rgba(217,176,140,.5);
+    --adm-text: #f4e2cf;
+    --adm-text-2: #e7c8a9;
+    --adm-muted: #c8a382;
+    --adm-field: rgba(73,45,30,.94);
+    --adm-field-focus: rgba(87,53,36,.96);
+    --adm-shadow: 0 20px 44px rgba(0,0,0,.22);
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .app-content,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .content-glass,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready {
+    color: var(--adm-text);
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready :is(
+    .rounded-3xl.border,
+    .overflow-hidden.rounded-3xl,
+    .rounded-3xl[class*="bg-white"],
+    .rounded-2xl[class*="bg-white"],
+    [class*="bg-white"][class*="rounded-3xl"],
+    [class*="bg-[#FFFDF9]"],
+    [class*="bg-[#F8F5F0]"]
+):not(.bg-emerald-50):not(.bg-red-50):not(.bg-orange-50):not(.bg-emerald-100):not(.bg-red-100) {
+    background: var(--adm-surface) !important;
+    border-color: var(--adm-border) !important;
+    box-shadow: var(--adm-shadow) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready :is(
+    .border-b.bg-gradient-to-br,
+    .border-b[class*="from-white"],
+    .border-b[class*="to-[#F8F5F0]"],
+    .border-b[class*="bg-[#F8F5F0]"],
+    .border-b[class*="bg-white"],
+    .page-lead .inline-flex,
+    .inline-flex[class*="bg-white"]
+):not(.bg-emerald-50):not(.bg-red-50) {
+    background: var(--adm-header) !important;
+    border-color: var(--adm-border) !important;
+    color: var(--adm-text) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready :is(
+    [class*="text-[#4B2E1F]"],
+    [class*="text-[#7B4B2A]"],
+    [class*="text-[#9B8574]"],
+    [class*="text-[#D9B08C]"],
+    h1, h2, h3, h4, h5, h6, th, td, label
+) {
+    color: var(--adm-text) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready p,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready small,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready .text-sm,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready .text-xs {
+    color: var(--adm-text-2) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready :is(
+    .rounded-full[class*="bg-[#F1E5D8]"],
+    .rounded-full[class*="bg-white"],
+    a[class*="border-[#D9B08C]"][class*="bg-white"],
+    button[class*="border-[#D9B08C]"][class*="bg-white"]
+) {
+    background: var(--adm-surface-3) !important;
+    color: var(--adm-text) !important;
+    border-color: var(--adm-border) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready :is(
+    a[class*="bg-[#7B4B2A]"],
+    button[class*="bg-[#7B4B2A]"],
+    a[class*="bg-[#4B2E1F]"],
+    button[class*="bg-[#4B2E1F]"]
+) {
+    background: linear-gradient(180deg, #c35b1b, #9e4313) !important;
+    color: #fff4ea !important;
+    border-color: rgba(255,255,255,.08) !important;
+    box-shadow: 0 12px 26px rgba(115,42,8,.24) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready input:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready select,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready textarea {
+    background: var(--adm-field) !important;
+    color: var(--adm-text) !important;
+    border-color: var(--adm-border-strong) !important;
+    caret-color: var(--adm-text) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.03) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready input::placeholder,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready textarea::placeholder {
+    color: var(--adm-muted) !important;
+    opacity: 1 !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready input:focus,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready select:focus,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready textarea:focus {
+    background: var(--adm-field-focus) !important;
+    border-color: rgba(201,138,74,.72) !important;
+    box-shadow: 0 0 0 4px rgba(201,138,74,.18) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready table thead,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready table thead tr {
+    background: linear-gradient(180deg, rgba(113,70,44,.95), rgba(89,57,39,.95)) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready table tbody tr {
+    background: transparent !important;
+    border-color: rgba(217,176,140,.14) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready table tbody tr:nth-child(even) {
+    background: rgba(255,255,255,.02) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready table tbody tr:hover {
+    background: rgba(201,138,74,.08) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready .border-dashed,
+html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="admin"] .page-ready [class*="border-dashed"] {
+    border-color: rgba(217,176,140,.26) !important;
+    background: rgba(76,46,31,.45) !important;
+}

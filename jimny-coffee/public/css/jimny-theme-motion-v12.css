@@ -1,0 +1,82 @@
+/* JIMNY Coffee V12 / Liquid Glass Theme Morph. Styling only. */
+:root { --jimny-v12-time: 540ms; --jimny-v12-easing: cubic-bezier(.22,1,.36,1); }
+
+/* The new theme is revealed from the toggle; the old screenshot remains beneath it. */
+html.jimny-v12-animating::view-transition-old(root) {
+    animation: none;
+    mix-blend-mode: normal;
+    z-index: 1;
+}
+html.jimny-v12-animating::view-transition-new(root) {
+    animation: jimny-v12-liquid-reveal var(--jimny-v12-time) var(--jimny-v12-easing) both;
+    mix-blend-mode: normal;
+    z-index: 2;
+}
+@keyframes jimny-v12-liquid-reveal {
+    0% { clip-path: circle(0px at var(--jimny-v12-x) var(--jimny-v12-y)); opacity: .96; }
+    36% { opacity: 1; }
+    100% { clip-path: circle(var(--jimny-v12-radius) at var(--jimny-v12-x) var(--jimny-v12-y)); opacity: 1; }
+}
+
+/* Standard transitions on browsers without the View Transitions API. */
+html.jimny-v12-fallback body.jimny-v11,
+html.jimny-v12-fallback body.jimny-v11 :is(
+    .app-sidebar, .sidebar-link, .content-glass, .app-topbar, .coffee-art-header,
+    .panel, .owner-panel, .owner-stat, .owner-compact, .metric-card,
+    .product-card, .pos-catalog, .catalog-toolbar, .order-cart,
+    .cart-totals, .jimny-stage-card, .jimny-stage-brand, .report-table,
+    .smart-panel, .smart-v2-chat, input, select, textarea
+) {
+    transition-property: background-color, border-color, color, box-shadow !important;
+    transition-duration: var(--jimny-v12-time) !important;
+    transition-timing-function: ease-in-out !important;
+}
+
+/* Signature: caramel squircle gently settles as the theme switches. */
+html.jimny-v12-animating body.jimny-v11 .app-sidebar .sidebar-link.active::before {
+    animation: jimny-v12-fluid-squircle var(--jimny-v12-time) var(--jimny-v12-easing) both;
+}
+@keyframes jimny-v12-fluid-squircle {
+    0%   { transform: translateX(-9px) scale(.94, 1.03); opacity: .55; }
+    46%  { transform: translateX(1px) scale(1.018, .98); opacity: .94; }
+    100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+/* Motion detail only; preserve existing Light/Dark colors and functional styles. */
+html.jimny-v12-animating .jimny-theme-thumb {
+    transition-duration: 340ms !important;
+    transition-timing-function: cubic-bezier(.2,1.25,.28,1) !important;
+}
+html.jimny-v12-animating .jimny-theme-saber { transition-duration: 400ms !important; }
+
+/* POS should never keep the cashier waiting for a cinematic transition. */
+html.jimny-v12-animating[data-jimny-v12-role="kasir"] .jimny-theme-thumb {
+    transition-duration: 250ms !important;
+}
+
+/* Owner/administrator surfaces can glow gently without moving the layout. */
+html.jimny-v12-animating[data-jimny-v12-role="owner"] body.jimny-v11 :is(.owner-panel,.owner-stat) {
+    animation: jimny-v12-owner-glow var(--jimny-v12-time) ease-out both;
+}
+html.jimny-v12-animating[data-jimny-v12-role="admin"] body.jimny-v11 .sidebar-link.active {
+    animation: jimny-v12-admin-settle var(--jimny-v12-time) ease-out both;
+}
+@keyframes jimny-v12-owner-glow {
+    0%,100% { filter: brightness(1); }
+    47% { filter: brightness(1.045); }
+}
+@keyframes jimny-v12-admin-settle {
+    0%,100% { filter: brightness(1); }
+    42% { filter: brightness(1.07); }
+}
+
+/* Respect accessibility preferences and avoid costly view-transition captures. */
+@media (prefers-reduced-motion: reduce) {
+    html.jimny-v12-animating::view-transition-old(root),
+    html.jimny-v12-animating::view-transition-new(root),
+    html.jimny-v12-animating body.jimny-v11 .app-sidebar .sidebar-link.active::before,
+    html.jimny-v12-animating body.jimny-v11 :is(.owner-panel,.owner-stat,.sidebar-link.active) {
+        animation: none !important;
+        transition: none !important;
+    }
+}
