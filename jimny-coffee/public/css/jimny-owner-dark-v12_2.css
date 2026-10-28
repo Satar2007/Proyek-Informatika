@@ -1,0 +1,119 @@
+/*
+ * JIMNY Coffee V12.2 — Owner Dark Mode Contrast Repair.
+ * Scoped to V12's explicit Owner role and dark theme. Does not affect Admin,
+ * Kasir, guest, light mode, or Smart Assistant overlays.
+ * Fixes hardcoded Tailwind white-to-cream gradients on shared transaction,
+ * transaction detail, owner attendance and reporting section headers.
+ */
+@media screen {
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] {
+        --jimny-owner-fix-surface: #39271d;
+        --jimny-owner-fix-raised: #503729;
+        --jimny-owner-fix-header: linear-gradient(135deg, rgba(94, 62, 43, .96), rgba(66, 43, 31, .98));
+        --jimny-owner-fix-line: rgba(211, 162, 112, .40);
+        --jimny-owner-fix-title: #f9e8d3;
+        --jimny-owner-fix-desc: #e6c3a1;
+    }
+
+    /* Transaction, item/detail, daily/monthly report and attendance panels. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    :is(.overflow-hidden.rounded-3xl.border.bg-white, .rounded-3xl.border.bg-white) {
+        background: var(--jimny-owner-fix-surface) !important;
+        border-color: var(--jimny-owner-fix-line) !important;
+        color: var(--jimny-owner-fix-title);
+    }
+
+    /* Critical fix: reset background-image, NOT just background-color.
+       Earlier theme rules left Tailwind's white gradient visible. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    :is(.overflow-hidden.rounded-3xl, .rounded-3xl.border) >
+    :is(.border-b.bg-gradient-to-br, .border-b[class*="from-white"], .border-b[class*="bg-gradient-to-"]) {
+        background: var(--jimny-owner-fix-header) !important;
+        background-image: var(--jimny-owner-fix-header) !important;
+        border-color: var(--jimny-owner-fix-line) !important;
+        color: var(--jimny-owner-fix-title) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 232, 202, .05);
+    }
+
+    /* Other cream/white header strips and the attendance progress block. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > :is(.border-b.bg-white, .border-b[class*="bg-[#FFFDF9]"], .border-b[class*="bg-[#F8F5F0]"]) {
+        background: var(--jimny-owner-fix-raised) !important;
+        background-image: none !important;
+        border-color: var(--jimny-owner-fix-line) !important;
+    }
+
+    /* Headings/descriptions inside the repaired header strips. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br :is(h2, h3, h4),
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b[class*="from-white"] :is(h2, h3, h4) {
+        color: var(--jimny-owner-fix-title) !important;
+        text-shadow: none !important;
+    }
+
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br p,
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b[class*="from-white"] p,
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b[class*="bg-[#FFFDF9]"] p:not(.text-emerald-600),
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b[class*="bg-[#F8F5F0]"] p:not(.text-emerald-600) {
+        color: var(--jimny-owner-fix-desc) !important;
+        text-shadow: none !important;
+    }
+
+    /* Owner attendance: name avatar and neutral counter chips. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br [class*="bg-[#F8F5F0]"],
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br [class*="bg-[#F1E5D8]"],
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br [class*="bg-[#FFF3E4]"] {
+        background: rgba(122, 84, 55, .45) !important;
+        color: var(--jimny-owner-fix-title) !important;
+        border-color: var(--jimny-owner-fix-line) !important;
+    }
+
+    /* Avoid unreadable light counter pills on the reworked headers. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br span[class*="bg-[#F1E5D8]"] {
+        background: #694835 !important;
+        color: #fff0db !important;
+    }
+
+    /* Shared transaction/report tables: dark header band with readable column names. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    table thead :is(tr, th) {
+        background: #634633 !important;
+        background-image: none !important;
+        color: #f9e4ca !important;
+        border-color: rgba(219, 180, 133, .32) !important;
+    }
+
+    /* Readability of secondary controls situated directly in the new headers. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br a.bg-white {
+        background: rgba(105, 73, 53, .88) !important;
+        color: var(--jimny-owner-fix-title) !important;
+        border-color: var(--jimny-owner-fix-line) !important;
+    }
+
+    /* More consistent form/date controls in owner transaction & attendance filters. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+        background-color: #453025 !important;
+        color: #f6e4cf !important;
+        border-color: rgba(204, 151, 107, .49) !important;
+        caret-color: #f6e4cf !important;
+        color-scheme: dark !important;
+    }
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="owner"] .page-ready
+    :is(input, textarea)::placeholder {
+        color: #cbaa8b !important;
+        opacity: 1;
+    }
+
+    /* Preserve semantic status colors and the separate Smart Insight overlay. */
+}

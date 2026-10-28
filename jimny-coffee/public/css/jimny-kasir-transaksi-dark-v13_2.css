@@ -1,0 +1,109 @@
+/*
+ JIMNY COFFEE / V13.2
+ Kasir transaction and detail headers ONLY, and Dark Mode ONLY.
+ Source: resources/views/transaksi/index.blade.php and show.blade.php.
+ Does not change transaction status, QRIS, buttons, POS, or light mode.
+*/
+
+@media screen {
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] {
+        --jkt132-bg: #382419;
+        --jkt132-head: #513526;
+        --jkt132-head2: #40291d;
+        --jkt132-accent: rgba(218, 172, 118, .44);
+        --jkt132-title: #ffebd4;
+        --jkt132-desc: #e9c7a6;
+        --jkt132-muted: #d6ad87;
+    }
+
+    /* Shared transaction list/detail panel shells; do not affect semantic alerts. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl.border.bg-white {
+        background: var(--jkt132-bg) !important;
+        background-image: none !important;
+        border-color: var(--jkt132-accent) !important;
+    }
+
+    /* Main issue: Tailwind from-white gradients remain even if bgcolor changed.
+       Target ONLY a bordered title strip that is the direct child of a transaction panel. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br,
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b[class*="from-white"],
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b[class*="bg-gradient-to-"] {
+        background: linear-gradient(125deg, var(--jkt132-head), var(--jkt132-head2)) !important;
+        background-image: linear-gradient(125deg, var(--jkt132-head), var(--jkt132-head2)) !important;
+        border-color: var(--jkt132-accent) !important;
+        color: var(--jkt132-title) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 242, 226, .06);
+    }
+
+    /* Restore title and description readability within the corrected strips. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br :is(h2,h3,h4),
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b[class*="from-white"] :is(h2,h3,h4) {
+        color: var(--jkt132-title) !important;
+        opacity: 1 !important;
+        text-shadow: none !important;
+    }
+
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br p,
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b[class*="from-white"] p {
+        color: var(--jkt132-desc) !important;
+        opacity: 1 !important;
+        text-shadow: none !important;
+    }
+
+    /* Neutral item-counter pills that sit inside the heading, not status badges. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br span.rounded-full[class*="bg-[#F1E5D8]"] {
+        background-color: #79543b !important;
+        color: #ffead2 !important;
+        border: 1px solid rgba(255, 226, 189, .18) !important;
+    }
+
+    /* Pending transaction footer has a hard-coded cream background in Blade. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-t[class*="bg-[#FFFDF9]"] {
+        background: #483021 !important;
+        background-image: none !important;
+        border-color: var(--jkt132-accent) !important;
+    }
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl > .border-t[class*="bg-[#FFFDF9]"] p {
+        color: var(--jkt132-desc) !important;
+    }
+
+    /* Dark-safe transaction table column names. */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl table thead tr {
+        background: #61432f !important;
+        background-image: none !important;
+        border-color: var(--jkt132-accent) !important;
+        color: var(--jkt132-title) !important;
+    }
+
+    /* QRIS pending informational notice remains amber (semantic). */
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl .bg-amber-50 {
+        background: #63492b !important;
+        color: #ffe0a8 !important;
+        border-color: #a57b3b !important;
+    }
+    html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+    .overflow-hidden.rounded-3xl .bg-amber-50 :is(strong,span) {
+        color: #ffebc6 !important;
+    }
+
+    /* Transaction detail stat cards already have a suitable dark fill: leave as-is. */
+    @media (prefers-reduced-motion: no-preference) {
+        html[data-theme="dark"] body.jimny-v11[data-jimny-v12-role="kasir"] .page-ready
+        .overflow-hidden.rounded-3xl > .border-b.bg-gradient-to-br {
+            transition: background-color .32s ease, color .32s ease, border-color .32s ease;
+        }
+    }
+}

@@ -17,6 +17,28 @@ class SmartAssistantController extends Controller
     public function insights(Request $request): JsonResponse
     {
         $role = $request->user()->role;
+
+        // JIMNY_SMART_INSIGHT_V14: endpoint snapshot ringan untuk sinyal aktivitas.
+        // Read-only: tanpa perubahan status pembayaran, stok, atau transaksi.
+        if ($request->boolean('activity_only')) {
+            $query = Transaction::query();
+            if ($role === 'kasir') {
+                $query->where('user_id', $request->user()->id);
+            }
+            $latest = $query->orderByDesc('updated_at')->orderByDesc('id')
+                ->first(['id', 'status', 'payment_status', 'updated_at']);
+            $stockId = \App\Models\StockLog::query()->orderByDesc('id')->value('id');
+
+            return response()->json([
+                'transaction_key' => $latest
+                    ? $latest->id . ':' . $latest->status . ':' . $latest->payment_status . ':' . $latest->updated_at
+                    : '',
+                'transaction_status' => $latest?->status,
+                'payment_status' => $latest?->payment_status,
+                'stock_key' => (string) ($stockId ?? ''),
+            ])->header('Cache-Control', 'private, no-store');
+        }
+
         $scope = $this->transactionScope($request);
 
         $today = (clone $scope)->whereDate('created_at', today());
@@ -329,5 +351,43 @@ class SmartAssistantController extends Controller
                     : null
             )
         );
+    }
+
+    /**
+     * Membaca hasil handoff JSA terbaru.
+     *
+     * Admin/Owner only dan read-only.
+     */
+    public function decisions(
+        \Illuminate\Http\Request $request,
+        \App\Services\JsaDecisionService $service
+    ): \Illuminate\Http\JsonResponse {
+        $user = $request->user();
+
+        abort_unless(
+            $user
+                && in_array(
+                    $user->role,
+                    ['admin', 'owner'],
+                    true
+                ),
+            403
+        );
+
+        try {
+            return response()->json(
+                $service->latest()
+            );
+        } catch (\RuntimeException $exception) {
+            return response()->json(
+                [
+                    'phase' => 5,
+                    'status' => 'BLOCKED',
+                    'message' =>
+                        'Paket keputusan JSA tidak tersedia atau gagal verifikasi integritas.',
+                ],
+                409
+            );
+        }
     }
 }

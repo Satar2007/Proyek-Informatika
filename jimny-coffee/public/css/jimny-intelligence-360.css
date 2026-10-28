@@ -1,0 +1,38 @@
+/* V16-18: scoped to Smart Assistant V15 Prediksi/Stok only. */
+.jimny-v15 .j360-panel{display:none;border:1px solid rgba(187,136,91,.32);border-radius:20px;background:linear-gradient(140deg,rgba(255,254,249,.77),rgba(236,214,190,.45));box-shadow:0 9px 26px rgba(54,31,19,.065),inset 0 1px rgba(255,255,255,.7);padding:16px 18px;margin-top:12px;color:#4d3124;min-width:0;grid-column:1/-1}
+.jimny-v15[data-jv15-view="forecast"] .j360-forecast{display:block;animation:j360-in .34s cubic-bezier(.23,1,.32,1) both}
+.jimny-v15[data-jv15-view="stock"] .j360-restock{display:block;animation:j360-in .34s cubic-bezier(.23,1,.32,1) both}
+.jimny-v15 .j360-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.jimny-v15 .j360-headline{display:grid;gap:4px}
+.jimny-v15 .j360-eyebrow{font-size:9px;font-weight:800;letter-spacing:.12em;color:#aa714a}
+.jimny-v15 .j360-panel h3{font-size:16px;font-weight:800;margin:0;color:inherit}
+.jimny-v15 .j360-horizons{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.jimny-v15 .j360-horizon,.jimny-v15 .j360-refresh{cursor:pointer;font:inherit;font-weight:700;font-size:11px;border:1px solid #dec0a5;border-radius:13px;background:rgba(255,250,243,.78);color:#533322;padding:8px 12px;transition:background .2s,transform .2s,box-shadow .2s}
+.jimny-v15 .j360-horizon:hover,.jimny-v15 .j360-refresh:hover{transform:translateY(-2px);box-shadow:0 4px 13px rgba(91,51,20,.09)}
+.jimny-v15 .j360-horizon.is-active{background:#70442e;color:#fff3e5;border-color:#70442e}
+.jimny-v15 .j360-refresh:disabled{opacity:.6;cursor:wait}
+.jimny-v15 .j360-body{display:grid;gap:8px}
+.jimny-v15 .j360-result{display:flex;gap:12px;flex-wrap:wrap;align-items:baseline}
+.jimny-v15 .j360-value{font-size:26px;font-weight:900;color:#9c5e32;font-variant-numeric:tabular-nums}
+.jimny-v15 .j360-range{font-size:12px;color:#795641}
+.jimny-v15 .j360-message,.jimny-v15 .j360-note,.jimny-v15 .j360-small,.jimny-v15 .j360-foot{font-size:11px;line-height:1.5;color:#856b57;margin:6px 0 0}
+.jimny-v15 .j360-unavailable{background:rgba(232,174,93,.13);color:#75502f;border:1px dashed #d8ad7e;padding:12px;border-radius:12px;font-weight:700;font-size:12px}
+.jimny-v15 .j360-error{font-size:12px;color:#a03631}
+.jimny-v15 .j360-ok{font-size:12px;color:#216b4b}
+.jimny-v15 .j360-restock-list{display:grid;gap:8px;margin-top:12px}
+.jimny-v15 .j360-restock-row{display:flex;gap:14px;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:12px;background:rgba(255,253,250,.68);border:1px solid rgba(186,132,97,.21)}
+.jimny-v15 .j360-restock-info{display:grid;gap:4px;min-width:0}
+.jimny-v15 .j360-restock-info strong{font-size:12px}
+.jimny-v15 .j360-restock-info span{font-size:10px;color:#8a6d55}
+.jimny-v15 .j360-restock-row b{font-size:12px;white-space:nowrap;color:#8d4d29}
+/* Dark theme: legible cards, no bright white on white */
+[data-theme="dark"] .jimny-v15 .j360-panel,.dark .jimny-v15 .j360-panel,.jimny-v15[data-theme="dark"] .j360-panel{background:linear-gradient(145deg,rgba(83,54,39,.92),rgba(49,31,25,.93));border-color:#8b634b;color:#f8e5cf}
+[data-theme="dark"] .jimny-v15 .j360-refresh,[data-theme="dark"] .jimny-v15 .j360-horizon,.dark .jimny-v15 .j360-horizon,.dark .jimny-v15 .j360-refresh{background:#4a3025;border-color:#8a6149;color:#f3dfc8}
+[data-theme="dark"] .jimny-v15 .j360-horizon.is-active,.dark .jimny-v15 .j360-horizon.is-active{background:#c18a57;border-color:#c18a57;color:#2b1b13}
+[data-theme="dark"] .jimny-v15 .j360-value,.dark .jimny-v15 .j360-value{color:#eeb57e}
+[data-theme="dark"] .jimny-v15 .j360-note,[data-theme="dark"] .jimny-v15 .j360-small,[data-theme="dark"] .jimny-v15 .j360-range,[data-theme="dark"] .jimny-v15 .j360-foot,.dark .jimny-v15 .j360-note,.dark .jimny-v15 .j360-small{color:#ddbea4}
+[data-theme="dark"] .jimny-v15 .j360-restock-row,.dark .jimny-v15 .j360-restock-row{background:#51382c;border-color:#80624d}
+[data-theme="dark"] .jimny-v15 .j360-restock-info span,.dark .jimny-v15 .j360-restock-info span{color:#d8b99d}
+[data-theme="dark"] .jimny-v15 .j360-restock-row b,.dark .jimny-v15 .j360-restock-row b{color:#f9c489}
+@keyframes j360-in{from{opacity:0;transform:translateY(8px);filter:blur(3px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@media(prefers-reduced-motion:reduce){.jimny-v15 .j360-panel,.jimny-v15 .j360-horizon,.jimny-v15 .j360-refresh{animation:none!important;transition:none!important}}

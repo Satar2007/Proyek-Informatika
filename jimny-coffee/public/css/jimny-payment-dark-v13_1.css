@@ -1,0 +1,173 @@
+/* JIMNY COFFEE | Payment Dark V13.1
+ * UI-only, specific to resources/views/payment/midtrans.blade.php.
+ * Does NOT style Snap's cross-origin iframe or change payment verification.
+ * Light mode remains unchanged.
+ */
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 {
+  --pay-ink: #fff0dd;
+  --pay-secondary: #e0bfa0;
+  --pay-muted: #c5a182;
+  --pay-outline: rgba(219, 164, 113, .40);
+  --pay-pane: rgba(52, 31, 22, .96);
+  --pay-inset: rgba(80, 48, 31, .92);
+  position: relative;
+  isolation: isolate;
+  color: var(--pay-ink);
+}
+
+/* Decorative illumination lives behind the merchant page, not inside Snap. */
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset: -22px -28px;
+  border-radius: 38px;
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(191, 119, 67, .17), transparent 58%),
+    radial-gradient(ellipse at 90% 95%, rgba(151, 82, 40, .14), transparent 63%);
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 > .rounded-3xl {
+  background: linear-gradient(155deg, rgba(60, 36, 25, .97), rgba(40, 25, 19, .98)) !important;
+  color: var(--pay-ink) !important;
+  border: 1px solid var(--pay-outline) !important;
+  border-radius: 26px;
+  box-shadow: 0 25px 55px rgba(12, 7, 5, .34), inset 0 1px 0 rgba(255, 229, 195, .10) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 > .rounded-3xl > .mb-5 {
+  position: relative;
+  padding: 6px 0 18px;
+  border-bottom: 1px solid rgba(235, 191, 143, .21);
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 > .rounded-3xl > .mb-5 p:first-child {
+  color: #e9a86d !important;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 h1 {
+  color: #fff2e3 !important;
+  text-wrap: balance;
+  text-shadow: 0 3px 15px rgba(0, 0, 0, .15);
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 .text-gray-600 {
+  color: var(--pay-secondary) !important;
+}
+
+/* Payment amount: contrast belongs to both background AND text. */
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 .bg-amber-50 {
+  background: linear-gradient(128deg, rgba(102, 64, 43, .96), rgba(75, 46, 33, .95)) !important;
+  color: var(--pay-ink) !important;
+  border: 1px solid rgba(233, 177, 111, .30) !important;
+  border-radius: 21px;
+  box-shadow: inset 0 1px 0 rgba(255, 232, 202, .10) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 .bg-amber-50 .text-gray-600 {
+  color: #e4c3a5 !important;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 .bg-amber-50 .text-amber-950 {
+  color: #fff0dc !important;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 .bg-amber-50 .border-amber-200 {
+  border-color: rgba(240, 194, 146, .37) !important;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 .bg-amber-50 .text-3xl {
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+  color: #ffe1a5 !important;
+}
+
+/* The status bar was white with nearly white type after theme transforms. */
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 #payment-status {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  background: rgba(110, 70, 34, .67) !important;
+  border: 1px solid rgba(236, 181, 92, .51) !important;
+  border-radius: 15px;
+  color: #ffe1a6 !important;
+  font-weight: 800;
+  line-height: 1.5;
+  box-shadow: inset 3px 0 0 #dda657 !important;
+  animation: jimny-pay-status-enter .35s ease-out both;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13[data-payment-status="paid"] #payment-status {
+  background: rgba(19, 87, 66, .55) !important;
+  color: #a3f4d2 !important;
+  border-color: rgba(103, 226, 170, .46) !important;
+  box-shadow: inset 3px 0 0 #69deb0 !important;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13:is([data-payment-status="expired"], [data-payment-status="failed"], [data-payment-status="cancelled"]) #payment-status {
+  background: rgba(110, 38, 40, .48) !important;
+  color: #ffd0d0 !important;
+  border-color: rgba(236, 125, 125, .38) !important;
+  box-shadow: inset 3px 0 0 #ec8585 !important;
+}
+
+/* Payment CTA: bright enough for dark mode, never fake-success. */
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 #pay-button {
+  border-radius: 15px;
+  background: linear-gradient(115deg, #bb5018 0%, #a63b0c 57%, #c96529 100%) !important;
+  color: #fffaf4 !important;
+  box-shadow: 0 11px 27px rgba(100, 36, 12, .24), inset 0 1px 0 rgba(255,255,255,.20) !important;
+  transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+}
+
+@media (hover: hover) {
+  html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 #pay-button:not(:disabled):hover {
+    transform: translateY(-2px);
+    filter: brightness(1.10);
+    box-shadow: 0 16px 33px rgba(100, 36, 12, .32), inset 0 1px 0 rgba(255,255,255,.24) !important;
+  }
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 #pay-button:not(:disabled):active {
+  transform: translateY(0) scale(.995);
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 #pay-button:disabled {
+  opacity: .65;
+  cursor: progress;
+  transform: none;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 a[href] {
+  color: #f8d6b2 !important;
+  text-underline-offset: 4px;
+  transition: color .18s ease;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 a[href]:hover {
+  color: #fff8eb !important;
+}
+
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 a[href]:focus-visible,
+html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 button:focus-visible {
+  outline: 3px solid #ffcf90;
+  outline-offset: 4px;
+}
+
+@keyframes jimny-pay-status-enter {
+  from { opacity: .75; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 *,
+  html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 *::before,
+  html[data-theme="dark"] body.jimny-v11 .jimny-midtrans-v13 *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}

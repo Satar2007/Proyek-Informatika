@@ -7,14 +7,16 @@
 
     <title>JIMNY COFFEE</title>
 
+    <script src="{{ asset('js/jimny-theme-v11.js') }}?v=11.1"></script>
+    <script src="{{ asset('js/jimny-theme-motion-v12.js') }}?v=12.0" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         input,
         textarea,
         select {
-            color: #000000 !important;
-            caret-color: #000000 !important;
+            color: var(--jimny-field-ink, #000000) !important;
+            caret-color: var(--jimny-field-ink, #000000) !important;
         }
 
         input::placeholder,
@@ -32,10 +34,10 @@
         select:-webkit-autofill,
         select:-webkit-autofill:hover,
         select:-webkit-autofill:focus {
-            -webkit-text-fill-color: #000000 !important;
-            caret-color: #000000 !important;
-            box-shadow: 0 0 0px 1000px #ffffff inset !important;
-            -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+            -webkit-text-fill-color: var(--jimny-field-ink, #000000) !important;
+            caret-color: var(--jimny-field-ink, #000000) !important;
+            box-shadow: 0 0 0px 1000px var(--jimny-field-bg, #ffffff) inset !important;
+            -webkit-box-shadow: 0 0 0px 1000px var(--jimny-field-bg, #ffffff) inset !important;
             transition: background-color 9999s ease-in-out 0s;
         }
 
@@ -47,12 +49,12 @@
         input[type="text"],
         textarea,
         select {
-            color-scheme: light !important;
+            color-scheme: var(--jimny-scheme, light) !important;
         }
 
         input[type="date"]::-webkit-calendar-picker-indicator,
         input[type="time"]::-webkit-calendar-picker-indicator {
-            filter: invert(0) !important;
+            filter: var(--jimny-picker-filter, invert(0)) !important;
             opacity: 1 !important;
         }
 
@@ -64,12 +66,14 @@
     <link rel="stylesheet" href="{{ asset('css/ember-theme.css') }}?v=4">
     <link rel="stylesheet" href="{{ asset('css/page-transition.css') }}?v=7">
     <link rel="stylesheet" href="{{ asset('css/guest-theme.css') }}?v=7">
+    <link rel="stylesheet" href="{{ asset('css/jimny-theme-v11.css') }}?v=11.2">
+    <link rel="stylesheet" href="{{ asset('css/jimny-theme-motion-v12.css') }}?v=12.0">
     <script src="{{ asset('js/pos-motion.js') }}?v=4" defer></script>
     <script src="{{ asset('js/page-motion.js') }}?v=2" defer></script>
 
 </head>
 
-<body class="ember-theme guest-page m-0 min-h-screen bg-slate-950 p-0 antialiased">
+<body data-jimny-v12-role="guest" class="ember-theme guest-page jimny-v11 m-0 min-h-screen bg-slate-950 p-0 antialiased">
     <x-page-transition />
     <div class="guest-shell">{{ $slot }}</div>
 

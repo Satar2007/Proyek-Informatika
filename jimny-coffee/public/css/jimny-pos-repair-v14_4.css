@@ -1,0 +1,41 @@
+/* JIMNY POS REPAIR V14.4 — minimalist visual fix, both Light/Dark themes.
+   Do NOT touch the product-card display, flex, height, grid, x-show,
+   page size, the order cart or any checkout behavior. */
+
+/* Remove only the photo's original six-pixel picture mat. */
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo {
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* Fill existing photo area, without cropping or extra margins.
+   The SVG's own aspect ratio is adjusted by the tiny scoped JS companion.
+   A slightly different image ratio may be stretched to match the slot. */
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-image {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none;
+    max-height: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    object-fit: fill !important;
+    object-position: center center !important;
+    transform: none !important;
+}
+
+/* No image expansion on hover: keep the original photo fully visible. */
+body.pos-screen .pos-workspace .product-grid .product-card:hover > .product-photo > .menu-photo-image {
+    transform: none !important;
+}
+
+/* Default placeholder remains visible when a menu has no image. */
+body.pos-screen .pos-workspace .product-grid .product-card > .product-photo > .menu-photo-placeholder {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+}

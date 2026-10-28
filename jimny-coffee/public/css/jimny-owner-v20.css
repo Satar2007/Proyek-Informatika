@@ -1,0 +1,33 @@
+.smart-v2-dashboard.j20-host{padding:24px!important;background:#f8f3ed!important;overflow-y:auto!important}
+#jimny-owner-v20{font:13px/1.6 system-ui,-apple-system,Segoe UI,sans-serif;color:#4b3022;max-width:1250px;margin:auto}
+#jimny-owner-v20 *{box-sizing:border-box}#jimny-owner-v20 [hidden]{display:none!important}
+#jimny-owner-v20 h2{font-size:26px;line-height:1.2;margin:7px 0 9px;font-weight:800;letter-spacing:-.7px}
+#jimny-owner-v20 h3{font-size:17px;line-height:1.4;margin:0 0 10px;font-weight:750}#jimny-owner-v20 h4{font-size:15px;margin:7px 0}
+#jimny-owner-v20 p{margin:8px 0;color:#765e4d}#jimny-owner-v20 .j20-kicker{font-size:10px;font-weight:800;letter-spacing:1.1px;color:#96603b}
+#jimny-owner-v20 .j20-heading{display:flex;justify-content:space-between;gap:18px;align-items:start;margin-bottom:18px}
+#jimny-owner-v20 label{display:flex;flex-direction:column;font-size:11px;font-weight:700;gap:4px}
+#jimny-owner-v20 button,#jimny-owner-v20 select{font:inherit;border:1px solid #d8c5b2;border-radius:10px;background:#fffaf4;color:#4b3022;padding:9px 12px;cursor:pointer;min-height:40px}
+#jimny-owner-v20 button:focus-visible,#jimny-owner-v20 select:focus-visible{outline:3px solid #b97730;outline-offset:3px}
+#jimny-owner-v20 button:disabled,#jimny-owner-v20 select:disabled{opacity:.6;cursor:wait}
+#jimny-owner-v20 .j20-filters{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
+#jimny-owner-v20 #j20-refresh{background:#593a29;color:#fff}
+#jimny-owner-v20 .j20-tabs{display:flex;gap:5px;flex-wrap:wrap;padding-bottom:7px}
+#jimny-owner-v20 .j20-tabs button[aria-pressed=true]{background:#67452e;color:#fff;border-color:#67452e}
+#jimny-owner-v20 #j20-status{font-size:11px;margin:10px 0 18px;min-height:18px}
+#jimny-owner-v20 .j20-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:24px}
+#jimny-owner-v20 .j20-kpi{padding:18px;background:#fffdf9;border:1px solid #e5d7c9;border-radius:17px;display:flex;flex-direction:column;gap:5px}
+#jimny-owner-v20 .j20-kpi:first-child{background:#67452e;color:#fff6e8;border-color:#67452e}
+#jimny-owner-v20 .j20-kpi strong{font-size:25px;font-weight:800;overflow-wrap:anywhere}#jimny-owner-v20 small{font-size:11px}
+#jimny-owner-v20 .j20-negative{color:#a53a26}#jimny-owner-v20 .j20-kpi:first-child small{color:#f7dfc6}
+#jimny-owner-v20 .j20-card{background:#fffcf8;border:1px solid #e5d7c9;border-radius:18px;padding:19px;margin:0 0 16px;box-shadow:0 5px 18px #5d351008}
+#jimny-owner-v20 .j20-section-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:15px 0 12px}
+#jimny-owner-v20 .j20-section-heading>span{font-size:10px;color:#765e4d}
+#jimny-owner-v20 .j20-action{border-left:4px solid #b87840}#jimny-owner-v20 .j20-action-text{font-weight:600;font-size:12px;display:block}
+#jimny-owner-v20 .j20-table-wrap{max-height:360px;overflow:auto}#jimny-owner-v20 table{border-collapse:collapse;width:100%;font-size:12px;text-align:left}
+#jimny-owner-v20 th{background:#f2e9de;color:#6d4b34;font-size:10px;text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0}
+#jimny-owner-v20 th,#jimny-owner-v20 td{padding:11px 9px;border-bottom:1px solid #eadfd3;vertical-align:top}
+#jimny-owner-v20 td:first-child{font-weight:600}#jimny-owner-v20 .j20-note,#jimny-owner-v20 .j20-warning{padding:12px 14px;border-radius:10px;background:#f4eadb;color:#68472d;font-size:12px}
+#jimny-owner-v20 .j20-projection{background:#f1e2cd;padding:20px;border-radius:14px;margin:15px 0}#jimny-owner-v20 .j20-projection strong{display:block;font-size:32px;line-height:1.4;color:#734521}
+#jimny-owner-v20 svg{width:100%;height:auto;max-height:230px;display:block}#jimny-owner-v20 .j20-date-range{font-size:10px;text-align:right}
+#jimny-owner-v20 summary{cursor:pointer;font-weight:700;margin:10px 0;font-size:12px}#jimny-owner-v20 .j20-definitions{margin:18px 0;font-size:11px}
+@media(max-width:700px){.smart-v2-dashboard.j20-host{padding:16px!important}#jimny-owner-v20 .j20-heading{flex-direction:column}#jimny-owner-v20 h2{font-size:23px}#jimny-owner-v20 .j20-kpi{padding:13px}#jimny-owner-v20 .j20-kpi strong{font-size:20px}#jimny-owner-v20 .j20-section-heading{align-items:start;flex-direction:column}}
