@@ -1,0 +1,160 @@
+/*
+ JIMNY Intelligence V15.1 — Clean Command Center.
+ This file is additive and depends on V15. It never changes Alpine x-show,
+ POS checkout, chat streaming, ML/POS data, routes, or JS.
+ Scoped to the analytics dashboard enhanced by V15 only.
+*/
+
+/* Main dashboard: compact, not a stack of unrelated reports. */
+.jimny-glass-v9 .smart-panel.jimny-glass-shell .smart-v2-dashboard.jimny-v15 {
+  padding: 12px clamp(13px,1.8vw,20px) 13px !important;
+  scrollbar-gutter: auto !important;
+}
+.jimny-v15 .smart-v2-heading {
+  margin-bottom: 5px !important;
+  gap: 10px !important;
+}
+.jimny-v15 .smart-v2-heading h2 {
+  font-size: clamp(21px,1.9vw,26px) !important;
+  margin: 1px 0 2px !important;
+  line-height: 1.1 !important;
+}
+.jimny-v15 .smart-v2-heading .smart-v2-eyebrow {display:none !important;}
+.jimny-v15 .smart-v2-heading p {margin:0 !important; font-size:10px !important;}
+.jimny-v15 .jv15-nav {margin: 6px 0 11px !important;}
+
+/* Repeated navigation subtitle: tab names and heading already convey it. */
+.jimny-v15 .jv15-statusline {display:none !important;}
+
+/* Eliminate the duplicate headings between the Overview KPI and chart. */
+.jimny-v15 .jimny-glass-section-heading:not(.jimny-glass-ml-heading) {
+  display:none !important;
+}
+/* Forecast is already called Prediksi in the tab + page heading. */
+.jimny-v15 .jimny-glass-ml-heading {display:none !important;}
+
+/* OVERVIEW = exactly three KPIs and one hero chart.
+   Busy hour appears in the KPI only, stock appears ONLY in tab Stok.
+   IMPORTANT: display:none only; never use display:flex!important on x-show nodes. */
+.jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15[data-jv15-view="overview"] .jimny-glass-hours,
+.jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15[data-jv15-view="overview"] .jimny-glass-stock {
+  display:none !important;
+}
+.jimny-v15[data-jv15-view="overview"] .smart-v2-disclaimer {display:none !important;}
+
+.jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15 .smart-v2-kpis.jimny-glass-kpis {
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:9px !important;
+  margin:0 0 11px !important;
+}
+.jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15 .jimny-glass-kpis > .smart-v2-kpi {
+  min-height:68px !important;
+  padding:10px 13px !important;
+  gap:3px !important;
+}
+.jimny-v15 .jimny-glass-kpis > .smart-v2-kpi > strong {
+  font-size:clamp(19px,1.9vw,24px) !important;
+}
+
+/* Chart itself is the single Overview feature: no second title, daily peak
+   summary or duplicate 'total porsi' KPI. Preserve date range + interactive chart. */
+.jimny-v15[data-jv15-view="overview"] .jimny-glass-trend > p,
+.jimny-v15[data-jv15-view="overview"] .jimny-glass-trend > .smart-v2-chart-meta,
+.jimny-v15[data-jv15-view="overview"] .jimny-glass-trend .smart-v2-chart-scope > strong {
+  display:none !important;
+}
+.jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15[data-jv15-view="overview"] .smart-v2-charts.jimny-glass-charts {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) !important;
+  gap:0 !important;
+}
+.jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15[data-jv15-view="overview"] .jimny-glass-trend {
+  grid-column:1/-1 !important;
+  min-height:0 !important;
+  padding:13px 17px 11px !important;
+}
+.jimny-v15[data-jv15-view="overview"] .jimny-glass-trend h3 {
+  font-size:15px !important;
+  margin:0 0 4px !important;
+}
+.jimny-v15[data-jv15-view="overview"] .jimny-glass-trend .smart-v2-chart-scope {
+  width:fit-content !important;
+  font-size:10px !important;
+  margin-bottom:0 !important;
+  padding:3px 7px !important;
+}
+.jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15[data-jv15-view="overview"] .jimny-glass-trend .smart-v2-line-chart {
+  height:clamp(170px,25vh,245px) !important;
+  margin-top:0 !important;
+}
+
+/* Stock is one dedicated view, without its own repeated heading. */
+.jimny-v15[data-jv15-view="stock"] .jimny-glass-stock h3 {display:none !important;}
+.jimny-v15[data-jv15-view="stock"] .smart-v2-disclaimer {display:none !important;}
+.jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15[data-jv15-view="stock"] .jimny-glass-stock {
+  min-height:155px !important;
+  padding:15px !important;
+}
+.jimny-v15[data-jv15-view="stock"] .jimny-glass-stock .smart-v4-stock-empty {
+  min-height:100px !important;
+}
+
+/* Prediction: keep verified vs demo warnings, date, stale-data notice.
+   The technical model is available via existing 'Lihat detail' UI only. */
+.jimny-v15[data-jv15-view="forecast"] .jimny-ml-eyebrow,
+.jimny-v15[data-jv15-view="forecast"] .jimny-ml-head p,
+.jimny-v15[data-jv15-view="forecast"] .jimny-ml-metadata > span:first-child {
+  display:none !important;
+}
+.jimny-v15[data-jv15-view="forecast"] .jimny-ml-zone {
+  margin-top:5px !important;
+  padding:15px 17px !important;
+}
+.jimny-v15[data-jv15-view="forecast"] .jimny-ml-overview {
+  margin:7px 0 !important;
+}
+.jimny-v15[data-jv15-view="forecast"] .jv15-detailbar {
+  margin:0 0 3px !important;
+  padding:4px 6px !important;
+}
+
+/* Motion polish: stronger visual feedback without animation overload. */
+.jimny-v15 .jv15-nav-pill {
+  transition:transform .49s cubic-bezier(.18,1.14,.24,1),width .43s cubic-bezier(.2,1,.3,1) !important;
+  box-shadow:0 6px 22px rgba(107,62,35,.23), inset 0 1px 1px rgba(255,245,222,.35) !important;
+}
+.jimny-v15[data-jv15-view="overview"] .jimny-glass-trend {
+  animation:jv151-appear .44s cubic-bezier(.17,.82,.2,1) both !important;
+}
+.jimny-v15[data-jv15-view="overview"] .jimny-glass-kpis > .smart-v2-kpi {
+  animation:jv151-appear .38s cubic-bezier(.22,.82,.27,1) both;
+}
+.jimny-v15[data-jv15-view="overview"] .jimny-glass-kpis > .smart-v2-kpi:nth-child(2) {animation-delay:55ms;}
+.jimny-v15[data-jv15-view="overview"] .jimny-glass-kpis > .smart-v2-kpi:nth-child(3) {animation-delay:100ms;}
+@keyframes jv151-appear {
+  from {opacity:.4; transform:translateY(8px) scale(.988)}
+  to {opacity:1; transform:translateY(0) scale(1)}
+}
+.jimny-v15 .jv15-tab:active {transform:scale(.96) !important;}
+.jimny-v15 .jimny-glass-kpis > .smart-v2-kpi:focus-within,
+.jimny-v15 .jimny-glass-trend:focus-within {
+  outline:2px solid rgba(187,118,67,.5);
+  outline-offset:2px;
+}
+
+/* Small viewports should scroll, not clip controls. */
+@media (max-width:760px) {
+  .jimny-v15 .smart-v2-heading {align-items:flex-start !important;}
+  .jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15 .smart-v2-kpis.jimny-glass-kpis {gap:6px !important;}
+  .jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15 .jimny-glass-kpis > .smart-v2-kpi {padding:9px 8px !important;}
+  .jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15[data-jv15-view="overview"] .jimny-glass-trend .smart-v2-line-chart {height:170px !important;}
+}
+@media (max-height:690px) and (min-width:981px) {
+  .jimny-glass-v9 .smart-panel.jimny-glass-shell .smart-v2-dashboard.jimny-v15 {padding-top:8px !important;}
+  .jimny-glass-v9 .smart-panel.jimny-glass-shell .jimny-v15[data-jv15-view="overview"] .jimny-glass-trend .smart-v2-line-chart {height:160px !important;}
+}
+@media (prefers-reduced-motion:reduce) {
+  .jimny-v15 .jv15-nav-pill,
+  .jimny-v15 .jimny-glass-trend,
+  .jimny-v15 .jimny-glass-kpis > .smart-v2-kpi {animation:none !important;transition:none !important;}
+}
