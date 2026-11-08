@@ -59,7 +59,7 @@ class SmartAssistantController extends Controller
         if ($todayTransactions === 0) {
             $messages[] = 'Belum ada transaksi sukses hari ini. Data akan diperbarui otomatis setelah transaksi berhasil.';
         } else {
-            $messages[] = 'Hari ini tercatat ' . $todayTransactions . ' transaksi sukses dengan omzet Rp ' . number_format($todayRevenue, 0, ',', '.') . '.';
+            $messages[] = 'Hari ini tercatat ' . $todayTransactions . ' transaksi sukses dengan penerimaan termasuk pajak Rp ' . number_format($todayRevenue, 0, ',', '.') . '.';
         }
 
         if ($lowStock->isNotEmpty()) {
@@ -144,7 +144,7 @@ class SmartAssistantController extends Controller
 
     private function transactionScope(Request $request)
     {
-        $query = Transaction::query()->where('status', 'success');
+        $query = Transaction::query()->where('status', 'success')->where('payment_status', 'paid');
         if ($request->user()->role === 'kasir') {
             $query->where('user_id', $request->user()->id);
         }
@@ -158,6 +158,7 @@ class SmartAssistantController extends Controller
             ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
             ->join('menus', 'transaction_details.menu_id', '=', 'menus.id')
             ->where('transactions.status', 'success')
+            ->where('transactions.payment_status', 'paid')
             ->where('transactions.created_at', '>=', now()->subDays($days));
 
         if ($request->user()->role === 'kasir') {
@@ -215,7 +216,7 @@ class SmartAssistantController extends Controller
         $difference = $todayRevenue - $yesterdayRevenue;
         $trend = $difference > 0 ? 'naik' : ($difference < 0 ? 'turun' : 'sama');
 
-        $answer = 'Omzet hari ini Rp ' . number_format($todayRevenue, 0, ',', '.') . '. Dibanding kemarin Rp ' . number_format($yesterdayRevenue, 0, ',', '.') . ', nilainya ' . $trend . ' Rp ' . number_format(abs($difference), 0, ',', '.') . '.';
+        $answer = 'Penerimaan termasuk pajak hari ini Rp ' . number_format($todayRevenue, 0, ',', '.') . '. Dibanding kemarin Rp ' . number_format($yesterdayRevenue, 0, ',', '.') . ', nilainya ' . $trend . ' Rp ' . number_format(abs($difference), 0, ',', '.') . '.';
         if ($role === 'kasir') {
             $answer .= ' Angka ini hanya menghitung transaksi sukses milik akun kasir yang sedang login.';
         }
@@ -270,6 +271,7 @@ class SmartAssistantController extends Controller
             })
             ->join('transactions', 'a.transaction_id', '=', 'transactions.id')
             ->where('transactions.status', 'success')
+            ->where('transactions.payment_status', 'paid')
             ->where('transactions.created_at', '>=', now()->subDays(60));
 
         if ($request->user()->role === 'kasir') {

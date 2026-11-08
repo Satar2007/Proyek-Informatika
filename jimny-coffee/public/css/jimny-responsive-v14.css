@@ -1,0 +1,106 @@
+/* JIMNY_RESPONSIVE_V14_GLOBAL
+ * Fluid, touch-safe foundations for the POS, Owner/Admin pages and guest layout.
+ * Uses viewport width, never a device-model-specific breakpoint.
+ * This file deliberately does NOT recolor existing application themes.
+ */
+
+:root {
+    --j14-space-1: clamp(8px, 1vw, 12px);
+    --j14-space-2: clamp(12px, 1.3vw, 18px);
+    --j14-space-3: clamp(16px, 2vw, 28px);
+    --j14-touch: 44px;
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { min-width: 0; }
+main, article, section, .min-h-screen, .max-w-7xl, .container { min-width: 0; }
+main img, main video, main canvas, main svg, .max-w-7xl img {
+    max-inline-size: 100%;
+}
+main :is(.flex, .grid) > :is(div, section, article, aside, main) { min-width: 0; }
+main :is(h1,h2,h3,p), .max-w-7xl :is(h1,h2,h3,p) { overflow-wrap: break-word; }
+
+/* Existing table wrappers remain keyboard-focusable and scroll horizontally.
+ * Do not stack <td> as pseudo-cards; header associations must stay intact. */
+:is(.overflow-x-auto, .table-responsive, .table-container, .j14-table-scroll) {
+    max-inline-size: 100%;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+}
+:is(.overflow-x-auto, .table-responsive, .table-container, .j14-table-scroll) > table {
+    width: 100%;
+}
+:is(.overflow-x-auto, .table-responsive, .table-container, .j14-table-scroll):focus-visible {
+    outline: 2px solid #b98254;
+    outline-offset: 3px;
+}
+
+@media (max-width: 359px) {
+    main, .max-w-7xl { min-width: 0; }
+    main :is(.grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-cols-5, .grid-cols-6) {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
+
+/* Compact phones: replace very dense grids, preserve 2-up product tiles when feasible. */
+@media (min-width: 360px) and (max-width: 599px) {
+    main :is(.grid-cols-3, .grid-cols-4, .grid-cols-5, .grid-cols-6) {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 599px) {
+    /* Prevent iOS Safari form-field auto-zoom. */
+    :is(main, nav, header, .max-w-7xl) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+        font-size: max(16px, 1em);
+    }
+    main :is(.overflow-x-auto, .table-responsive, .table-container) > table {
+        min-width: 570px;
+    }
+    main > :is(.max-w-7xl, .container) {
+        max-width: 100%;
+    }
+    :is(main, .max-w-7xl) :is(.whitespace-nowrap, [style*="white-space: nowrap"]) {
+        max-width: 100%;
+    }
+}
+
+/* Mid-width foldables and tablets: avoid 4- or 6-column squeeze. */
+@media (min-width: 600px) and (max-width: 1023px) {
+    main :is(.grid-cols-4, .grid-cols-5, .grid-cols-6),
+    main [class~="md:grid-cols-4"],
+    main [class~="lg:grid-cols-4"] {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    main :is(.overflow-x-auto, .table-responsive, .table-container) > table {
+        min-width: 620px;
+    }
+}
+
+/* Wide desktops: existing layout and application breakpoints remain authoritative. */
+@media (min-width: 1280px) {
+    main > .max-w-7xl { max-width: 1280px; margin-inline: auto; }
+}
+
+/* Coarse-pointer devices need adequate hit areas without disturbing desktop density. */
+@media (pointer: coarse) {
+    main :is(button, [role="button"], input[type="submit"], input[type="button"]) {
+        min-height: 40px;
+        touch-action: manipulation;
+    }
+    main a, main button { -webkit-tap-highlight-color: rgba(184, 129, 76, .16); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .smart-assistant-root *,
+    .smart-assistant-root *::before,
+    .smart-assistant-root *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media print {
+    :is(.smart-fab, .smart-v2-backdrop, .smart-panel) { display: none !important; }
+}

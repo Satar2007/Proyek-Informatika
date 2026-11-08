@@ -47,7 +47,7 @@
                 <div class="smart-title" id="jimny-assistant-title">JIMNY Smart Assistant</div>
                 <div class="smart-subtitle">Mode {{ ucfirst(auth()->user()->role) }} · Satu sumber data POS</div>
             </div>
-            <span class="smart-v3-header-status" aria-label="Berbasis data POS"><span class="smart-v3-live-dot"></span> Database POS • AI Lokal</span>
+            <span class="smart-v3-header-status" :class="'is-' + aiStatus" :aria-label="aiStatusText"><span class="smart-v3-live-dot"></span><span x-text="aiStatusText">Menunggu AI</span></span>
             <button type="button" @click="closePanel()" class="smart-close smart-v3-close" aria-label="Tutup Smart Assistant" title="Tutup (Esc)">
                 <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
             </button>
@@ -107,6 +107,7 @@
             <template x-for="(message, index) in messages" :key="index">
                 <div class="smart-v10-message-row" :class="message.role === 'user' ? 'is-user' : 'is-bot'">
                     <div class="smart-v10-bubble smart-message" :class="message.role === 'user' ? 'smart-user' : 'smart-bot'">
+                        <div class="smart-message-label" x-show="message.label" x-text="message.label"></div>
                         <div class="smart-v10-message-text" x-text="message.text"></div>
                     </div>
                 </div>
@@ -1487,13 +1488,293 @@
     .jimny-glass-v9 .smart-messages.smart-v10-messages{scroll-behavior:auto}
     .jimny-glass-v9 .smart-messages.smart-v10-messages .smart-v10-bubble{animation:none;transition:none}
 }
+.smart-v3-header-status .smart-v3-live-dot{transition:background .2s,box-shadow .2s}
+.smart-v3-header-status.is-idle .smart-v3-live-dot{background:#d2b18f;box-shadow:none;animation:none}
+.smart-v3-header-status.is-local .smart-v3-live-dot{background:#8aca93}
+.smart-v3-header-status.is-fallback .smart-v3-live-dot{background:#e7b45e;box-shadow:0 0 0 4px rgba(231,180,94,.14);animation:none}
+.smart-v3-header-status.is-error .smart-v3-live-dot{background:#df8175;box-shadow:0 0 0 4px rgba(223,129,117,.14);animation:none}
+.smart-v3-header-status.is-unknown .smart-v3-live-dot{background:#c4b2a0;box-shadow:none;animation:none}
+
+
+/* =========================================================
+   JIMNY CASHIER UI FIX V11
+   Scoped exclusively to cashier chat-only interface.
+   No changes to owner/admin, POS, API or Ollama.
+   ========================================================= */
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only.jimny-glass-shell .smart-v3-header {
+    display:flex;
+    align-items:center;
+    flex-wrap:nowrap;
+    min-width:0;
+    min-height:70px;
+    padding:10px 14px;
+    gap:9px;
+    box-sizing:border-box;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only.jimny-glass-shell .smart-avatar {
+    flex:0 0 40px;
+    width:40px;
+    height:40px;
+    overflow:hidden;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v3-brand {
+    flex:1 1 auto;
+    min-width:0;
+    overflow:hidden;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v3-overline {
+    display:flex;
+    flex-wrap:nowrap;
+    align-items:center;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    gap:5px;
+    font-size:7px;
+    letter-spacing:.10em;
+    line-height:1.2;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-title {
+    font-size:15px;
+    line-height:1.2;
+    margin:3px 0 1px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-subtitle {
+    font-size:9px;
+    line-height:1.3;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v3-header-status {
+    flex:0 1 118px;
+    min-width:0;
+    max-width:118px;
+    padding:6px 8px;
+    gap:6px;
+    font-size:8px;
+    overflow:hidden;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v3-header-status > span:last-child {
+    display:block;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v3-close {
+    flex:0 0 34px;
+    width:34px;
+    height:34px;
+    margin-left:0;
+}
+
+/* Cashier operational hero contrast */
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v10-cashier-hero {
+    background:linear-gradient(
+        118deg,
+        #3B281F 0%,
+        #4C3325 100%
+    ) !important;
+    border-bottom:1px solid rgba(225,185,145,.22);
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v10-cashier-kicker {
+    color:#E7B77E !important;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v10-cashier-hero h2 {
+    color:#FFF3E6 !important;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v10-cashier-hero p {
+    color:#DEC5AD !important;
+}
+
+/* Cashier chat heading contrast */
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v2-chat-head {
+    background:linear-gradient(
+        135deg,
+        #352219,
+        #432C20
+    ) !important;
+    border-bottom:1px solid rgba(226,188,146,.25);
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v2-chat-head-title {
+    color:#FFF3E6 !important;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v2-chat-head-desc {
+    color:#D9C1AA !important;
+}
+
+/* AI response label */
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only .smart-v10-bubble.smart-bot .smart-message-label {
+    color:#E7B77E !important;
+}
+
+
+
+/* =========================================================
+   JIMNY CASHIER HEADER VISIBILITY HOTFIX V12
+   Fix responsive Qwen3 badge visibility.
+   Scoped exclusively to cashier interface.
+   ========================================================= */
+
+@media (max-width: 980px) {
+
+    .jimny-glass-v9 .smart-panel.smart-v3-unified.smart-v3-chat-only.jimny-glass-shell .smart-v3-header {
+        display:flex !important;
+        flex-wrap:nowrap !important;
+        align-items:center !important;
+        min-width:0;
+        gap:8px;
+    }
+
+    .jimny-glass-v9 .smart-panel.smart-v3-unified.smart-v3-chat-only.jimny-glass-shell .smart-v3-header-status {
+        display:flex !important;
+        visibility:visible !important;
+        opacity:1 !important;
+        flex:0 1 118px;
+        width:118px;
+        min-width:0;
+        max-width:118px;
+        white-space:nowrap;
+        overflow:hidden;
+        padding:6px 8px;
+        font-size:8px;
+    }
+
+    .jimny-glass-v9 .smart-panel.smart-v3-unified.smart-v3-chat-only.jimny-glass-shell .smart-v3-brand {
+        flex:1 1 auto;
+        min-width:0;
+        overflow:hidden;
+    }
+
+    .jimny-glass-v9 .smart-panel.smart-v3-unified.smart-v3-chat-only.jimny-glass-shell .smart-v3-close {
+        display:grid;
+        flex:0 0 34px;
+        width:34px;
+        height:34px;
+        margin-left:0;
+    }
+}
+
+@media (max-width: 420px) {
+
+    .jimny-glass-v9 .smart-panel.smart-v3-unified.smart-v3-chat-only.jimny-glass-shell .smart-v3-header {
+        padding-left:10px;
+        padding-right:10px;
+        gap:6px;
+    }
+
+    .jimny-glass-v9 .smart-panel.smart-v3-unified.smart-v3-chat-only.jimny-glass-shell .smart-v3-header-status {
+        flex:0 1 92px;
+        width:92px;
+        max-width:92px;
+        padding:5px 6px;
+        font-size:7px;
+    }
+
+    .jimny-glass-v9 .smart-panel.smart-v3-unified.smart-v3-chat-only.jimny-glass-shell .smart-avatar {
+        flex:0 0 36px;
+        width:36px;
+        height:36px;
+    }
+
+    .jimny-glass-v9 .smart-panel.smart-v3-unified.smart-v3-chat-only.jimny-glass-shell .smart-title {
+        font-size:13px;
+    }
+
+    .jimny-glass-v9 .smart-panel.smart-v3-unified.smart-v3-chat-only.jimny-glass-shell .smart-v3-close {
+        flex-basis:32px;
+        width:32px;
+        height:32px;
+    }
+}
+
+/* END JIMNY CASHIER HEADER VISIBILITY HOTFIX V12 */
+
+
+
+/* =========================================================
+   JIMNY CASHIER UI FIX V13
+   AI status clarity + cashier button contrast.
+   Presentation only. POS/API/Ollama logic unchanged.
+   ========================================================= */
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only.jimny-glass-shell .smart-v3-header-status {
+    flex:0 0 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    max-width:118px !important;
+    padding:6px 9px;
+    gap:6px;
+    overflow:hidden;
+}
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only.jimny-glass-shell .smart-v3-header-status > span:last-child {
+    display:block;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+/* Compact status on narrow screens */
+
+@media (max-width:420px) {
+    .jimny-glass-v9 .smart-panel.smart-v3-chat-only.jimny-glass-shell .smart-v3-header-status {
+        max-width:92px !important;
+        padding:5px 6px;
+        font-size:7px;
+    }
+}
+
+/* Disabled send button remains readable */
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only.jimny-glass-shell .smart-form button:disabled {
+    opacity:1 !important;
+    background:#80624F !important;
+    color:#FFF9F3 !important;
+    box-shadow:none !important;
+    cursor:not-allowed !important;
+}
+
+/* Active send button */
+
+.jimny-glass-v9 .smart-panel.smart-v3-chat-only.jimny-glass-shell .smart-form button:not(:disabled) {
+    opacity:1 !important;
+    background:linear-gradient(135deg,#4B2E1F,#70452F) !important;
+    color:#FFFFFF !important;
+}
+
 </style>
+{{-- JIMNY_RESPONSIVE_V14_SMART_INCLUDE: late stylesheet, V13 styles retained --}}
+@include('components.jimny-responsive-v14')
+
 
 <script>
 function smartAssistant(){
     return {
         allowProactive: {{ request()->routeIs('owner.dashboard') ? 'false' : 'true' }},
-        open:false, loading:false, streamingReply:false, input:'', messages:[], insights:[], proactiveVisible:false, currentInsight:'', proactiveTimer:null, proactiveDismissed:false,
+        open:false, loading:false, streamingReply:false, input:'', messages:[], aiStatus:'idle', aiStatusText:'Menunggu AI', insights:[], proactiveVisible:false, currentInsight:'', proactiveTimer:null, proactiveDismissed:false,
         activeTab:'chat', showAllInsights:false, showAllHours:false, savedBodyOverflow:null,
         canAnalytics: {{ in_array(auth()->user()->role, ['owner', 'admin']) ? 'true' : 'false' }},
         analytics:null, analyticsLoading:false, analyticsError:'', analyticsDays:'30', analyticsMenu:'', analyticsMenus:[], trendHover:null,
@@ -2170,13 +2451,30 @@ function smartAssistant(){
             const controller=new AbortController();
             const timeout=setTimeout(()=>controller.abort(),58000);
             let replyIndex=-1;
+const aiStates={
+    idle:{header:'Menunggu AI',message:'JIMNY AI'},
+    local:{header:'Qwen3 Aktif',message:'AI Lokal \u00B7 Qwen3'},
+    verified:{header:'POS Langsung',message:'Data POS \u00B7 Query Langsung'},
+    fallback:{header:'Mode Cadangan',message:'Mode Cadangan \u00B7 Laravel'},
+    error:{header:'AI Terputus',message:'AI \u00B7 Koneksi Terputus'},
+    unknown:{header:'AI Tidak Dikenal',message:'Sumber AI Tidak Diketahui'}
+};
+const setAiStatus=(status)=>{
+    const state=aiStates[status]||aiStates.unknown;
+    this.aiStatus=Object.prototype.hasOwnProperty.call(aiStates,status)?status:'unknown';
+    this.aiStatusText=state.header;
+    if(replyIndex>=0)this.messages[replyIndex].label=state.message;
+};
+setAiStatus('idle');
             const append=(piece)=>{
                 if(replyIndex<0){
-                    this.messages.push({role:'bot',text:''});
+                    this.messages.push({role:'bot',text:'',label:(aiStates[this.aiStatus]||aiStates.unknown).message});
                     replyIndex=this.messages.length-1;
                     this.streamingReply=true;
                 }
-                this.messages[replyIndex].text+=piece;this.scroll();
+                this.messages[replyIndex].text+=piece;
+                this.messages[replyIndex].label=(aiStates[this.aiStatus]||aiStates.unknown).message;
+                this.scroll();
             };
             try{
                 const response=await fetch('{{ route('smart-assistant.ai-chat') }}',{
@@ -2189,7 +2487,16 @@ function smartAssistant(){
                 const contentType=response.headers.get('content-type')||'';
                 if(!contentType.includes('ndjson')){
                     const data=await response.json();
-                    append(String(data.answer||'AI belum dapat menjawab.'));
+                    if(data.fallback===true) setAiStatus("fallback");
+                    else if(typeof data.engine==="string" && /^ollama:/i.test(data.engine)) setAiStatus("local");
+                    else if(data.engine==="pos_query:cashier_today") setAiStatus("verified");
+                    else setAiStatus("unknown");
+                    append(String(data.answer||"AI belum dapat menjawab."));
+                    if(replyIndex>=0){
+                        this.messages[replyIndex].engine=typeof data.engine==="string"?data.engine:null;
+                        this.messages[replyIndex].source=typeof data.source==="string"?data.source:null;
+                        this.messages[replyIndex].fallback=data.fallback===true;
+                    }
                 }else if(response.body && response.body.getReader){
                     const reader=response.body.getReader();
                     const decoder=new TextDecoder('utf-8');
@@ -2197,8 +2504,16 @@ function smartAssistant(){
                     const onLine=(line)=>{
                         if(!line.trim())return;
                         let event;try{event=JSON.parse(line);}catch(_){return;}
-                        if(event.type==='delta'||event.type==='fallback')append(String(event.text||''));
-                        else if(event.type==='error')append('\n'+String(event.text||'Respons terputus.'));
+                        if(event.type==="delta"){
+                            if(this.aiStatus!=="fallback")setAiStatus("local");
+                            append(String(event.text||""));
+                        }else if(event.type==="fallback"){
+                            setAiStatus("fallback");
+                            append(String(event.text||""));
+                        }else if(event.type==="error"){
+                            setAiStatus("error");
+                            append("\n"+String(event.text||"Respons terputus."));
+                        }
                     };
                     while(true){
                         const {done,value}=await reader.read();
@@ -2218,12 +2533,22 @@ function smartAssistant(){
                         if(!line.trim())continue;
                         try{
                             const event=JSON.parse(line);
-                            if(event.type==='delta'||event.type==='fallback')append(String(event.text||''));
+                            if(event.type==="delta"){
+                                if(this.aiStatus!=="fallback")setAiStatus("local");
+                                append(String(event.text||""));
+                            }else if(event.type==="fallback"){
+                                setAiStatus("fallback");
+                                append(String(event.text||""));
+                            }else if(event.type==="error"){
+                                setAiStatus("error");
+                                append("\n"+String(event.text||"Respons terputus."));
+                            }
                         }catch(_){}
                     }
                 }
-                if(replyIndex<0||!this.messages[replyIndex].text.trim())append('AI belum menghasilkan jawaban. Coba lagi.');
+                if(replyIndex<0||!this.messages[replyIndex].text.trim()){setAiStatus('error');append('AI belum menghasilkan jawaban. Coba lagi.');}
             }catch(e){
+                setAiStatus('error');
                 append(e.name==='AbortError'?'AI membutuhkan waktu terlalu lama. Coba pertanyaan lebih singkat.':'Koneksi ke AI terputus. Periksa layanan Ollama dan Laravel.');
             }finally{
                 clearTimeout(timeout);this.loading=false;this.streamingReply=false;this.scroll();

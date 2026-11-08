@@ -30,6 +30,43 @@ class JimnyLocalAiController extends Controller
 
         $message = trim((string) $input['message']);
         $role = (string) $request->user()->role;
+        // JIMNY_V20_P1_VERIFIED_DAILY_SALES
+        // Direct read-only POS answer for current-day cashier sales. Never use business-wide totals.
+        if ($role === 'kasir'
+            && preg_match('/(?:penjualan|omzet|pendapatan).*(?:hari\s+ini)|(?:hari\s+ini).*(?:penjualan|omzet|pendapatan)/iu', $message)) {
+            try {
+                $day = \Illuminate\Support\Carbon::today();
+                $nextDay = $day->copy()->addDay();
+                $row = \Illuminate\Support\Facades\DB::table('transactions')
+                    ->where('user_id', (int) $request->user()->id)
+                    ->where('status', 'success')
+                    ->where('payment_status', 'paid')
+                    ->where('created_at', '>=', $day)
+                    ->where('created_at', '<', $nextDay)
+                    ->selectRaw('COUNT(*) AS receipts, COALESCE(SUM(total - diskon), 0) AS sales, COALESCE(SUM(grand_total), 0) AS collected')
+                    ->first();
+
+                return response()->json([
+                    'answer' => 'Data POS untuk akun Kasir ini pada ' . $day->toDateString()
+                        . ': penjualan sebelum pajak Rp' . number_format((float) $row->sales, 0, ',', '.')
+                        . '; penerimaan termasuk pajak Rp' . number_format((float) $row->collected, 0, ',', '.')
+                        . '; transaksi sukses dan lunas ' . (int) $row->receipts . '.',
+                    'source' => 'pos_database',
+                    'engine' => 'pos_query:cashier_today',
+                    'fallback' => false,
+                    'scope' => 'own_cashier_transactions',
+                    'date' => $day->toDateString(),
+                ])->header('Cache-Control', 'private, no-store');
+            } catch (\Throwable $e) {
+                report($e);
+                return response()->json([
+                    'answer' => 'Data penjualan hari ini gagal dibaca. Nilainya belum dapat dipastikan; tidak boleh diasumsikan Rp0.',
+                    'source' => 'unavailable',
+                    'engine' => 'laravel_fallback',
+                    'fallback' => true,
+                ], 200)->header('Cache-Control', 'private, no-store');
+            }
+        }
 
         // Keep the previous user turn for follow-up questions ("kalau naik 20%?").
         $previousUser = '';
