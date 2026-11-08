@@ -71,6 +71,8 @@
     <script src="{{ asset('js/pos-motion.js') }}?v=4" defer></script>
     <script src="{{ asset('js/page-motion.js') }}?v=2" defer></script>
 
+    <!-- JIMNY_RESPONSIVE_V14_LAYOUT: fluid responsive stylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/jimny-responsive-v14.css') }}?v=14.0.0">
 </head>
 
 <body data-jimny-v12-role="guest" class="ember-theme guest-page jimny-v11 m-0 min-h-screen bg-slate-950 p-0 antialiased">

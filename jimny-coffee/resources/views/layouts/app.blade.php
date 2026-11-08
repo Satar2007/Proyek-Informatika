@@ -97,6 +97,8 @@
     <link rel="stylesheet" href="{{ asset('css/jimny-kasir-transaksi-dark-v13_2.css') }}?v=13.2">
     <link rel="stylesheet" href="{{ asset('css/jimny-pos-repair-v14_4.css') }}?v=14.4">
     <script defer src="{{ asset('js/jimny-pos-repair-v14_4.js') }}?v=14.4"></script>
+    <!-- JIMNY_RESPONSIVE_V14_LAYOUT: fluid responsive stylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/jimny-responsive-v14.css') }}?v=14.0.0">
 </head>
 
 @php
