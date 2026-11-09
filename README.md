@@ -39,7 +39,7 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 
 **JIMNY COFFEE** adalah project aplikasi Point of Sale (POS) berbasis Laravel untuk membantu pengelolaan pesanan, transaksi, menu, stok, laporan penjualan, dan aktivitas karyawan dalam satu sistem. Tampilan aplikasi menggunakan nuansa warna kopi dan menyediakan halaman sesuai peran pengguna.
 
-> **Status repository:** Fitur utama JIMNY COFFEE dan Smart Assistant V2 sudah terintegrasi ke branch `main`. Analitik penjualan telah tersedia; model prediksi machine learning belum diimplementasikan dan masih direncanakan.
+> **Status repository (November 2026):** Fitur POS, Smart Assistant Owner V20, pembaruan AI P1, dan antarmuka responsif V14 telah diintegrasikan ke `main` (PR [#37](https://github.com/Satar2007/Proyek-Informatika/pull/37)). Fitur prediksi statistik sudah tersedia; kualitas prediksi tetap bergantung pada data historis, bukan jaminan akurasi bisnis nyata. Pelatihan atau fine-tuning model Qwen3 menggunakan data toko **tidak** dilakukan.
 
 ## Fitur Aplikasi
 
@@ -47,8 +47,47 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 | :-- | :-- |
 | **Kasir** | Pemilihan menu & pesanan, pencatatan transaksi, pilihan pembayaran Cash/QRIS, presensi & izin, riwayat transaksi, laporan penjualan. |
 | **Admin** | Dashboard, pengelolaan menu, log stok, pengaturan shift, pengajuan izin, pengelolaan akun, dan riwayat transaksi. |
-| **Owner** | Dashboard ringkasan bisnis, laporan penjualan, riwayat transaksi, dan rekap kehadiran. |
-| **Smart Insight** | Panel informasi kontekstual yang muncul pada antarmuka sebagai pendamping aktivitas pengguna. |
+| **Owner** | Dashboard bisnis, laporan penjualan, tren, perbandingan periode, performa menu, prediksi permintaan, persiapan stok, dan rekap kehadiran. |
+| **Smart Assistant** | Asisten Owner/Admin dan Kasir berbasis data POS, dengan analitik deterministik dan chatbot lokal Ollama/Qwen3 (opsional). |
+| **Responsive GUI V14** | Penyesuaian antarmuka untuk layar mobile, foldable, tablet, laptop, dan desktop berdasarkan lebar viewport. |
+
+## Smart Assistant Owner V20 & AI Lokal
+
+JIMNY Smart Assistant menyatukan tiga kemampuan yang perlu dibedakan:
+
+1. **Analitik deterministik Laravel/MySQL:** KPI penjualan, transaksi lunas, nilai rata-rata transaksi, tren harian, dan perbandingan dua periode. Untuk ringkasan historis Owner, hanya transaksi `status=success` dan `payment_status=paid` yang dihitung; **penjualan sebelum pajak** = `total - diskon`, sedangkan uang tertagih menggunakan `grand_total`.
+2. **Sistem pendukung keputusan berbasis aturan:** prioritas operasional untuk kesegaran data, penurunan penjualan/menu, dan kecukupan stok. Saran bukan eksekusi pembelian atau perubahan stok otomatis.
+3. **Chatbot AI lokal:** Laravel mengirim pertanyaan dan fakta POS yang telah dihitung ke model `qwen3:4b-instruct` melalui Ollama. Model membantu merangkai penjelasan dalam bahasa Indonesia, **bukan sumber angka penjualan**. Ketika Ollama tidak tersedia, tersedia jalur respons cadangan berbasis Laravel/POS.
+
+Akses disesuaikan dengan peran: Owner/Admin dapat melihat analitik bisnis, sedangkan Kasir dibatasi pada data operasional sesuai otorisasi. Untuk pertanyaan Kasir tentang penjualan hari ini, sistem dapat menjawab secara langsung dari query POS tanpa bergantung pada model bahasa.
+
+### Prediksi permintaan dan persiapan stok
+
+Modul Owner V20 melakukan peramalan deret waktu dari transaksi historis, mengisi hari tanpa transaksi dengan nol dan membatasi ringkasan historis pada **hari kalender yang telah selesai**. Dua kandidat metode yang tersedia adalah:
+
+- **Moving Average 28 hari (`mean28`)** sebagai baseline.
+- **Weekday Blend**: `0,7 × rata-rata hari mingguan yang sama + 0,3 × rata-rata 28 hari` untuk menangkap pola mingguan.
+
+Metode dipilih berdasarkan evaluasi kesalahan pada jendela historis terdahulu; jendela terakhir digunakan untuk pemeriksaan terpisah (*holdout*). Sistem melaporkan **galat absolut**, rentang **skenario**, dan catatan keterbatasan. Rentang tersebut **bukan** interval probabilitas terkalibrasi.
+
+Rekomendasi persiapan stok per menu menggunakan rumus `maks(0, pembulatan ke atas prediksi kebutuhan 7 hari + stok minimum - stok tersedia)`. Ini adalah rekomendasi **porsi/menu**, bukan perhitungan otomatis bahan baku dan bukan perintah pembelian.
+
+> **Keterbatasan data:** Dataset pengembangan dapat mencakup transaksi sintetis/dummy. Performa prediksi pada data tersebut tidak membuktikan akurasi operasional coffee shop nyata. Tidak adanya transaksi juga bisa berarti toko tutup atau pencatatan belum masuk. Owner perlu memverifikasi kesegaran data sebelum mengambil keputusan.
+
+### Menjalankan chatbot lokal (opsional)
+
+Jika ingin menggunakan jawaban AI generatif, pasang [Ollama](https://ollama.com/) pada komputer atau server yang menjalankan Laravel, lalu siapkan model yang digunakan source saat ini:
+
+```powershell
+ollama pull qwen3:4b-instruct
+ollama list
+```
+
+Pastikan server Ollama aktif pada `http://127.0.0.1:11434` (misalnya melalui layanan Ollama atau `ollama serve` apabila belum berjalan). Source AI V20 menggunakan endpoint lokal `/api/chat`; **jangan menganggap `127.0.0.1` merujuk ke perangkat pengguna browser** bila Laravel berjalan pada mesin/server lain. Tanpa layanan Ollama, fitur POS/analitik tetap dapat digunakan; respons chatbot generatif akan beralih ke fallback sesuai endpoint.
+
+### GUI responsif V14
+
+Styling V14 diintegrasikan melalui layout dan komponen Blade, dengan stylesheet `jimny-coffee/public/css/jimny-responsive-v14.css` serta komponen `jimny-coffee/resources/views/components/jimny-responsive-v14.blade.php`. Gunakan Chrome/Edge DevTools untuk memeriksa viewport mobile, foldable, tablet, dan desktop; validasi kode tidak otomatis menjamin setiap ukuran layar bebas overflow.
 
 ## Preview Antarmuka
 
@@ -111,6 +150,8 @@ Sistem informasi kasir dan pengelolaan operasional kedai kopi berbasis web, deng
 - **Database:** MySQL
 - **Frontend:** Blade, Tailwind CSS, CSS, dan JavaScript
 - **Build tools:** Composer, NPM, dan Vite
+- **AI lokal opsional:** Ollama + Qwen3 4B Instruct
+- **Analitik / forecasting:** Laravel SQL aggregation, rule-based recommendations, Moving Average 28 hari, Weekday Blend, evaluasi holdout
 - **Kolaborasi:** Git & GitHub (branch dan pull request)
 
 ## Menjalankan Project
@@ -164,18 +205,14 @@ MySQL lokal.
 
 Buka PowerShell atau Terminal.
 
-Contoh:
+Dari **root repository**, masuk terlebih dahulu ke folder aplikasi Laravel:
 
-``` powershell
-Set-Location "C:\laragon\www\Satar"
+```powershell
+Set-Location .\jimny-coffee
+Test-Path .\artisan
 ```
 
-Pastikan berada pada folder utama project yang berisi:
-
-    artisan
-    composer.json
-    package.json
-    .env.example
+Perintah `Test-Path` harus menghasilkan `True`. File `artisan`, `composer.json`, `package.json`, dan `.env.example` berada **di dalam `jimny-coffee/`**, bukan di root Git repository.
 
 ------------------------------------------------------------------------
 
@@ -187,11 +224,13 @@ Install dependency backend Laravel:
 composer install
 ```
 
-Install dependency frontend:
+Install dependency frontend (gunakan lockfile bila tersedia):
 
-``` bash
-npm install
+```bash
+npm ci
 ```
+
+Jika `package-lock.json` tidak tersedia atau lockfile perlu dibuat untuk pengembangan, gunakan `npm install` sebagai alternatif.
 
 ------------------------------------------------------------------------
 
@@ -237,6 +276,7 @@ Catatan:
 -   Pada Laragon default, username MySQL biasanya `root`
 -   Password biasanya kosong
 -   Jika MySQL menggunakan password, sesuaikan dengan konfigurasi lokal
+-   `satar_integrated` di atas **hanya contoh nama database**; sesuaikan dengan database yang benar pada komputer masing-masing (misalnya `satar_acceptance` pada lingkungan pengujian lokal tertentu). Jangan pernah mengunggah `.env` pribadi.
 
 ------------------------------------------------------------------------
 
@@ -279,27 +319,27 @@ Pastikan Laravel membaca database yang benar:
 php artisan tinker --execute="echo config('database.connections.mysql.database');"
 ```
 
-Output yang benar:
-
-    satar_integrated
-
-Jika hasil berbeda, periksa kembali file `.env`.
+Hasil harus **sama dengan nilai `DB_DATABASE` yang kamu atur di `.env`**. Tidak ada keharusan memakai nama `satar_integrated`. Jika hasil berbeda, periksa `.env` dan cache konfigurasi Laravel.
 
 ------------------------------------------------------------------------
 
-### 9. Migration dan Seeder
+### 9. Migration dan Seeder (khusus database baru)
 
-Buat tabel database dan data awal aplikasi:
+**Penting:** migrasi dan seeder dapat membuat atau mengubah data. Jangan menjalankan `migrate`, `migrate --seed`, atau seeder pada database POS yang sudah terisi tanpa backup dan persetujuan tim.
 
-``` bash
-php artisan migrate --seed
+Untuk **database baru yang benar-benar kosong**, periksa dahulu migration dan daftar seeder yang akan dijalankan. Setelah disetujui:
+
+```bash
+php artisan migrate
 ```
 
-Seeder yang dijalankan:
+Seeder akun/menu awal dijalankan secara terpisah hanya bila dibutuhkan pada lingkungan pengembangan. **Jangan menjalankan seeder transaksi dummy pada database operasional.** Untuk memeriksa kondisi database yang sudah ada tanpa mengubahnya:
 
--   CategorySeeder
--   MenuSeeder
--   UserSeeder
+```bash
+php artisan migrate:status
+```
+
+> Database MySQL yang diakses melalui SQLyog adalah database yang sama dengan koneksi Laravel. SQLyog merupakan aplikasi administrasi MySQL, bukan jenis database tersendiri.
 
 ------------------------------------------------------------------------
 
@@ -400,15 +440,7 @@ Buka browser:
 
 ### Akun Login Awal
 
-Berikut adalah akun default yang dapat digunakan untuk pengujian aplikasi:
-
-| Role | Email | Password |
-| :-- | :-- | :-- |
-| Admin | admin@coffee.com | password |
-| Kasir | kasir@coffee.com | password |
-| Owner | owner@coffee.com | password |
-
-> Penting: Disarankan untuk mengganti password default setelah deployment atau saat aplikasi digunakan pada lingkungan production.
+Tersedia role **Owner, Admin, dan Kasir**. Akun uji hanya dibuat sesuai kebutuhan pada **database pengembangan yang terisolasi**, mengikuti seeder yang dipakai tim. Jangan memublikasikan kredensial aktif atau mengandalkan password default pada lingkungan operasional.
 
 ------------------------------------------------------------------------
 
@@ -429,19 +461,22 @@ Simulator QRIS:
 
 ------------------------------------------------------------------------
 
-### Troubleshooting
+### Troubleshooting dan verifikasi
 
 Jika terjadi error, jangan langsung mengubah source code.
 
-Jalankan:
+Jalankan perintah **baca-saja** berikut dari folder `jimny-coffee`:
 
-``` bash
+```bash
 php artisan tinker --execute="echo config('database.connections.mysql.database');"
-
 php artisan migrate:status
-
 php artisan about
+php artisan route:list --path=smart-assistant
 ```
+
+Untuk memeriksa kompilasi Blade, jalankan `php artisan view:cache`. Perintah ini mengubah **cache view lokal saja**, bukan database POS.
+
+Unit/feature tests Laravel sebaiknya dijalankan menggunakan **database testing terisolasi**. Jangan mengarahkan suite pengujian yang mungkin melakukan write/refresh database ke database transaksi aktif.
 
 ------------------------------------------------------------------------
 
@@ -456,6 +491,7 @@ karena dapat berisi:
 -   APP_KEY Laravel
 -   Credential database
 -   Credential Midtrans
+-   Token sesi, backup `.env`, dan hasil ekspor database lengkap `.xlsx` (dapat berisi data pengguna dan pembayaran)
 
 Gunakan:
 
