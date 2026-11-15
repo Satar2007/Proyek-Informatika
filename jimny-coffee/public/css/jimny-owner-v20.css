@@ -31,3 +31,69 @@
 #jimny-owner-v20 svg{width:100%;height:auto;max-height:230px;display:block}#jimny-owner-v20 .j20-date-range{font-size:10px;text-align:right}
 #jimny-owner-v20 summary{cursor:pointer;font-weight:700;margin:10px 0;font-size:12px}#jimny-owner-v20 .j20-definitions{margin:18px 0;font-size:11px}
 @media(max-width:700px){.smart-v2-dashboard.j20-host{padding:16px!important}#jimny-owner-v20 .j20-heading{flex-direction:column}#jimny-owner-v20 h2{font-size:23px}#jimny-owner-v20 .j20-kpi{padding:13px}#jimny-owner-v20 .j20-kpi strong{font-size:20px}#jimny-owner-v20 .j20-section-heading{align-items:start;flex-direction:column}}
+
+/* JSA V20 - Grafik tren penjualan */
+#jimny-owner-v20 #j20-trend svg {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+}
+
+#jimny-owner-v20 .j20-point-detail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    align-items: center;
+    margin-top: 14px;
+    padding: 13px 15px;
+    border: 1px solid #e5d7c9;
+    border-radius: 12px;
+    background: #f7eee4;
+    color: #68472d;
+    font-size: 12px;
+}
+
+#jimny-owner-v20 .j20-point-detail strong {
+    width: 100%;
+    color: #704322;
+    font-size: 17px;
+}
+
+#jimny-owner-v20 #j20-trend circle {
+    cursor: pointer;
+    transition: r .15s ease, fill .15s ease;
+}
+
+#jimny-owner-v20 #j20-trend circle:hover {
+    r: 7;
+    fill: #704322;
+}
+
+#jimny-owner-v20 #j20-trend circle:focus {
+    outline: none;
+    stroke: #704322;
+    stroke-width: 3;
+}
+
+@media(max-width:700px) {
+    #jimny-owner-v20 .j20-point-detail {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* JSA V20 - Tampilan label tanggal harian */
+#jimny-owner-v20 #j20-trend {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#jimny-owner-v20 #j20-trend svg {
+    display: block;
+    height: auto;
+    max-height: none;
+    max-width: none;
+}
+
