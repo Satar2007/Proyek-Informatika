@@ -1,0 +1,8 @@
+# GPU-only optional environment. Native Windows CUDA support depends on drivers and wheels.
+# Ollama remains a separate inference runtime; this actually trains a Qwen3 LoRA.
+torch>=2.6,<3
+transformers>=4.53,<5
+peft>=0.16,<1
+accelerate>=1.7,<2
+bitsandbytes>=0.46,<1
+safetensors>=0.5,<1
