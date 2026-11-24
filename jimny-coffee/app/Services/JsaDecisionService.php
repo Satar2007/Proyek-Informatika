@@ -97,6 +97,13 @@ class JsaDecisionService
                 $verifiedArtifacts['restock']
             );
 
+        // Forecast Fase 2 hanya ditampilkan jika artefaknya sudah
+        // diverifikasi oleh manifest + SHA-256 di atas.
+        // Paket lama yang tidak membawa forecast tetap kompatibel.
+        $forecast = isset($verifiedArtifacts['forecast'])
+            ? $this->readJson($verifiedArtifacts['forecast'])
+            : null;
+
         return [
             'phase' => 5,
 
@@ -119,6 +126,8 @@ class JsaDecisionService
              * Laravel tidak menghitung ulang restock_qty.
              */
             'restock' => $restock,
+
+            'forecast' => $forecast,
 
             'integrity' => [
                 'verified' => true,

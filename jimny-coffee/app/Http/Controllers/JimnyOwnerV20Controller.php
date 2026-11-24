@@ -15,6 +15,12 @@ class JimnyOwnerV20Controller extends Controller
         abort_unless(in_array($r->user()->role,['admin','owner'],true),403);
         $v=$r->validate(['message'=>'required|string|max:500','owner_days'=>'sometimes|integer|in:7,30,90','owner_horizon'=>'sometimes|integer|in:1,7,30,90,365','history'=>'sometimes|array|max:6','history.*.role'=>'required|in:user,assistant','history.*.content'=>'required|string|max:400']);
         $text=$v['message'];$h=(int)($v['owner_horizon']??7);$days=(int)($v['owner_days']??30);
+        // JSA_FASE8_EXPLICIT_HYPOTHETICAL: no Owner snapshot for a purely hypothetical question.
+        $explicitChange = app(\App\Services\JsaExplicitChangeResponder::class)->respond((string) $text);
+        if ($explicitChange !== null) {
+            return response()->json($explicitChange)->header('Cache-Control', 'private, no-store');
+        }
+
         if(preg_match('/tahun|365/iu',$text))$h=365;
         elseif(preg_match('/90|triwulan/iu',$text))$h=90;
         elseif(preg_match('/bulan|30/iu',$text))$h=30;
@@ -39,7 +45,7 @@ class JimnyOwnerV20Controller extends Controller
         $messages[] = ['role' => 'user', 'content' => $text];
         try {
             $response=Http::connectTimeout(3)->timeout(48)->post('http://127.0.0.1:11434/api/chat',[
-                'model'=>'qwen3:4b-instruct','stream'=>false,'think'=>false,'keep_alive'=>'30m',
+                'model'=>'jimny-qwen3:adaptive','stream'=>false,'think'=>false,'keep_alive'=>'30m',
                 'messages'=>$messages,
                 'options'=>['temperature'=>.15,'num_predict'=>650,'num_ctx'=>8192]]);
             if(!$response->successful())throw new \RuntimeException('Ollama unavailable');
@@ -67,7 +73,7 @@ class JimnyOwnerV20Controller extends Controller
             return response()->json([
                 'answer' => $answer,
                 'source' => 'pos_database',
-                'engine' => 'ollama:qwen3:4b-instruct',
+                'engine' => 'ollama:jimny-qwen3:adaptive',
                 'fallback' => false,
             ]);
         }catch(\Throwable $e){report($e);return response()->json([

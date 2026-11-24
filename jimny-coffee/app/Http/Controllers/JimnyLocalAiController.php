@@ -29,6 +29,12 @@ class JimnyLocalAiController extends Controller
         ]);
 
         $message = trim((string) $input['message']);
+        // JSA_FASE8_EXPLICIT_HYPOTHETICAL: deterministic answer, no POS queries or Ollama.
+        $explicitChange = app(\App\Services\JsaExplicitChangeResponder::class)->respond($message);
+        if ($explicitChange !== null) {
+            return response()->json($explicitChange)->header('Cache-Control', 'private, no-store');
+        }
+
         $role = (string) $request->user()->role;
         // JIMNY_V20_P1_VERIFIED_DAILY_SALES
         // Direct read-only POS answer for current-day cashier sales. Never use business-wide totals.
@@ -240,7 +246,7 @@ class JimnyLocalAiController extends Controller
                     ->timeout(55)
                     ->withOptions(['stream' => true, 'read_timeout' => 35])
                     ->post('http://127.0.0.1:11434/api/chat', [
-                        'model' => 'qwen3:4b-instruct',
+                        'model' => 'jimny-qwen3:adaptive',
                         'messages' => $messages,
                         'stream' => true,
                         'think' => false,
