@@ -108,16 +108,24 @@ class AkunController extends Controller
 
         try {
             DB::transaction(function () use ($request, $user) {
+                User::lockRoleRoster();
+                $lockedUser = User::query()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+
                 // Write the snapshot first; the target FK becomes NULL when
                 // the account is deleted, while the audit record is retained.
                 $this->recordRoleAudit(
                     $request,
-                    $user,
-                    (string) $user->role,
+                    $lockedUser,
+                    (string) $lockedUser->role,
                     null,
                     'account_deleted'
                 );
-                $user->delete();
+
+                if (!$lockedUser->delete()) {
+                    throw ValidationException::withMessages([
+                        'account' => 'Akun tidak dapat dihapus.',
+                    ]);
+                }
             }, 3);
         } catch (ValidationException $e) {
             $errors = $e->errors();

@@ -77,6 +77,19 @@ class ProfileTest extends TestCase
 
         $this->assertGuest();
         $this->assertNull($user->fresh());
+        $this->assertDatabaseCount('user_role_audits', 1);
+        $this->assertDatabaseHas('user_role_audits', [
+            'actor_user_id' => null,
+            'actor_name' => $user->name,
+            'actor_email' => $user->email,
+            'actor_role' => 'kasir',
+            'target_user_id' => null,
+            'target_name' => $user->name,
+            'target_email' => $user->email,
+            'event' => 'account_deleted',
+            'old_role' => 'kasir',
+            'new_role' => null,
+        ]);
     }
 
     public function test_correct_password_must_be_provided_to_delete_account(): void
@@ -95,5 +108,6 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->fresh());
+        $this->assertDatabaseCount('user_role_audits', 0);
     }
 }

@@ -109,6 +109,7 @@ class JimnySecurityInvariantTest extends TestCase
             ->assertSessionHas('error');
 
         $this->assertDatabaseHas('users', ['id' => $owner->id, 'role' => 'owner']);
+        $this->assertDatabaseCount('user_role_audits', 0);
     }
 
     public function test_last_owner_cannot_delete_own_account_from_profile(): void
@@ -121,6 +122,7 @@ class JimnySecurityInvariantTest extends TestCase
             ->assertSessionHasErrorsIn('userDeletion', 'account');
 
         $this->assertDatabaseHas('users', ['id' => $owner->id, 'role' => 'owner']);
+        $this->assertDatabaseCount('user_role_audits', 0);
     }
 
     public function test_last_admin_cannot_delete_own_account_from_profile(): void
@@ -133,6 +135,7 @@ class JimnySecurityInvariantTest extends TestCase
             ->assertSessionHasErrorsIn('userDeletion', 'account');
 
         $this->assertDatabaseHas('users', ['id' => $admin->id, 'role' => 'admin']);
+        $this->assertDatabaseCount('user_role_audits', 0);
     }
 
     public function test_admin_cannot_demote_the_last_admin(): void
