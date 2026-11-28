@@ -19,6 +19,8 @@ class ObjectAuthorizationRegressionTest extends TestCase
     {
         parent::setUp();
 
+        config(['midtrans.server_key' => 'TEST-KEY-NOT-REAL']);
+
         $db = DB::connection();
 
         if (
