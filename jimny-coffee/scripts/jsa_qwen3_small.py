@@ -17,13 +17,13 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from jsa_qwen3_learning import DEFAULT_EXAMPLES, LearningError, verify_examples
+from jsa_qwen3_learning import (DEFAULT_EXAMPLES, LearningError, MIN_EVAL_EXAMPLES, MIN_TRAIN_EXAMPLES, verify_examples)
 
 BASE_MODEL = 'Qwen/Qwen3-0.6B'
 RUNS = Path('storage/app/private/jsa/learning/qwen3/small_runs')
 PUBLISHED = Path('storage/app/private/jsa/learning/qwen3/small_published')
-MIN_TRAIN = 100
-MIN_EVAL = 20
+MIN_TRAIN = MIN_TRAIN_EXAMPLES
+MIN_EVAL = MIN_EVAL_EXAMPLES
 MIN_VRAM_GIB = 5.0
 RUN_RE = re.compile(r'^qwen3s_[0-9a-f]{20}$')
 PII_EMAIL = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b')
@@ -66,16 +66,31 @@ def validate_alias(alias: str) -> None:
 
 
 def validate_manifest(m: dict, sandbox: bool, now: datetime | None = None):
-    if m.get('schema_version') != 3 or m.get('stage') != 'sandbox_candidate':
+    if not isinstance(m, dict):
+        raise SmallTrainingError('Manifest contoh harus berupa objek JSON')
+    if type(m.get('schema_version')) is not int or m.get('schema_version') != 3 or m.get('stage') != 'sandbox_candidate':
         raise SmallTrainingError('Manifest contoh tidak sesuai Fase 3')
-    if m.get('train_count', 0) < MIN_TRAIN or m.get('eval_count', 0) < MIN_EVAL:
-        raise SmallTrainingError('Contoh training/evaluasi belum cukup')
-    if not re.fullmatch(r'[0-9a-f]{64}', m.get('dataset_fingerprint', '')):
+
+    train_count = m.get('train_count')
+    eval_count = m.get('eval_count')
+    if (type(train_count) is not int or type(eval_count) is not int
+            or train_count < MIN_TRAIN or eval_count < MIN_EVAL):
+        raise SmallTrainingError('Contoh training/evaluasi belum cukup atau tipenya tidak valid')
+
+    fingerprint = m.get('dataset_fingerprint')
+    if not isinstance(fingerprint, str) or not re.fullmatch(r'[0-9a-f]{64}', fingerprint):
         raise SmallTrainingError('Fingerprint dataset tidak valid')
-    if not m.get('source_verified', False) and not sandbox:
+
+    source_verified = m.get('source_verified')
+    if type(source_verified) is not bool:
+        raise SmallTrainingError('source_verified harus bernilai boolean JSON')
+    if source_verified is not True and not sandbox:
         raise SmallTrainingError('Sumber belum terverifikasi: --sandbox wajib untuk eksperimen')
+
     created = m.get('created_at_utc')
     if created:
+        if not isinstance(created, str):
+            raise SmallTrainingError('Tanggal manifest tidak valid')
         try:
             d = datetime.fromisoformat(created.replace('Z', '+00:00'))
             if d.tzinfo is None:
@@ -88,15 +103,28 @@ def validate_manifest(m: dict, sandbox: bool, now: datetime | None = None):
 
 
 def candidate_decision(before: float, after: float, source_verified: bool):
-    good = all(map(math.isfinite, (before, after))) and before > 0 and after < before * 0.99
+    # This gate measures training/eval token loss only. It is not a business
+    # quality benchmark and must never be interpreted as production approval.
+    loss_pass = (
+        all(map(math.isfinite, (before, after)))
+        and before > 0
+        and after >= 0
+        and after < before * 0.99
+    )
     return {
-        'evaluation_pass': bool(good),
+        # Kept for backwards compatibility with the sandbox deploy wrapper.
+        # It only permits packaging an isolated candidate, never promotion.
+        'evaluation_pass': bool(loss_pass),
+        'training_loss_pass': bool(loss_pass),
+        'evaluation_scope': 'training_token_loss_only',
+        'business_quality_pass': False,
+        'promotion_eligible': False,
         'evaluation_loss_before': round(before, 6) if math.isfinite(before) else None,
         'evaluation_loss_after': round(after, 6) if math.isfinite(after) else None,
-        'source_verified': bool(source_verified),
+        'source_verified': source_verified is True,
         'production_promoted': False,
         'ollama_imported': False,
-        'notes': 'Token-loss improvement on arithmetic holdout is NOT evidence of better business reasoning.',
+        'notes': 'Loss gate only permits isolated candidate packaging. Independent business holdout and promotion gate are mandatory; no production promotion is authorized.',
     }
 
 
@@ -183,10 +211,18 @@ def verify_run(folder: Path):
 
 
 def guard_deploy(m: dict, sandbox: bool):
-    if (m.get('schema_version') != 4 or m.get('base_model_hf') != BASE_MODEL or
-        m.get('stage') != 'sandbox_candidate' or not m.get('evaluation_pass')):
+    if not isinstance(m, dict):
+        raise SmallTrainingError('Manifest deployment harus berupa objek JSON')
+    if (type(m.get('schema_version')) is not int or m.get('schema_version') != 4
+            or m.get('base_model_hf') != BASE_MODEL
+            or m.get('stage') != 'sandbox_candidate'
+            or m.get('evaluation_pass') is not True):
         raise SmallTrainingError('Model belum lulus evaluasi kandidat yang sesuai')
-    if not m.get('source_verified', False) and not sandbox:
+
+    source_verified = m.get('source_verified')
+    if type(source_verified) is not bool:
+        raise SmallTrainingError('source_verified harus bernilai boolean JSON')
+    if source_verified is not True and not sandbox:
         raise SmallTrainingError('Sumber belum terverifikasi; deployment hanya sandbox')
 
 

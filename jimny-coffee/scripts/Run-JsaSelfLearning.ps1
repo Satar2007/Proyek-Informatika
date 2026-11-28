@@ -56,8 +56,18 @@ try {
     $Managed = @(Get-ChildItem -LiteralPath $ExportParent -Directory -ErrorAction SilentlyContinue |
         Where-Object { $_.Name -match '^export-\d{8}-\d{6}$' } |
         Sort-Object Name -Descending)
+    $ExportParentResolved = (Resolve-Path -LiteralPath $ExportParent -ErrorAction Stop).Path.TrimEnd('\')
     foreach ($Old in ($Managed | Select-Object -Skip 3)) {
-        Remove-Item -LiteralPath $Old.FullName -Recurse -Force -ErrorAction Stop
+        $Item = Get-Item -LiteralPath $Old.FullName -Force -ErrorAction Stop
+        if (($Item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+            throw "Cleanup ditolak: target merupakan symlink/junction: $($Item.FullName)"
+        }
+        $ResolvedOld = (Resolve-Path -LiteralPath $Item.FullName -ErrorAction Stop).Path.TrimEnd('\')
+        $ResolvedParent = Split-Path -Parent $ResolvedOld
+        if ($ResolvedParent -ine $ExportParentResolved -or $Item.Name -notmatch '^export-\d{8}-\d{6}$') {
+            throw "Cleanup ditolak: target berada di luar direktori ekspor terkelola: $ResolvedOld"
+        }
+        Remove-Item -LiteralPath $ResolvedOld -Recurse -Force -ErrorAction Stop
     }
     Write-Host "`nBERHASIL: Dataset diperbarui; kandidat training disimpan terpisah." -ForegroundColor Green
     Write-Host "Catatan: model kandidat BELUM menggantikan forecast POS dan Ollama belum fine-tuned."

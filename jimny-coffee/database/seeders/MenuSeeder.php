@@ -347,7 +347,10 @@ class MenuSeeder extends Seeder
                 continue;
             }
 
-            Menu::updateOrCreate(
+            // Seed only missing catalog rows. Existing operational state
+            // (stock, price, activation and description) belongs to the business
+            // and must never be overwritten by a repeat seeding operation.
+            Menu::withTrashed()->firstOrCreate(
                 ['slug' => Str::slug($menu['nama'])],
                 [
                     'category_id'  => $category->id,

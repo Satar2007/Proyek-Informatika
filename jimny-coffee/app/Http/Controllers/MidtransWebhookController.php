@@ -32,11 +32,11 @@ class MidtransWebhookController extends Controller
             ], 422);
         }
 
-        $serverKey = (string) config('midtrans.server_key');
+        $signatureSecret = (string) config('midtrans.signature_secret_key');
 
-        if ($serverKey === '') {
+        if ($signatureSecret === '') {
             report(new RuntimeException(
-                'Server Key Midtrans belum dikonfigurasi.'
+                'Signature Secret Key Midtrans belum dikonfigurasi.'
             ));
 
             return response()->json([
@@ -50,7 +50,7 @@ class MidtransWebhookController extends Controller
             $orderId
             . $statusCode
             . $grossAmount
-            . $serverKey
+            . $signatureSecret
         );
 
         if (

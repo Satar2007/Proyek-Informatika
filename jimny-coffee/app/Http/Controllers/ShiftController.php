@@ -153,19 +153,11 @@ class ShiftController extends Controller
     {
         try {
             DB::transaction(function () use ($shift) {
+                // Shared lock order: shift -> leave request -> attendance.
+                // Leave creation and approval use the same parent-first order.
                 $lockedShift = Shift::whereKey($shift->id)
                     ->lockForUpdate()
                     ->firstOrFail();
-
-                $hasAttendance = Attendance::where('shift_id', $lockedShift->id)
-                    ->lockForUpdate()
-                    ->exists();
-
-                if ($hasAttendance) {
-                    throw new \RuntimeException(
-                        'Shift tidak dapat dihapus karena sudah memiliki riwayat kehadiran.'
-                    );
-                }
 
                 $pendingLeave = LeaveRequest::where('user_id', $lockedShift->user_id)
                     ->whereDate('tanggal', $lockedShift->tanggal)
@@ -179,8 +171,18 @@ class ShiftController extends Controller
                     );
                 }
 
+                $hasAttendance = Attendance::where('shift_id', $lockedShift->id)
+                    ->lockForUpdate()
+                    ->exists();
+
+                if ($hasAttendance) {
+                    throw new \RuntimeException(
+                        'Shift tidak dapat dihapus karena sudah memiliki riwayat kehadiran.'
+                    );
+                }
+
                 $lockedShift->delete();
-            });
+            }, 3);
 
             return back()->with('success', 'Shift berhasil dihapus.');
         } catch (\RuntimeException $e) {

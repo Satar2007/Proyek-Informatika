@@ -193,6 +193,7 @@
             isExpired: false,
             isProcessing: false,
             isCancelling: false,
+            isChecking: false,
 
             get statusLabel() {
                 const labels = {
@@ -346,23 +347,44 @@
                         return;
                     }
 
-                    const res = await fetch(`/payment/check/${paymentId}`);
-                    const data = await res.json();
+                    if (this.isChecking) return;
+                    this.isChecking = true;
 
-                    this.status = data.status;
+                    try {
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+                        if (!csrfToken) throw new Error('CSRF token tidak tersedia.');
 
-                    if (this.status === 'paid') {
-                        clearInterval(this.interval);
-                        clearInterval(this.countdownInterval);
+                        const res = await fetch(`/payment/check/${paymentId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                            },
+                            credentials: 'same-origin',
+                            cache: 'no-store',
+                        });
 
-                        this.showSuccessModal();
-                        return;
-                    }
+                        if (!res.ok) throw new Error(`Status check gagal: HTTP ${res.status}`);
 
-                    if (this.status === 'expired' || this.status === 'cancelled' || this.status === 'failed') {
-                        clearInterval(this.interval);
-                        clearInterval(this.countdownInterval);
-                        this.countdown = '00:00';
+                        const data = await res.json();
+                        this.status = data.status || this.status;
+
+                        if (this.status === 'paid') {
+                            clearInterval(this.interval);
+                            clearInterval(this.countdownInterval);
+                            this.showSuccessModal();
+                            return;
+                        }
+
+                        if (['expired', 'cancelled', 'failed'].includes(this.status)) {
+                            clearInterval(this.interval);
+                            clearInterval(this.countdownInterval);
+                            this.countdown = '00:00';
+                        }
+                    } catch (error) {
+                        console.warn('Pemeriksaan status QRIS belum berhasil.', error);
+                    } finally {
+                        this.isChecking = false;
                     }
                 }, 3000);
             },

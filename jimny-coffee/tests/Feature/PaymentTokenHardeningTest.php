@@ -6,7 +6,9 @@ use App\Models\Payment;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\MidtransService;
+use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -72,6 +74,44 @@ class PaymentTokenHardeningTest extends TestCase
         $this->assertSame(0, $fake->calls);
     }
 
+    public function test_snap_token_network_call_runs_outside_database_transaction(): void
+    {
+        $cashier = User::factory()->create([
+            'role' => 'kasir',
+        ]);
+
+        $payment = $this->paymentFor($cashier);
+        $transactionLevelBeforeRequest = DB::transactionLevel();
+
+        $fake = new class extends MidtransService {
+            public int $transactionLevelDuringRequest = -1;
+
+            public function __construct() {}
+
+            public function buatSnapToken(Payment $payment): string
+            {
+                $this->transactionLevelDuringRequest = DB::transactionLevel();
+                return 'TEST-SNAP-TOKEN-OUTSIDE-TRANSACTION';
+            }
+        };
+
+        $this->app->instance(MidtransService::class, $fake);
+
+        $this->actingAs($cashier)
+            ->post(route('payment.token', $payment->id))
+            ->assertOk()
+            ->assertJsonPath('snap_token', 'TEST-SNAP-TOKEN-OUTSIDE-TRANSACTION');
+
+        $this->assertSame(
+            $transactionLevelBeforeRequest,
+            $fake->transactionLevelDuringRequest
+        );
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'midtrans_snap_token' => 'TEST-SNAP-TOKEN-OUTSIDE-TRANSACTION',
+        ]);
+    }
+
     public function test_midtrans_failure_still_returns_503(): void
     {
         $cashier = User::factory()->create([
@@ -99,6 +139,75 @@ class PaymentTokenHardeningTest extends TestCase
             ->assertStatus(503)
             ->assertJsonPath('success', false)
             ->assertJsonPath('message', 'Pembayaran Midtrans belum dapat dibuka.');
+    }
+
+    public function test_status_synchronization_requires_post_and_keeps_get_read_only(): void
+    {
+        $cashier = User::factory()->create([
+            'role' => 'kasir',
+        ]);
+
+        $payment = $this->paymentFor($cashier);
+        $payment->update([
+            'midtrans_snap_token' => 'TEST-SNAP-TOKEN',
+        ]);
+
+        $fake = new class extends MidtransService {
+            public int $calls = 0;
+
+            public function __construct() {}
+
+            public function ambilStatus(Payment $payment): ?object
+            {
+                $this->calls++;
+                return null;
+            }
+        };
+
+        $this->app->instance(MidtransService::class, $fake);
+
+        $this->actingAs($cashier)
+            ->get(route('payment.check', $payment->id))
+            ->assertStatus(405);
+
+        $this->assertSame(0, $fake->calls);
+
+        $this->actingAs($cashier)
+            ->post(route('payment.check', $payment->id))
+            ->assertOk()
+            ->assertJsonPath('status', 'waiting');
+
+        $this->assertSame(1, $fake->calls);
+    }
+
+    public function test_legacy_manual_confirmation_cannot_mark_payment_paid(): void
+    {
+        $cashier = User::factory()->create([
+            'role' => 'kasir',
+        ]);
+
+        $payment = $this->paymentFor($cashier);
+
+        try {
+            app(PaymentService::class)->konfirmasiPayment($payment);
+            $this->fail('Manual confirmation must be disabled.');
+        } catch (RuntimeException $exception) {
+            $this->assertStringContainsString(
+                'Konfirmasi pembayaran manual dinonaktifkan',
+                $exception->getMessage()
+            );
+        }
+
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'payment_status' => 'waiting',
+        ]);
+
+        $this->assertDatabaseHas('transactions', [
+            'id' => $payment->transaction_id,
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+        ]);
     }
 
     public function test_cashier_cannot_request_token_for_another_cashier_payment(): void

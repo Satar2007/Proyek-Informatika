@@ -297,7 +297,9 @@ class SmartAssistantController extends Controller
             ->select(DB::raw('HOUR(created_at) AS jam'), DB::raw('COUNT(*) AS jumlah'))
             ->groupBy(DB::raw('HOUR(created_at)'))
             ->orderByDesc('jumlah');
-        return optional($query->first())->jam !== null ? (int) $query->first()->jam : null;
+        $peak = $query->first();
+
+        return $peak?->jam !== null ? (int) $peak->jam : null;
     }
 
     private function contains(string $text, array $words): bool

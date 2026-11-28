@@ -82,6 +82,42 @@ class User extends Authenticatable
         return $this->hasMany(StockLog::class, 'created_by');
     }
 
+    /**
+     * Lock the account roster in a stable order before changing privileged roles.
+     * This serializes concurrent demotions/deletions so two requests cannot
+     * simultaneously remove the final Admin or Owner account.
+     */
+    public static function lockRoleRoster(): \Illuminate\Database\Eloquent\Collection
+    {
+        return static::query()
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->get(['id', 'role']);
+    }
+
+    /**
+     * Refuse to remove the final account for a protected operational role.
+     */
+    public static function assertRoleRemovalAllowed(
+        string $role,
+        \Illuminate\Database\Eloquent\Collection $lockedRoster,
+        string $field = 'role'
+    ): void {
+        if (!in_array($role, ['admin', 'owner'], true)) {
+            return;
+        }
+
+        $remaining = $lockedRoster->where('role', $role)->count();
+
+        if ($remaining <= 1) {
+            $label = $role === 'owner' ? 'Owner' : 'Admin';
+
+            throw ValidationException::withMessages([
+                $field => "Tidak dapat menghapus atau menurunkan role {$label} terakhir. Buat atau tetapkan akun pengganti terlebih dahulu.",
+            ]);
+        }
+    }
+
     public function delete()
     {
         if (!$this->exists) {
@@ -91,23 +127,30 @@ class User extends Authenticatable
         return DB::transaction(function () {
             /*
             |--------------------------------------------------------------------------
-            | Lock akun
+            | Lock account roster and target account
             |--------------------------------------------------------------------------
             |
-            | TransactionService juga mengunci row user sebelum checkout.
-            | Dengan begitu checkout baru dan penghapusan akun tidak bisa
-            | berjalan saling mendahului tanpa melihat kondisi terbaru.
+            | Every privileged role mutation locks the roster in the same
+            | primary-key order. This prevents concurrent requests from
+            | deleting/demoting the final Admin or Owner simultaneously.
             |
             */
 
+            $lockedRoster = static::lockRoleRoster();
+
             $lockedUser = static::query()
                 ->whereKey($this->getKey())
-                ->lockForUpdate()
                 ->first();
 
             if (!$lockedUser) {
                 return null;
             }
+
+            static::assertRoleRemovalAllowed(
+                (string) $lockedUser->role,
+                $lockedRoster,
+                'account'
+            );
 
             /*
             |--------------------------------------------------------------------------
@@ -133,7 +176,7 @@ class User extends Authenticatable
                 ->where('user_id', $lockedUser->id)
                 ->where('payment_method', 'qris')
                 ->where('status', 'pending')
-                ->where('payment_status', 'unpaid')
+                ->whereIn('payment_status', ['unpaid', 'waiting'])
                 ->exists();
 
             if ($hasPendingQris) {

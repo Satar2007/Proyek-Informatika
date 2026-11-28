@@ -68,6 +68,22 @@ class JsaQwen3LearningTests(unittest.TestCase):
     def test_short_dataset_rejected(self):
         with self.assertRaises(q.LearningError): q.build_examples(self.ds, min_rows=999)
 
+    def test_trainer_minimum_is_enforced_even_when_caller_lowers_min_rows(self):
+        rows = [(date(2025, 1, 1) + timedelta(days=i), 10) for i in range(q.MIN_DATASET_ROWS - 1)]
+        with patch.object(q, 'source', return_value=(self.run, {'fingerprint': 'abc', 'quality': {}})):
+            with patch.object(q, 'read_total', return_value=rows):
+                with self.assertRaises(q.LearningError):
+                    q.build_examples(self.ds, min_rows=60)
+
+    def test_cleanup_rejects_archive_outside_managed_parent(self):
+        parent = self.root / 'managed-examples'
+        parent.mkdir()
+        outside = self.root / 'examples-old-0123456789abcdef'
+        outside.mkdir()
+        with self.assertRaises(q.LearningError):
+            q._remove_managed_example_archive(outside, parent)
+        self.assertTrue(outside.exists())
+
     def test_publish_knowledge_creates_alias_without_changing_base(self):
         target=self.root/'ollama'
         commands=[]

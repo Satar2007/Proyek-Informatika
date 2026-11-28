@@ -294,7 +294,7 @@ class JimnyLocalAiController extends Controller
                         } catch (Throwable $ignored) {
                             $fallback = 'Data POS belum tersedia saat ini.';
                         }
-                        $fallback .= '\n\n(AI lokal sedang tidak tersedia; ini jawaban cadangan POS.)';
+                        $fallback .= "\n\n(AI lokal sedang tidak tersedia; ini jawaban cadangan POS.)";
                     }
                     $emit('fallback', $fallback);
                 } else {
