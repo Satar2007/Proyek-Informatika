@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\SqlErrorMessage;
+
 use App\Models\Attendance;
 use App\Models\LeaveRequest;
 use App\Models\Shift;
@@ -145,7 +147,7 @@ class ShiftController extends Controller
         } catch (Throwable $e) {
             return back()
                 ->withInput()
-                ->with('error', 'Gagal generate shift: ' . $e->getMessage());
+                ->with('error', 'Gagal generate shift: ' . SqlErrorMessage::forUser($e));
         }
     }
 
@@ -186,7 +188,7 @@ class ShiftController extends Controller
 
             return back()->with('success', 'Shift berhasil dihapus.');
         } catch (\RuntimeException $e) {
-            return back()->with('error', $e->getMessage());
+            return back()->with('error', SqlErrorMessage::forUser($e));
         }
     }
 
