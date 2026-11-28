@@ -81,6 +81,7 @@ jobs:
         run: |
           npm ci
           npm run build
+          node --test tests/JavaScript/pos-xss.test.cjs
 
       - name: Prepare dedicated test database
         run: php artisan migrate --force --no-interaction

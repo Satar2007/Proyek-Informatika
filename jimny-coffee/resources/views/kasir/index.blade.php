@@ -447,10 +447,10 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        await Swal.fire('Berhasil', data.message, 'success');
+                        await Swal.fire({ titleText: 'Berhasil', text: data.message, icon: 'success' });
                         await this.loadAttendanceStatus();
                     } else {
-                        Swal.fire('Gagal', data.message, 'error');
+                        Swal.fire({ titleText: 'Gagal', text: data.message, icon: 'error' });
                     }
                 } catch (e) {
                     Swal.fire('Error', 'Terjadi kesalahan saat clock in.', 'error');
@@ -491,10 +491,10 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        await Swal.fire('Berhasil', data.message, 'success');
+                        await Swal.fire({ titleText: 'Berhasil', text: data.message, icon: 'success' });
                         await this.loadAttendanceStatus();
                     } else {
-                        Swal.fire('Gagal', data.message, 'error');
+                        Swal.fire({ titleText: 'Gagal', text: data.message, icon: 'error' });
                     }
                 } catch (e) {
                     Swal.fire('Error', 'Terjadi kesalahan saat clock out.', 'error');
@@ -539,10 +539,10 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        await Swal.fire('Berhasil', data.message, 'success');
+                        await Swal.fire({ titleText: 'Berhasil', text: data.message, icon: 'success' });
                         await this.loadAttendanceStatus();
                     } else {
-                        Swal.fire('Gagal', data.message, 'error');
+                        Swal.fire({ titleText: 'Gagal', text: data.message, icon: 'error' });
                     }
                 } catch (e) {
                     Swal.fire('Error', 'Terjadi kesalahan saat mengajukan izin.', 'error');
@@ -613,7 +613,7 @@
                 const result = await Swal.fire({
                     title: 'Hapus Item?',
                     html: `
-                        <p>Apakah Anda yakin ingin menghapus <strong>${item.nama}</strong> dari pesanan?</p>
+                        <p>Apakah Anda yakin ingin menghapus <strong>${this.escapeHtml(item.nama)}</strong> dari pesanan?</p>
                         <p style="margin-top: 8px; color: #7B4B2A; font-size: 13px;">
                             Item ini akan dihapus dari keranjang.
                         </p>
@@ -808,7 +808,7 @@
                                 this.startNewOrder();
                             }
                         } else {
-                            Swal.fire('Error', data.message, 'error');
+                            Swal.fire({ titleText: 'Error', text: data.message, icon: 'error' });
                         }
                     } catch (e) {
                         Swal.fire('Error', 'Terjadi kesalahan', 'error');
@@ -854,7 +854,7 @@
                             this.namaPelanggan = '';
                             window.location.href = `/payment/${data.payment_id}`;
                         } else {
-                            Swal.fire('Error', data.message, 'error');
+                            Swal.fire({ titleText: 'Error', text: data.message, icon: 'error' });
                         }
                     } catch (e) {
                         Swal.fire('Error', 'Terjadi kesalahan', 'error');
