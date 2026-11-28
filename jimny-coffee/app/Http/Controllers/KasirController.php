@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\SqlErrorMessage;
+
 use App\Models\Menu;
 use App\Models\Category;
 use App\Services\TransactionService;
@@ -137,7 +139,7 @@ class KasirController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => SqlErrorMessage::forUser($e),
             ], 422);
         }
     }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\SqlErrorMessage;
+
 use App\Models\Menu;
 use App\Models\Category;
 use App\Models\PriceHistory;
@@ -293,7 +295,7 @@ class MenuController extends Controller
         } catch (Exception $e) {
             return redirect()
                 ->route('admin.menu.index')
-                ->with('error', $e->getMessage());
+                ->with('error', SqlErrorMessage::forUser($e));
         }
 
         return redirect()
@@ -318,7 +320,7 @@ class MenuController extends Controller
         } catch (Exception $e) {
             return redirect()
                 ->route('admin.menu.index')
-                ->with('error', $e->getMessage());
+                ->with('error', SqlErrorMessage::forUser($e));
         }
 
         return redirect()

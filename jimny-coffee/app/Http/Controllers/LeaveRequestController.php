@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\SqlErrorMessage;
+
 use App\Models\Attendance;
 use App\Models\LeaveRequest;
 use App\Models\Shift;
@@ -152,7 +154,7 @@ class LeaveRequestController extends Controller
         } catch (Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', $e->getMessage());
+                ->with('error', SqlErrorMessage::forUser($e));
         }
     }
 
@@ -179,7 +181,7 @@ class LeaveRequestController extends Controller
         } catch (Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', $e->getMessage());
+                ->with('error', SqlErrorMessage::forUser($e));
         }
     }
 }

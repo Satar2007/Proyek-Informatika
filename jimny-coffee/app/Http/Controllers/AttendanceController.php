@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\SqlErrorMessage;
+
 use App\Models\Attendance;
 use App\Models\Shift;
 use Illuminate\Support\Facades\DB;
@@ -115,7 +117,7 @@ class AttendanceController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => SqlErrorMessage::forUser($e),
             ], 422);
         }
     }
@@ -161,7 +163,7 @@ class AttendanceController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => SqlErrorMessage::forUser($e),
             ], 422);
         }
     }
