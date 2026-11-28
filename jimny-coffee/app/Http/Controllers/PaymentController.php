@@ -6,6 +6,8 @@ use App\Models\Payment;
 use App\Services\MidtransService;
 use App\Services\StockService;
 use App\Services\StockReservationService;
+use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Throwable;
@@ -60,40 +62,100 @@ class PaymentController extends Controller
             ], 409);
         }
 
+        if ($payment->expired_at && $payment->expired_at->isPast()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Batas waktu transaksi telah habis. Batalkan transaksi ini dan buat transaksi baru.',
+            ], 409);
+        }
+
         try {
-            $snapToken = DB::transaction(function () use ($paymentId) {
-                $lockedPayment = Payment::with('transaction')
-                    ->lockForUpdate()
-                    ->findOrFail($paymentId);
+            $snapToken = Cache::store(
+                config('midtrans.lock_store', config('cache.default'))
+            )
+                ->lock(
+                    'midtrans:snap-token:' . $paymentId,
+                    (int) config('midtrans.lock_seconds', 180)
+                )
+                ->block(10, function () use ($paymentId) {
+                    $currentPayment = Payment::with('transaction')
+                        ->findOrFail($paymentId);
 
-                if (
-                    $lockedPayment->payment_status !== 'waiting'
-                    || $lockedPayment->transaction->status !== 'pending'
-                    || $lockedPayment->transaction->stock_reservation_status !== 'reserved'
-                ) {
-                    throw new ConflictHttpException(
-                        'Transaksi tidak lagi menunggu pembayaran.'
+                    if (
+                        !$currentPayment->transaction
+                        || $currentPayment->payment_status !== 'waiting'
+                        || $currentPayment->transaction->status !== 'pending'
+                        || $currentPayment->transaction->stock_reservation_status !== 'reserved'
+                    ) {
+                        throw new ConflictHttpException(
+                            'Transaksi tidak lagi menunggu pembayaran.'
+                        );
+                    }
+
+                    // Re-check expiry after acquiring the shared token lock.
+                    // The request may have waited after its first preflight check.
+                    if ($currentPayment->expired_at && $currentPayment->expired_at->isPast()) {
+                        throw new ConflictHttpException(
+                            'Batas waktu transaksi telah habis. Batalkan transaksi ini dan buat transaksi baru.'
+                        );
+                    }
+
+                    if (filled($currentPayment->midtrans_snap_token)) {
+                        return $currentPayment->midtrans_snap_token;
+                    }
+
+                    // Request Midtrans berjalan di luar database transaction.
+                    $newToken = $this->midtransService
+                        ->buatSnapToken($currentPayment);
+
+                    $expiryMinutes = max(
+                        5,
+                        min(10080, (int) config('midtrans.snap_expiry_minutes', 5))
                     );
-                }
+                    $expiresAt = now()->addMinutes($expiryMinutes);
 
-                if (filled($lockedPayment->midtrans_snap_token)) {
-                    return $lockedPayment->midtrans_snap_token;
-                }
+                    return DB::transaction(function () use (
+                        $paymentId,
+                        $newToken,
+                        $expiresAt
+                    ) {
+                        $freshPayment = Payment::with('transaction')
+                            ->lockForUpdate()
+                            ->findOrFail($paymentId);
 
-                $newToken = $this->midtransService
-                    ->buatSnapToken($lockedPayment);
+                        if (
+                            !$freshPayment->transaction
+                            || $freshPayment->payment_status !== 'waiting'
+                            || $freshPayment->transaction->status !== 'pending'
+                            || $freshPayment->transaction->stock_reservation_status !== 'reserved'
+                        ) {
+                            throw new ConflictHttpException(
+                                'Transaksi tidak lagi menunggu pembayaran.'
+                            );
+                        }
 
-                $lockedPayment->update([
-                    'midtrans_snap_token' => $newToken,
-                ]);
+                        if (filled($freshPayment->midtrans_snap_token)) {
+                            return $freshPayment->midtrans_snap_token;
+                        }
 
-                return $newToken;
-            });
+                        $freshPayment->update([
+                            'midtrans_snap_token' => $newToken,
+                            'expired_at' => $expiresAt,
+                        ]);
+
+                        return $newToken;
+                    });
+                });
 
             return response()->json([
                 'success' => true,
                 'snap_token' => $snapToken,
             ]);
+        } catch (LockTimeoutException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Permintaan token pembayaran sedang diproses. Coba lagi beberapa saat.',
+            ], 409)->header('Retry-After', '2');
         } catch (ConflictHttpException $e) {
             return response()->json([
                 'success' => false,

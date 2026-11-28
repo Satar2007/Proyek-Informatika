@@ -95,7 +95,7 @@ class ValentinusAccountManagementTest extends TestCase
             ->post(route('admin.akun.store'), [
                 'name' => 'Password Pendek',
                 'email' => 'password-pendek-valent@example.test',
-                'password' => '12345',
+                'password' => '123456',
                 'role' => 'kasir',
             ])
             ->assertSessionHasErrors('password');

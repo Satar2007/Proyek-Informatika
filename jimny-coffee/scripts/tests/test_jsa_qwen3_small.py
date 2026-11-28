@@ -38,6 +38,18 @@ class SmallQwen3PolicyTests(unittest.TestCase):
            'train_count':2,'eval_count':50,'dataset_fingerprint':'a'*64}
         with self.assertRaises(m.SmallTrainingError):m.validate_manifest(x, False)
 
+    def test_manifest_rejects_truthy_string_source_verified(self):
+        x={'schema_version':3,'stage':'sandbox_candidate','source_verified':'false',
+           'train_count':100,'eval_count':20,'dataset_fingerprint':'a'*64}
+        with self.assertRaises(m.SmallTrainingError):
+            m.validate_manifest(x, True)
+
+    def test_deploy_rejects_truthy_string_evaluation_pass(self):
+        x={'schema_version':4,'base_model_hf':m.BASE_MODEL,'stage':'sandbox_candidate',
+           'evaluation_pass':'false','source_verified':False}
+        with self.assertRaises(m.SmallTrainingError):
+            m.guard_deploy(x, True)
+
     def test_guard_checks_stale_examples(self):
         x={'schema_version':3,'stage':'sandbox_candidate','source_verified':True,
            'train_count':273,'eval_count':50,'dataset_fingerprint':'a'*64,

@@ -12,6 +12,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\AkunController;
+use App\Http\Controllers\UserRoleAuditController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\SmartAssistantController;
 use App\Http\Controllers\MidtransWebhookController;
@@ -68,8 +69,8 @@ Route::middleware(['auth', 'role:kasir,admin'])->group(function () {
 
     // Payment
     Route::get('/payment/struk/{id}', [PaymentController::class, 'struk'])->name('payment.struk');
-    Route::get('/payment/check/{id}', [PaymentController::class, 'check'])->name('payment.check');
-    Route::post('/payment/token/{id}', [PaymentController::class, 'token'])->name('payment.token');
+    Route::post('/payment/check/{id}', [PaymentController::class, 'check'])->middleware('throttle:60,1')->name('payment.check');
+    Route::post('/payment/token/{id}', [PaymentController::class, 'token'])->middleware('throttle:10,1')->name('payment.token');
     Route::get('/payment/{id}', [PaymentController::class, 'show'])->name('payment.show');
     Route::post('/payment/success/{id}', [PaymentController::class, 'success'])->name('payment.success');
 
@@ -121,6 +122,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/izin', [LeaveRequestController::class, 'index'])->name('izin.index');
     Route::post('/izin/{id}/approve', [LeaveRequestController::class, 'approve'])->name('izin.approve');
     Route::post('/izin/{id}/reject', [LeaveRequestController::class, 'reject'])->name('izin.reject');
+
+    // Audit perubahan role (read-only, Admin only)
+    Route::get('/audit-role', [UserRoleAuditController::class, 'index'])
+        ->name('audit-role.index');
 
     // Akun
     Route::get('/akun', [AkunController::class, 'index'])->name('akun.index');

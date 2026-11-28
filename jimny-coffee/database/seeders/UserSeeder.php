@@ -2,39 +2,59 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use RuntimeException;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::updateOrCreate(
-            ['email' => 'admin@coffee.com'],
-            [
-                'name'     => 'Admin',
-                'password' => Hash::make('password'),
-                'role'     => 'admin',
-            ]
-        );
+        if (
+            !app()->environment('local')
+            || !(bool) config('jimny.seed_default_users', false)
+        ) {
+            return;
+        }
 
-        User::updateOrCreate(
-            ['email' => 'kasir@coffee.com'],
-            [
-                'name'     => 'Kasir',
-                'password' => Hash::make('password'),
-                'role'     => 'kasir',
-            ]
-        );
+        $password = (string) config('jimny.seed_default_password', '');
 
-        User::updateOrCreate(
-            ['email' => 'owner@coffee.com'],
+        if (strlen($password) < 16) {
+            throw new RuntimeException(
+                'JIMNY_SEED_DEFAULT_PASSWORD wajib diisi minimal 16 karakter '
+                . 'ketika JIMNY_SEED_DEFAULT_USERS=true.'
+            );
+        }
+
+        $accounts = [
             [
-                'name'     => 'Owner',
-                'password' => Hash::make('password'),
-                'role'     => 'owner',
-            ]
-        );
+                'email' => 'admin@coffee.com',
+                'name' => 'Admin',
+                'role' => 'admin',
+            ],
+            [
+                'email' => 'kasir@coffee.com',
+                'name' => 'Kasir',
+                'role' => 'kasir',
+            ],
+            [
+                'email' => 'owner@coffee.com',
+                'name' => 'Owner',
+                'role' => 'owner',
+            ],
+        ];
+
+        foreach ($accounts as $account) {
+            // firstOrCreate never resets an existing user's password or role.
+            User::firstOrCreate(
+                ['email' => $account['email']],
+                [
+                    'name' => $account['name'],
+                    'password' => Hash::make($password),
+                    'role' => $account['role'],
+                ]
+            );
+        }
     }
 }

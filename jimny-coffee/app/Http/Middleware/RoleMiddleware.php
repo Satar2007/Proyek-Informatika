@@ -13,7 +13,7 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
-        if (!in_array(auth()->user()->role, $roles)) {
+        if (!in_array(auth()->user()->role, $roles, true)) {
             abort(403, 'Akses ditolak! Anda tidak memiliki izin.');
         }
 

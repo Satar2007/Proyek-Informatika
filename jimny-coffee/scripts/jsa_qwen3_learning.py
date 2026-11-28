@@ -13,6 +13,7 @@ import os
 import re
 import secrets
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -27,6 +28,11 @@ DEFAULT_KNOWLEDGE = Path('storage/app/private/jsa/learning/qwen3/knowledge')
 DEFAULT_EXAMPLES = Path('storage/app/private/jsa/learning/qwen3/examples')
 MODEL_BASE = 'qwen3:4b-instruct'
 MODEL_ADAPTIVE = 'jimny-qwen3:adaptive'
+MIN_TRAIN_EXAMPLES = 100
+MIN_EVAL_EXAMPLES = 20
+EXAMPLE_EMBARGO_DAYS = 14
+# 28 warm-up rows + 100 train + 20 holdout + 14-day embargo.
+MIN_DATASET_ROWS = 28 + MIN_TRAIN_EXAMPLES + MIN_EVAL_EXAMPLES + EXAMPLE_EMBARGO_DAYS
 ALIAS_RE = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._/-]{0,100}:[A-Za-z0-9][A-Za-z0-9._-]{0,50}$')
 
 class LearningError(RuntimeError):
@@ -176,10 +182,16 @@ def refresh_alias(dataset_dir:Path, output_dir:Path, base_model:str=MODEL_BASE,
     return metadata
 
 
-def build_examples(dataset_dir:Path,min_rows:int=120):
+def build_examples(dataset_dir:Path,min_rows:int=MIN_DATASET_ROWS):
     p,m=source(dataset_dir)
     rows=read_total(p/'active_total.csv')
-    if len(rows)<min_rows or len(rows)<90:raise LearningError('Dataset training Qwen3 minimal 90 hari dan harus memenuhi min_rows')
+    minimum_rows = max(MIN_DATASET_ROWS, int(min_rows))
+    if len(rows) < minimum_rows:
+        raise LearningError(
+            f'Dataset training Qwen3 minimal {minimum_rows} hari untuk menghasilkan '
+            f'sedikitnya {MIN_TRAIN_EXAMPLES} contoh training, {MIN_EVAL_EXAMPLES} '
+            f'evaluasi, dan embargo {EXAMPLE_EMBARGO_DAYS} hari.'
+        )
     examples=[]
     for i in range(28,len(rows)):
         recent=sum(n for _,n in rows[i-6:i+1])
@@ -199,8 +211,8 @@ def build_examples(dataset_dir:Path,min_rows:int=120):
             'messages':[{'role':'system','content':'Kamu asisten analitik kedai kopi yang akurat dan hati-hati.'},
                         {'role':'user','content':question},{'role':'assistant','content':answer}]})
     # Holdout chronological last >=20 days; no overlapping unique date labels.
-    cut=max(20,int(len(examples)*.15))
-    embargo=14  # adjacent rolling 7-day windows must not bleed between train and validation
+    cut=max(MIN_EVAL_EXAMPLES,int(len(examples)*.15))
+    embargo=EXAMPLE_EMBARGO_DAYS  # adjacent rolling 7-day windows must not bleed between train and validation
     return m,examples[:-(cut+embargo)],examples[-cut:]
 
 
@@ -227,6 +239,52 @@ def verify_examples(out:Path):
         raise LearningError('Gagal verifikasi contoh Qwen3: '+str(exc)) from exc
 
 
+
+def _is_link_or_junction(path: Path) -> bool:
+    # Detect symlinks and Windows reparse-point junctions on Python 3.11+.
+    path = Path(path)
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return False
+
+    if stat.S_ISLNK(info.st_mode):
+        return True
+
+    reparse_flag = getattr(stat, 'FILE_ATTRIBUTE_REPARSE_POINT', 0)
+    file_attributes = getattr(info, 'st_file_attributes', 0)
+    if reparse_flag and file_attributes & reparse_flag:
+        return True
+
+    # Python 3.12+ exposes an explicit junction predicate; retain it as an extra guard.
+    is_junction = getattr(path, 'is_junction', None)
+    return bool(is_junction()) if callable(is_junction) else False
+
+
+def _remove_managed_example_archive(path: Path, parent: Path) -> None:
+    # Remove only a verified direct-child archive in the managed examples folder.
+    parent = Path(parent).resolve(strict=True)
+    path = Path(path)
+
+    if not re.fullmatch(r'examples-old-[0-9a-f]{16}', path.name):
+        raise LearningError('Nama target cleanup tidak sesuai pola arsip terkelola')
+    try:
+        lexical_parent = path.parent.resolve(strict=True)
+    except OSError as exc:
+        raise LearningError('Direktori induk cleanup tidak dapat diverifikasi') from exc
+    if lexical_parent != parent:
+        raise LearningError('Target cleanup bukan anak langsung direktori arsip')
+    if _is_link_or_junction(path):
+        raise LearningError('Arsip lama berupa symlink/junction/reparse point; penghapusan ditolak')
+
+    resolved = path.resolve(strict=True)
+    if resolved.parent != parent:
+        raise LearningError('Target cleanup berada di luar direktori arsip yang diizinkan')
+    if not resolved.is_dir():
+        raise LearningError('Target cleanup bukan direktori')
+    shutil.rmtree(resolved)
+
+
 def publish_examples(dataset_dir:Path,out:Path):
     m,train,valid=build_examples(dataset_dir)
     out=Path(out)
@@ -250,7 +308,7 @@ def publish_examples(dataset_dir:Path,out:Path):
         for previous in known[5:]:
             try:verify_examples(previous)
             except LearningError:continue
-            shutil.rmtree(previous)
+            _remove_managed_example_archive(previous, out.parent)
     def lines(rows):
         return ''.join(json.dumps(x,ensure_ascii=False,sort_keys=True)+'\n' for x in rows).encode('utf8')
     files={'train.jsonl':lines(train),'eval.jsonl':lines(valid)}

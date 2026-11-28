@@ -17,6 +17,11 @@
                 Tambah, ubah, dan kelola akun pengguna sistem berdasarkan role admin, owner, dan kasir.
             </p>
         </div>
+
+        <a href="{{ route('admin.audit-role.index') }}"
+            class="inline-flex items-center justify-center rounded-2xl border border-[#D9B08C] bg-white px-5 py-3 text-sm font-black text-[#7B4B2A] shadow-sm transition hover:bg-[#F8F5F0]">
+            Lihat Audit Perubahan Role
+        </a>
     </div>
 
     {{-- Summary Cards --}}

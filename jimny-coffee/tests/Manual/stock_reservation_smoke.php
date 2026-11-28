@@ -64,7 +64,7 @@ class ReservationFakeMidtrans extends MidtransService
     {
         return 'TEST-TOKEN-NOT-A-REAL-MIDTRANS-TOKEN';
     }
-    public function batalkanSesiSnap(Payment $payment): bool
+    public function batalkanSesiSnap(Payment $payment, bool $statusApiConfirmedNotFound = false): bool
     {
         $this->cancels++;
         return $this->sessionCancelled;
@@ -86,6 +86,8 @@ function remoteFor(Payment $p, string $status): object
         'order_id' => $p->external_id,
         'gross_amount' => (string) $p->transaction->grand_total,
         'transaction_status' => $status,
+        'status_code' => '200',
+        'currency' => 'IDR',
         'fraud_status' => 'accept',
     ];
 }

@@ -99,6 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let preparing = false;
     let finished = false;
+    let statusTimer = null;
+    let statusChecking = false;
+    let statusDelay = 10000;
 
     function tampilkanStatus(pesan) {
         if (statusElement) {
@@ -112,18 +115,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function scheduleStatusCheck(delay) {
+        if (finished) return;
+        if (statusTimer !== null) clearTimeout(statusTimer);
+        statusTimer = setTimeout(cekStatus, delay);
+    }
+
     async function cekStatus() {
+        if (finished || statusChecking) return;
+        if (statusTimer !== null) {
+            clearTimeout(statusTimer);
+            statusTimer = null;
+        }
+
+        statusChecking = true;
         try {
             const response = await fetch(checkUrl, {
+                method: 'POST',
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 credentials: 'same-origin',
                 cache: 'no-store'
             });
 
             if (!response.ok) {
-                throw new Error('Gagal mengambil status pembayaran.');
+                throw new Error('Gagal mengambil status pembayaran: HTTP ' + response.status);
             }
 
             const data = await response.json();
@@ -131,29 +149,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.status === 'paid') {
                 finished = true;
                 tampilkanStatus('Pembayaran berhasil diverifikasi.');
-
-                if (payButton) {
-                    payButton.disabled = true;
-                }
-
-                clearInterval(intervalStatus);
+                if (payButton) payButton.disabled = true;
+                if (statusTimer !== null) clearTimeout(statusTimer);
+                statusTimer = null;
                 window.location.href = strukUrl;
             } else if (['expired', 'failed', 'cancelled'].includes(data.status)) {
                 finished = true;
                 tampilkanStatus('Pembayaran berstatus: ' + data.status);
-
-                if (payButton) {
-                    payButton.disabled = true;
+                if (payButton) payButton.disabled = true;
+                if (statusTimer !== null) clearTimeout(statusTimer);
+                statusTimer = null;
+            } else {
+                statusDelay = 10000;
+                if (!preparing) {
+                    tampilkanStatus('Menunggu pembayaran atau konfirmasi dari Midtrans.');
                 }
-
-                clearInterval(intervalStatus);
-            } else if (!preparing) {
-                tampilkanStatus('Menunggu pembayaran atau konfirmasi dari Midtrans.');
             }
         } catch (error) {
+            statusDelay = Math.min(statusDelay * 2, 15000);
             if (!preparing) {
-                tampilkanStatus('Status belum dapat diperiksa. Silakan tunggu.');
+                tampilkanStatus('Status belum dapat diperiksa. Sistem akan mencoba kembali.');
             }
+        } finally {
+            statusChecking = false;
+            if (!finished) scheduleStatusCheck(statusDelay);
         }
     }
 
@@ -236,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const intervalStatus = setInterval(cekStatus, 3000);
+    scheduleStatusCheck(10000);
 });
 </script>
 @endpush

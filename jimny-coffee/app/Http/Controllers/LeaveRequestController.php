@@ -45,26 +45,30 @@ class LeaveRequestController extends Controller
                 ], 422);
             }
 
-            $attendance = Attendance::where('user_id', $user->id)
-                ->whereDate('tanggal', $request->tanggal)
-                ->first();
-
-            if ($attendance && $attendance->clock_in) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tidak bisa mengajukan izin karena Anda sudah clock in pada tanggal tersebut.',
-                ], 422);
-            }
-
+            // Keep the shared lock order consistent across attendance, shift deletion,
+            // and leave approval: shift -> leave request -> attendance.
             $existingRequest = LeaveRequest::where('user_id', $user->id)
                 ->whereDate('tanggal', $request->tanggal)
                 ->whereIn('status', ['pending', 'approved'])
+                ->lockForUpdate()
                 ->first();
 
             if ($existingRequest) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Pengajuan izin untuk tanggal tersebut sudah ada.',
+                ], 422);
+            }
+
+            $attendance = Attendance::where('user_id', $user->id)
+                ->whereDate('tanggal', $request->tanggal)
+                ->lockForUpdate()
+                ->first();
+
+            if ($attendance && $attendance->clock_in) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak bisa mengajukan izin karena Anda sudah clock in pada tanggal tersebut.',
                 ], 422);
             }
 
@@ -86,21 +90,30 @@ class LeaveRequestController extends Controller
     {
         try {
             DB::transaction(function () use ($id) {
-                $leaveRequest = LeaveRequest::with('user')
-                    ->lockForUpdate()
-                    ->findOrFail($id);
+                // Read only the immutable lookup keys first. The row is locked after
+                // its parent shift so all writers use the same lock order.
+                $lookup = LeaveRequest::query()->findOrFail($id);
 
-                if ($leaveRequest->status !== 'pending') {
-                    throw new Exception('Pengajuan izin ini sudah diproses sebelumnya.');
-                }
-
-                $shift = Shift::where('user_id', $leaveRequest->user_id)
-                    ->whereDate('tanggal', $leaveRequest->tanggal)
+                $shift = Shift::where('user_id', $lookup->user_id)
+                    ->whereDate('tanggal', $lookup->tanggal)
                     ->lockForUpdate()
                     ->first();
 
                 if (!$shift) {
                     throw new Exception('Tidak bisa menyetujui izin karena kasir tidak memiliki jadwal shift pada tanggal tersebut.');
+                }
+
+                $leaveRequest = LeaveRequest::with('user')
+                    ->lockForUpdate()
+                    ->findOrFail($id);
+
+                if ((int) $leaveRequest->user_id !== (int) $shift->user_id ||
+                    substr((string) $leaveRequest->tanggal, 0, 10) !== substr((string) $shift->tanggal, 0, 10)) {
+                    throw new Exception('Data pengajuan izin berubah. Silakan muat ulang sebelum memproses.');
+                }
+
+                if ($leaveRequest->status !== 'pending') {
+                    throw new Exception('Pengajuan izin ini sudah diproses sebelumnya.');
                 }
 
                 $attendance = Attendance::where('user_id', $leaveRequest->user_id)

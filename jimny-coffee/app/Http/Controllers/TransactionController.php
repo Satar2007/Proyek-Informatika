@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use App\Services\StockReservationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
@@ -122,168 +124,238 @@ class TransactionController extends Controller
         $transaksi = $query->findOrFail($id);
 
         if ($transaksi->payment_method === 'qris') {
+            $paymentId = (int) ($transaksi->payment?->id ?? 0);
+
+            if ($paymentId <= 0) {
+                return back()->with(
+                    'error',
+                    'Data pembayaran QRIS tidak ditemukan.'
+                );
+            }
+
             try {
-                // Alur ini khusus untuk pembayaran QRIS melalui Midtrans Sandbox.
-                if ((bool) config('midtrans.is_production')) {
-                    return back()->with(
-                        'error',
-                        'Alur pembatalan QRIS Sandbox tidak tersedia pada mode produksi.'
-                    );
-                }
-
-                $payment = $transaksi->payment;
-
-                if (!$payment || $payment->metode !== 'qris') {
-                    return back()->with(
-                        'error',
-                        'Data pembayaran QRIS tidak ditemukan.'
-                    );
-                }
-
-                if (
-                    $transaksi->status !== 'pending'
-                    || !in_array(
-                        $transaksi->payment_status,
-                        ['unpaid', 'waiting'],
-                        true
+                // Token creation, cancellation and automatic expiry share
+                // the same cache lock backend and payment-specific key.
+                return Cache::store(
+                    config('midtrans.lock_store', config('cache.default'))
+                )
+                    ->lock(
+                        'midtrans:snap-token:' . $paymentId,
+                        (int) config('midtrans.lock_seconds', 180)
                     )
-                    || $payment->payment_status !== 'waiting'
+                    ->block(10, fn () => $this->cancelQrisWithLock($id, $user));
+            } catch (LockTimeoutException $e) {
+                return back()->with(
+                    'error',
+                    'Pembayaran sedang diproses oleh permintaan lain. Tunggu sebentar lalu muat ulang halaman.'
+                );
+            }
+        }
+
+        // Pertahankan alur pembatalan transaksi non-QRIS.
+        if (
+            $transaksi->payment_status === 'paid'
+            || $transaksi->status === 'success'
+        ) {
+            return back()->with(
+                'error',
+                'Transaksi yang sudah lunas tidak bisa dibatalkan.'
+            );
+        }
+
+        DB::transaction(function () use ($transaksi) {
+            $transaksi->update([
+                'status' => 'cancelled',
+                'payment_status' => 'cancelled',
+            ]);
+
+            if ($transaksi->payment) {
+                $transaksi->payment->update([
+                    'payment_status' => 'cancelled',
+                ]);
+            }
+        });
+
+        return redirect()
+            ->route('transaksi.show', $transaksi->id)
+            ->with('success', 'Transaksi berhasil dibatalkan.');
+    }
+
+    /**
+     * QRIS cancellation runs while holding the same distributed lock used
+     * by Snap-token creation and automatic expiry.
+     *
+     * Network calls remain outside DB transactions. Local state is only
+     * finalized after Midtrans status is checked again and row identity
+     * is revalidated under database locks.
+     */
+    private function cancelQrisWithLock($id, $user): RedirectResponse
+    {
+        $query = Transaction::with('payment');
+
+        if ($user->role === 'kasir') {
+            $query->where('user_id', $user->id);
+        }
+
+        $transaksi = $query->findOrFail($id);
+
+        try {
+            // Pembatalan QRIS diizinkan pada Sandbox maupun Production.
+            // Status lokal hanya diubah setelah pembatalan sesi/transaksi
+            // dikonfirmasi oleh Midtrans pada alur di bawah.
+            $payment = $transaksi->payment;
+
+            if (!$payment || $payment->metode !== 'qris') {
+                return back()->with(
+                    'error',
+                    'Data pembayaran QRIS tidak ditemukan.'
+                );
+            }
+
+            if (
+                $transaksi->status !== 'pending'
+                || !in_array(
+                    $transaksi->payment_status,
+                    ['unpaid', 'waiting'],
+                    true
+                )
+                || $payment->payment_status !== 'waiting'
+            ) {
+                return back()->with(
+                    'error',
+                    'Transaksi tidak lagi menunggu pembayaran.'
+                );
+            }
+
+            // KASUS 1: Belum pernah dibuatkan Snap Token.
+            // Tidak ada permintaan pembatalan ke Midtrans.
+            if (blank($payment->midtrans_snap_token)) {
+                $hasil = DB::transaction(function () use ($id, $user) {
+                    $p = \App\Models\Payment::where(
+                        'transaction_id',
+                        $id
+                    )
+                        ->lockForUpdate()
+                        ->first();
+
+                    $q = Transaction::whereKey($id)
+                        ->lockForUpdate();
+
+                    if ($user->role === 'kasir') {
+                        $q->where('user_id', $user->id);
+                    }
+
+                    $t = $q->firstOrFail();
+
+                    if (
+                        !$p
+                        || $p->metode !== 'qris'
+                        || $p->payment_status !== 'waiting'
+                        || $t->status !== 'pending'
+                        || !in_array(
+                            $t->payment_status,
+                            ['unpaid', 'waiting'],
+                            true
+                        )
+                    ) {
+                        return [
+                            'ok' => false,
+                            'message' => 'Status transaksi sudah berubah.',
+                        ];
+                    }
+
+                    // Token bisa saja dibuat oleh permintaan lain
+                    // ketika kasir menekan tombol Batalkan.
+                    if (filled($p->midtrans_snap_token)) {
+                        return [
+                            'ok' => false,
+                            'message' => 'Snap Token baru saja dibuat. Muat ulang halaman lalu coba pembatalan kembali.',
+                        ];
+                    }
+
+                    app(StockReservationService::class)->release((int) $t->id);
+
+                    $p->update([
+                        'payment_status' => 'cancelled',
+                    ]);
+
+                    $t->update([
+                        'status' => 'cancelled',
+                        'payment_status' => 'cancelled',
+                    ]);
+
+                    return [
+                        'ok' => true,
+                        'message' => 'Transaksi QRIS berhasil dibatalkan.',
+                    ];
+                }, 3);
+
+                if (!$hasil['ok']) {
+                    return back()->with('error', $hasil['message']);
+                }
+
+                return redirect()
+                    ->route('transaksi.show', $id)
+                    ->with('success', $hasil['message']);
+            }
+
+            // KASUS 2: Snap Token sudah tersedia.
+            // Simpan identitas awal untuk divalidasi kembali saat
+            // pembaruan database dilakukan.
+            $tokenAwal = $payment->midtrans_snap_token;
+            $orderIdAwal = $payment->external_id;
+            $nominalAwal = (float) $transaksi->grand_total;
+
+            $midtrans = app(\App\Services\MidtransService::class);
+
+            // PENTING: seluruh panggilan jaringan Midtrans berada
+            // DI LUAR DB::transaction() dan database lock.
+            $remote = $midtrans->ambilStatus($payment);
+            $sesiDibatalkan = false;
+
+            if ($remote === null) {
+                // Status API belum menemukan transaksi pembayaran.
+                // Pembatalan sesi harus dikonfirmasi oleh Midtrans.
+                $sesiDibatalkan = $midtrans
+                    ->batalkanSesiSnap($payment, true);
+
+                if (!$sesiDibatalkan) {
+                    return back()->with(
+                        'error',
+                        'Midtrans belum mengonfirmasi pembatalan sesi Snap. Status SATAR tidak diubah.'
+                    );
+                }
+
+                // Periksa lagi setelah sesi Snap dibatalkan.
+                $remote = $midtrans->ambilStatus($payment);
+            } else {
+                // Jangan mengirim pembatalan untuk respons yang
+                // identitas atau nominalnya berbeda.
+                if (
+                    (string) ($remote->order_id ?? '') !== $orderIdAwal
+                    || !is_numeric($remote->gross_amount ?? null)
+                    || (float) $remote->gross_amount !== $nominalAwal
                 ) {
                     return back()->with(
                         'error',
-                        'Transaksi tidak lagi menunggu pembayaran.'
+                        'Identitas atau nominal pembayaran Midtrans tidak sesuai.'
                     );
                 }
 
-                // KASUS 1: Belum pernah dibuatkan Snap Token.
-                // Tidak ada permintaan pembatalan ke Midtrans.
-                if (blank($payment->midtrans_snap_token)) {
-                    $hasil = DB::transaction(function () use ($id, $user) {
-                        $p = \App\Models\Payment::where(
-                            'transaction_id',
-                            $id
-                        )
-                            ->lockForUpdate()
-                            ->first();
+                $statusRemote = strtolower(
+                    (string) ($remote->transaction_status ?? '')
+                );
 
-                        $q = Transaction::whereKey($id)
-                            ->lockForUpdate();
-
-                        if ($user->role === 'kasir') {
-                            $q->where('user_id', $user->id);
-                        }
-
-                        $t = $q->firstOrFail();
-
-                        if (
-                            !$p
-                            || $p->metode !== 'qris'
-                            || $p->payment_status !== 'waiting'
-                            || $t->status !== 'pending'
-                            || !in_array(
-                                $t->payment_status,
-                                ['unpaid', 'waiting'],
-                                true
-                            )
-                        ) {
-                            return [
-                                'ok' => false,
-                                'message' => 'Status transaksi sudah berubah.',
-                            ];
-                        }
-
-                        // Token bisa saja dibuat oleh permintaan lain
-                        // ketika kasir menekan tombol Batalkan.
-                        if (filled($p->midtrans_snap_token)) {
-                            return [
-                                'ok' => false,
-                                'message' => 'Snap Token baru saja dibuat. Muat ulang halaman lalu coba pembatalan kembali.',
-                            ];
-                        }
-
-                        app(StockReservationService::class)->release((int) $t->id);
-
-                        $p->update([
-                            'payment_status' => 'cancelled',
-                        ]);
-
-                        $t->update([
-                            'status' => 'cancelled',
-                            'payment_status' => 'cancelled',
-                        ]);
-
-                        return [
-                            'ok' => true,
-                            'message' => 'Transaksi QRIS berhasil dibatalkan.',
-                        ];
-                    }, 3);
-
-                    if (!$hasil['ok']) {
-                        return back()->with('error', $hasil['message']);
-                    }
-
-                    return redirect()
-                        ->route('transaksi.show', $id)
-                        ->with('success', $hasil['message']);
-                }
-
-                // KASUS 2: Snap Token sudah tersedia.
-                // Simpan identitas awal untuk divalidasi kembali saat
-                // pembaruan database dilakukan.
-                $tokenAwal = $payment->midtrans_snap_token;
-                $orderIdAwal = $payment->external_id;
-                $nominalAwal = (float) $transaksi->grand_total;
-
-                $midtrans = app(\App\Services\MidtransService::class);
-
-                // PENTING: seluruh panggilan jaringan Midtrans berada
-                // DI LUAR DB::transaction() dan database lock.
-                $remote = $midtrans->ambilStatus($payment);
-                $sesiDibatalkan = false;
-
-                if ($remote === null) {
-                    // Status API belum menemukan transaksi pembayaran.
-                    // Pembatalan sesi harus dikonfirmasi oleh Midtrans.
-                    $sesiDibatalkan = $midtrans
-                        ->batalkanSesiSnap($payment);
-
-                    if (!$sesiDibatalkan) {
-                        return back()->with(
-                            'error',
-                            'Midtrans belum mengonfirmasi pembatalan sesi Snap. Status SATAR tidak diubah.'
-                        );
-                    }
-
-                    // Periksa lagi setelah sesi Snap dibatalkan.
-                    $remote = $midtrans->ambilStatus($payment);
-                } else {
-                    // Jangan mengirim pembatalan untuk respons yang
-                    // identitas atau nominalnya berbeda.
-                    if (
-                        (string) ($remote->order_id ?? '') !== $orderIdAwal
-                        || !is_numeric($remote->gross_amount ?? null)
-                        || (float) $remote->gross_amount !== $nominalAwal
-                    ) {
-                        return back()->with(
-                            'error',
-                            'Identitas atau nominal pembayaran Midtrans tidak sesuai.'
-                        );
-                    }
-
-                    $statusRemote = strtolower(
-                        (string) ($remote->transaction_status ?? '')
-                    );
-
-                    if ($statusRemote === 'pending') {
-                        // SDK cancel() mengembalikan kode status,
-                        // bukan objek dengan transaction_status.
-                        //
-                        // Jika permintaan mengalami kendala setelah
-                        // diproses oleh Midtrans, Status API tetap
-                        // diperiksa ulang.
-                        try {
-                            $midtrans->batalkanTransaksiMidtrans($payment);
-                        } catch (\Throwable $e) {
+                if ($statusRemote === 'pending') {
+                    // SDK cancel() mengembalikan kode status,
+                    // bukan objek dengan transaction_status.
+                    //
+                    // Jika permintaan mengalami kendala setelah
+                    // diproses oleh Midtrans, Status API tetap
+                    // diperiksa ulang.
+                    try {
+                        $midtrans->batalkanTransaksiMidtrans($payment);
+                    } catch (\Throwable $e) {
                             report($e);
                         }
 
@@ -409,45 +481,16 @@ class TransactionController extends Controller
                 return redirect()
                     ->route('transaksi.show', $id)
                     ->with('success', $hasil['message']);
+        } catch (\Throwable $e) {
+            report($e);
 
-            } catch (\Throwable $e) {
-                report($e);
-
-                return back()->with(
-                    'error',
-                    'Pembatalan atau pemeriksaan status Midtrans mengalami kendala. Status SATAR belum dipastikan berubah. Periksa status pembayaran sebelum mencoba lagi.'
-                );
-            }
-        }
-
-        // Pertahankan alur pembatalan transaksi non-QRIS.
-        if (
-            $transaksi->payment_status === 'paid'
-            || $transaksi->status === 'success'
-        ) {
             return back()->with(
                 'error',
-                'Transaksi yang sudah lunas tidak bisa dibatalkan.'
+                'Pembatalan atau pemeriksaan status Midtrans mengalami kendala. Status SATAR belum dipastikan berubah. Periksa status pembayaran sebelum mencoba lagi.'
             );
         }
-
-        DB::transaction(function () use ($transaksi) {
-            $transaksi->update([
-                'status' => 'cancelled',
-                'payment_status' => 'cancelled',
-            ]);
-
-            if ($transaksi->payment) {
-                $transaksi->payment->update([
-                    'payment_status' => 'cancelled',
-                ]);
-            }
-        });
-
-        return redirect()
-            ->route('transaksi.show', $transaksi->id)
-            ->with('success', 'Transaksi berhasil dibatalkan.');
     }
+
     public function expire($id): RedirectResponse
     {
         $user = auth()->user();
